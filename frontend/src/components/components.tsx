@@ -126,10 +126,11 @@ function SensorsList({ setSelectedDatastream }: any) {
 
 
 	return(
-		<div style={{width: '25%', height: '100%', overflowY: 'scroll'}}>
+		<div>
 			<input type="text" value={sensorName} onChange={(e) => setSensorName(e.target.value)} />
 			<button onClick={() => getSensors(sensorName)}>
-		Fetch Sensors
+			<p>{sensorName}</p>
+		Fetch Sensors{sensorName}
 			</button>
 
 			{sensors.map((sensor:any) => (

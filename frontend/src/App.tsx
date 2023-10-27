@@ -6,9 +6,10 @@ function App() {
 
 	return (
 		<div style={{display: 'flex'}}>
-
-			<SensorsList setSelectedDatastream={setSelectedDatastream} />
-
+			<div style={{width: '25%', height: '100%', overflowY: 'scroll'}}>
+				<SensorsList setSelectedDatastream={setSelectedDatastream} />
+			</div>
+			
 			<div style={{width: '75%'}}>
 				{selectedDatastream && (
 					<DatastreamContent datastream={selectedDatastream} />
