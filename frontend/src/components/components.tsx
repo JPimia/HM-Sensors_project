@@ -86,7 +86,7 @@ function DatastreamContent({datastream}: any) {
 						<p>Result Time: </p>
 						<p>{observation.resultTime.split('T')[0]}</p>
 						<p>{observation.resultTime.split('T')[1].split('.')[0]}</p>
-						<p>Result: {observation.result}{unitOfMeasurement.symbol}</p>
+						<p>Result: {observation.result} {unitOfMeasurement.symbol}</p>
 					</div>
 				))}
 			</div>
