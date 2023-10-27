@@ -129,8 +129,7 @@ function SensorsList({ setSelectedDatastream }: any) {
 		<div>
 			<input type="text" value={sensorName} onChange={(e) => setSensorName(e.target.value)} />
 			<button onClick={() => getSensors(sensorName)}>
-			<p>{sensorName}</p>
-		Fetch Sensors{sensorName}
+		Fetch Sensors
 			</button>
 
 			{sensors.map((sensor:any) => (
