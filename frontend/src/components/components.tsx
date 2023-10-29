@@ -28,18 +28,13 @@ function DatastreamContent({datastream}: any) {
 	const chartContainer = useRef(null);
 
 	const {name, description, unitOfMeasurement, ObservedProperty, Observations} = datastream;
-	const observationResults = Observations.map(
-		(observation: { result: any; }) => observation.result
-		);
-	const observationTimes = Observations.map(
-		(observation: { resultTime: any; }) => observation.resultTime
-		);
-	const data = {
-		labels: observationTimes,
+	
+	const chartData = {
+		labels: Observations.map((observation: any) => observation.resultTime),
 		datasets: [
 			{
 				label: 'Observation Results',
-				data: observationResults,
+				data: Observations.map((observation: any) => observation.result),
 				fill: false,
 				borderColor: 'rgb(75, 192, 192)',
 				tension: 0.1,
@@ -92,23 +87,29 @@ function DatastreamContent({datastream}: any) {
 			</div>
 			<h3>Chart:</h3>
 			<div ref={chartContainer}>
-				<Line data={data} options={options} />
+				<Line data={chartData} options={options} />
 			</div>
 		</div>
 	);
 };
 
 
-function SensorsList({ setSelectedDatastream }: any) {
+function SensorsList({ setSelectedDatastream, setDatastreamComparisonList , setSelectedSensors, selectedSensors}: any) {
 	const [sensorName, setSensorName] = useState('hm sensor');
-	const [sensors, setSensors] = useState([]);
 	
+	const [compareType, setCompareType] = useState(null);
 	
+	async function handleCompareBtnClick(datastream: { [key: string]: any; }) {
+		const fullDatastream = await fetchDatastreamContents(datastream['@iot.selfLink']);
+		setCompareType(datastream.name);
+		setDatastreamComparisonList((prevList: any) => [...prevList, fullDatastream]);
+	}
+
+
 	async function getSensors(name: string) {
 		try {
 			const data = await fetchSensors(name);
-			setSensors(data.value);
-			setSelectedDatastream(null); // Reset selected datastream when fetching new sensors
+			setSelectedSensors(data.value);
 		} catch (error) {
 			console.error(error);
 		}
@@ -117,13 +118,19 @@ function SensorsList({ setSelectedDatastream }: any) {
 
 	async function getDatastream(datastream: { [key: string]: any; }) {
 		try {
-			const data = await fetchDatastreamContents(datastream);
+			const data = await fetchDatastreamContents(datastream['@iot.selfLink']);
 			setSelectedDatastream(data);
 		} catch (error) {
 			console.error(error);
 		}
 	}
 
+	function isCompareBtnDisabled(datastreamType: string, compareType: string | null):boolean {
+		if (compareType === null) {
+			return false
+		} else { 
+			return datastreamType !== compareType}
+	}
 
 	return(
 		<div>
@@ -132,18 +139,26 @@ function SensorsList({ setSelectedDatastream }: any) {
 		Fetch Sensors
 			</button>
 
-			{sensors.map((sensor:any) => (
+			{selectedSensors.map((sensor:any) => (
 				<div key={sensor.name}>
-					<h3>{sensor.name}</h3>
+					<h3>{sensor.name}</h3><p>{sensor['@iot.id']}</p>
 					<p>{sensor.description}</p>
 					<p>Datastreams:</p>
-					{sensor.Datastreams.map((datastream: { [x: string]: any; name?: any; }) => (
-						<button
-							key={datastream.name}
-							onClick={() => getDatastream(datastream)}
-						>
-							{datastream.name}
-						</button>
+					{sensor.Datastreams.map((datastream: any) => (
+						<div key={datastream.name}>
+					<button
+						onClick={() => getDatastream(datastream)}
+					>
+						{datastream.name}
+					</button>
+					<button
+						onClick={() => handleCompareBtnClick(datastream)}
+						style={{ backgroundColor: isCompareBtnDisabled(datastream.name, compareType) ? 'gray' : 'green' }}
+						disabled={isCompareBtnDisabled(datastream.name, compareType)}
+					>
+						Add to compare
+					</button>
+				</div>
 					))}
 				</div>
 			))}

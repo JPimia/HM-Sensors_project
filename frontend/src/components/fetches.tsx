@@ -35,7 +35,7 @@ async function fetchSensors(nameFilter: string): Promise<any> {
 async function fetchDatastreamContents(datastream: string): Promise<any> {
 
 	let url = `${datastream}?
-	$select=name,description,observationType,unitOfMeasurement&
+	$select=name,description,observationType,unitOfMeasurement,@iot.id&
 	$expand=ObservedProperty,Observations(
 		$select=resultTime,result;
 		$orderby=phenomenonTime desc;

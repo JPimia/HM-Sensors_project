@@ -1,34 +1,65 @@
 import { useState } from "react";
 import { DatastreamContent, SensorsList } from "./components/components";
 import PopupComponent from "./components/PopupComponent";
+import ChartGraphComparison from "./components/chartGraphComparisons";
 
 function App() {
-    const [selectedDatastream, setSelectedDatastream] = useState(null);
+	const [selectedDatastream, setSelectedDatastream] = useState(null);
+	const [selectedSensors, setSelectedSensors] = useState([]);
+	const [datastreamComparisonList, setDatastreamComparisonList] = useState([]);
+	const [viewPage, setViewPage] = useState("main");
 
-    return (
-        <>
-            <PopupComponent />
-            <div style={{ display: "flex" }}>
-                <div
-                    style={{
-                        width: "25%",
-                        height: "100%",
-                        overflowY: "scroll",
-                    }}
-                >
-                    <SensorsList
-                        setSelectedDatastream={setSelectedDatastream}
-                    />
-                </div>
+	function handleViewChange(page: any) {
+		setViewPage(page);
+	}
 
-                <div style={{ width: "75%" }}>
-                    {selectedDatastream && (
-                        <DatastreamContent datastream={selectedDatastream} />
-                    )}
-                </div>
-            </div>
-        </>
-    );
+	return (
+		<>
+		<div>
+			<div>
+				<PopupComponent />
+			</div>
+			<div style={{ display: "flex", marginBottom: "20px" }}>
+				<button onClick={() => handleViewChange("main")} style={{ marginRight: "20px" }}>
+				Home view
+				</button>
+				<button style={{ backgroundColor: 'green' }}
+				onClick={() => handleViewChange("graphComparison")}
+				>Graph Comparison</button>
+			</div>
+		</div>
+
+
+		{viewPage === "main" && (			
+			<div style={{ display: "flex" }}>
+				<div
+					style={{
+						width: "25%",
+						height: "100%",
+						overflowY: "scroll",
+					}}
+					>
+					<SensorsList
+						setSelectedDatastream={setSelectedDatastream}
+						setDatastreamComparisonList={setDatastreamComparisonList}
+						selectedSensors={selectedSensors}
+						setSelectedSensors={setSelectedSensors}
+					/>
+				</div>
+
+				<div style={{ width: "75%" }}>
+					{selectedDatastream && (
+						<DatastreamContent datastream={selectedDatastream} />
+					)}
+				</div>
+			</div>
+
+		)}
+		{viewPage === "graphComparison" && (
+			<ChartGraphComparison dataStreams={datastreamComparisonList} setComparisonList={setDatastreamComparisonList}/>
+		)}
+		</>
+	);
 }
 
 export default App;
