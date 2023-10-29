@@ -32,19 +32,17 @@ async function fetchSensors(nameFilter: string): Promise<any> {
 
 // Fetch contents of datastream using datastream -> '@iot.selfLink'
 // TODO: PAGING use @iot.nextLink if using top=1;
-async function fetchDatastreamContents(datastream: {[key: string]: any;}): Promise<any> {
-	if (datastream['@iot.selfLink']) {
+async function fetchDatastreamContents(datastream: string): Promise<any> {
 
-        let url = `${datastream['@iot.selfLink']}?
-        $select=name,description,observationType,unitOfMeasurement&
-        $expand=ObservedProperty,Observations(
-            $select=resultTime,result;
-            $orderby=phenomenonTime desc;
-            $top=20)`
+	let url = `${datastream}?
+	$select=name,description,observationType,unitOfMeasurement&
+	$expand=ObservedProperty,Observations(
+		$select=resultTime,result;
+		$orderby=phenomenonTime desc;
+		$top=20)`
 
-		const response = await fetchUrl(url);
-		return response;
-	}
+	const response = await fetchUrl(url);
+	return response;
 };
 
 
