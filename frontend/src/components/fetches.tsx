@@ -19,13 +19,13 @@ async function fetchUrl(url: string): Promise<any> {
 // TODO: PAGING use @iot.nextLink to get similar data for next sensor if using top=1;
 async function fetchSensors(nameFilter: string): Promise<any> {
 	const url =`https://gi3.gis.lrg.tum.de/frost/v1.1/Sensors?
-        $top=10&
-        $filter=substringof(tolower('${nameFilter}'),tolower(name))&
-        $select=name,description&
-        $expand=Datastreams(
-            $select=name,description,@iot.selfLink)`;
+		$top=10&
+		$filter=substringof(tolower('${nameFilter}'),tolower(name))&
+		$select=name,description&
+		$expand=Datastreams(
+			$select=name,description,@iot.selfLink)`;
 
-    const response = await fetchUrl(url);
+	const response = await fetchUrl(url);
 	return response;
 }
 

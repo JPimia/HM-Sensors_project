@@ -3,14 +3,14 @@ import {useState, useRef } from 'react';
 import {fetchSensors, fetchDatastreamContents} from './fetches';
 import {Line} from 'react-chartjs-2';
 import {
-  Chart,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
+	Chart,
+	CategoryScale,
+	LinearScale,
+	PointElement,
+	LineElement,
+	Title,
+	Tooltip,
+	Legend,
 } from 'chart.js';
 
 
@@ -138,30 +138,35 @@ function SensorsList({ setSelectedDatastream, setDatastreamComparisonList , setS
 			<button onClick={() => getSensors(sensorName)}>
 		Fetch Sensors
 			</button>
-
-			{selectedSensors.map((sensor:any) => (
-				<div key={sensor.name}>
-					<h3>{sensor.name}</h3><p>{sensor['@iot.id']}</p>
-					<p>{sensor.description}</p>
-					<p>Datastreams:</p>
-					{sensor.Datastreams.map((datastream: any) => (
-						<div key={datastream.name}>
-					<button
-						onClick={() => getDatastream(datastream)}
-					>
-						{datastream.name}
-					</button>
-					<button
-						onClick={() => handleCompareBtnClick(datastream)}
-						style={{ backgroundColor: isCompareBtnDisabled(datastream.name, compareType) ? 'gray' : 'green' }}
-						disabled={isCompareBtnDisabled(datastream.name, compareType)}
-					>
-						Add to compare
-					</button>
-				</div>
+			{selectedSensors ? ( // Check if filter returned any results
+				<div>
+					{selectedSensors.map((sensor:any) => (
+						<div key={sensor.name}>
+							<h3>{sensor.name}</h3><p>{sensor['@iot.id']}</p>
+							<p>{sensor.description}</p>
+							<p>Datastreams:</p>
+							{sensor.Datastreams.map((datastream: any) => (
+								<div key={datastream.name}>
+							<button
+								onClick={() => getDatastream(datastream)}
+							>
+								{datastream.name}
+							</button>
+							<button
+								onClick={() => handleCompareBtnClick(datastream)}
+								style={{ backgroundColor: isCompareBtnDisabled(datastream.name, compareType) ? 'gray' : 'green' }}
+								disabled={isCompareBtnDisabled(datastream.name, compareType)}
+							>
+								Add to compare
+							</button>
+						</div>
+							))}
+						</div>
 					))}
 				</div>
-			))}
+			) : (
+				<p>No sensors found</p>
+			)}
 		</div>
 	)
 }

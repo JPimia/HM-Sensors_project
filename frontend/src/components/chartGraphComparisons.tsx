@@ -1,23 +1,23 @@
 import React, { useState } from 'react';
 import { Line } from 'react-chartjs-2';
 import {
-  Chart,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
+	Chart,
+	CategoryScale,
+	LinearScale,
+	PointElement,
+	LineElement,
+	Title,
+	Tooltip,
+	Legend,
 } from 'chart.js';
 
 
 function randomizeBorderColor() {
-  const red = Math.floor(Math.random() * 256);
-  const green = Math.floor(Math.random() * 256);
-  const blue = Math.floor(Math.random() * 256);
-  
-  return `rgb(${red}, ${green}, ${blue})`;
+	const red = Math.floor(Math.random() * 256);
+	const green = Math.floor(Math.random() * 256);
+	const blue = Math.floor(Math.random() * 256);
+
+	return `rgb(${red}, ${green}, ${blue})`;
 }
 
 
@@ -46,41 +46,40 @@ function ChartGraphComparison({ dataStreams, setComparisonList }: any) {
 
 
 const chartData: any = {
-  labels: [],
-  datasets: [],
+	labels: [],
+	datasets: [],
 };
 
 selectedDataStreams.forEach((datastream: any) => {
-  
 
-  // add labels
-  chartData.labels = datastream.Observations.map((observation: any) => observation.resultTime);
+	// add labels
+	chartData.labels = datastream.Observations.map((observation: any) => observation.resultTime);
 
-  // add dataset
-  chartData.datasets.push({
-    label: datastream["@iot.id"],
-    data: datastream.Observations.map((observation: any) => observation.result),
-    fill: false,
-    borderColor: randomizeBorderColor(),
-    tension: 0.1,
-  });
+	// add dataset
+	chartData.datasets.push({
+	label: datastream["@iot.id"],
+	data: datastream.Observations.map((observation: any) => observation.result),
+	fill: false,
+	borderColor: randomizeBorderColor(),
+	tension: 0.1,
+	});
 });
 
 const options = {
-  scales: {
-    x: {
-      title: {
-        display: true,
-        text: 'Result Time',
-      },
-    },
-    y: {
-      title: {
-        display: true,
-        text: `Result`,
-      },
-    },
-  },
+	scales: {
+		x: {
+		title: {
+			display: true,
+			text: 'Result Time',
+		},
+		},
+		y: {
+			title: {
+				display: true,
+				text: `Result`,
+			},
+		},
+	},
 };
 	return (
 		<div style={{ display: "flex" }}>
