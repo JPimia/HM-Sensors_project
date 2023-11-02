@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Popup from "reactjs-popup";
 import "./PopupComponent.css";
+import "./RegisterPopUp"
 
 const PopupComponent = () => {
     const [username, setUsername] = useState("");

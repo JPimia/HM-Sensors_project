@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { DatastreamContent, SensorsList } from "./components/components";
 import PopupComponent from "./components/PopupComponent";
+import RegisterComponent from "./components/RegisterPopUp";
 import ChartGraphComparison from "./components/chartGraphComparisons";
 
 function App() {
@@ -16,8 +17,13 @@ function App() {
 	return (
 		<>
 		<div>
-			<div>
-				<PopupComponent />
+			<div style={{display: "flex", marginBottom: "10px"}}>
+                <div style={{margin: "5px"}}>
+				    <PopupComponent />
+                </div>
+                <div style={{margin: "5px"}}>
+                    <RegisterComponent />
+                </div>
 			</div>
 			<div style={{ display: "flex", marginBottom: "20px" }}>
 				<button onClick={() => handleViewChange("main")} style={{ marginRight: "20px" }}>
