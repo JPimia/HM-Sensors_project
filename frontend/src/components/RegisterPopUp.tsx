@@ -34,9 +34,6 @@ const RegisterComponent = () => {
         }
     };
 
-
-
-
     return (
         <div>
             <Popup

@@ -41,7 +41,7 @@ const PopupComponent = () => {
     return (
         <div>
             {isLoggedIn ? (
-                <p>{`${username} is logged in.`}</p>
+                <p>{`${username} is logssged in.`}</p>
             ) : (
                 <Popup
                     trigger={
