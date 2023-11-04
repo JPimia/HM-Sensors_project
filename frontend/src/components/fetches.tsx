@@ -1,3 +1,9 @@
+/* 
+	FROST-server documentation, parameters etc.
+	https://fraunhoferiosb.github.io/FROST-Server/ 
+*/
+
+
 async function fetchUrl(url: string): Promise<any> {
     try {
         const response = await fetch(url);
@@ -9,31 +15,30 @@ async function fetchUrl(url: string): Promise<any> {
         throw new Error("Failed to fetch URL: " + error);
     }
 }
-export default async function fetchSensor(name: string): Promise<any> {
-    const url = `https://gi3.gis.lrg.tum.de/frost/v1.1/Sensors?
-        $filter=name eq '${name}'&
-        $select=name,description&
-        $expand=Datastreams(
-            $select=name,description,@iot.selfLink)`;
 
-    const response = await fetchUrl(url);
-    return response;
+
+async function fetchSensor(name?: string, timeFrame?: any[], location?: any): Promise<any> {
+	
+	let filterOptions = `filter=`
+	if (name) {
+		filterOptions += `name eq '${name}'`; // name equal to: {name}
+	}
+
+	const url = `https://gi3.gis.lrg.tum.de/frost/v1.1/Sensors?
+		$${filterOptions}&
+		$expand=Datastreams`;
+
+	const response = await fetchUrl(url);
+	return response;
 }
 
-/* 
-	FROST-server documentation, parameters etc.
-	https://fraunhoferiosb.github.io/FROST-Server/ 
-*/
 
 // Fetch a list of sensors using name as filter,
-// TODO: PAGING use @iot.nextLink to get similar data for next sensor if using top=1;
 async function fetchSensors(nameFilter: string): Promise<any> {
     const url = `https://gi3.gis.lrg.tum.de/frost/v1.1/Sensors?
 		$top=10&
 		$filter=substringof(tolower('${nameFilter}'),tolower(name))&
-		$select=name,description&
-		$expand=Datastreams(
-			$select=name,description,@iot.selfLink)`;
+		$expand=Datastreams`;
 
     const response = await fetchUrl(url);
     return response;
