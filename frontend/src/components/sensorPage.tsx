@@ -21,22 +21,22 @@ interface Datastream {
 }
 
 function SensorPage() {
-	const { sensorName } = useParams<{ sensorName: string | undefined }>();
+	const { sensorName } = useParams<{ sensorName: string }>();
 	const [sensor, setSensor] = useState<SensorContainer | null>(null);
 
 	useEffect(() => {
 		async function fetchSensorData() {
 			try {
-				const data = await fetchSensor(sensorName || '');
+				const data = await fetchSensor(sensorName!);
 				setSensor(data);
 			} catch (error) {
 				console.error('Error fetching sensor data', error);
 			}
-			console.log(sensorName);
+			console.log(sensor);
 		}
 
 		fetchSensorData();
-	}, [sensorName]);
+	}, []);
 
 	if (!sensor) {
 		// You can render a loading indicator here

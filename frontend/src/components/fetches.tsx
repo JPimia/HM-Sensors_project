@@ -22,7 +22,7 @@ async function fetchUrl(url: string): Promise<any> {
 async function fetchSensor(name: string): Promise<any> {
 	
 	const url = `https://gi3.gis.lrg.tum.de/frost/v1.1/Sensors?
-		$filter=name eq '${name}&
+		$filter=name eq '${name}'&
 		$expand=Datastreams`;
 
 	const response = await fetchUrl(url);

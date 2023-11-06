@@ -70,7 +70,6 @@ function App() {
 						/>
 					) }
 				/>
-
 				<Route path="/sensor/:sensorName" element={ <SensorPage /> } />
 			</Routes>
 		</Router>
