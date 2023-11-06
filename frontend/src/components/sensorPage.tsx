@@ -3,31 +3,31 @@ import { useParams } from 'react-router-dom';
 import { fetchSensor } from './fetches';
 
 interface SensorContainer {
-    value: SensorData[];
+	value: SensorData[];
 }
 
 interface SensorData {
-    '@iot.id': string;
-    name: string;
-    description: string;
-    Datastreams: Datastream[];
+	'@iot.id': string;
+	name: string;
+	description: string;
+	Datastreams: Datastream[];
 }
 
 interface Datastream {
-    '@iot.id': string;
-    name: string;
-    description: string;
-    // Add more properties as needed
+	'@iot.id': string;
+	name: string;
+	description: string;
+	// Add more properties as needed
 }
 
 function SensorPage() {
-	const { sensorName } = useParams<{ sensorName: string }>();
+	const { sensorName } = useParams<{ sensorName: string | undefined }>();
 	const [sensor, setSensor] = useState<SensorContainer | null>(null);
 
 	useEffect(() => {
 		async function fetchSensorData() {
 			try {
-				const data = await fetchSensor(sensorName);
+				const data = await fetchSensor(sensorName || '');
 				setSensor(data);
 			} catch (error) {
 				console.error('Error fetching sensor data', error);
@@ -64,7 +64,7 @@ function SensorPage() {
 								// style={{ backgroundColor: isCompareBtnDisabled(datastream.name, compareType) ? 'gray' : 'green' }}
 								// disabled={isCompareBtnDisabled(datastream.name, compareType)}
 							>
-                                Add to compare
+								Add to compare
 							</button>
 						</div>
 					))}
