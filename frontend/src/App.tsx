@@ -18,11 +18,11 @@ function App() {
 				<div>
 					<PopupComponent />
 				</div>
-				<div style={{ display: 'flex', marginBottom: '20px' }}>
+				<div style={ { display: 'flex', marginBottom: '20px' } }>
 					<Link to="/">Home view</Link>
 					<Link
 						to="/graphComparison"
-						style={{ backgroundColor: 'green' }}
+						style={ { backgroundColor: 'green' } }
 					>
                         Graph Comparison
 					</Link>
@@ -32,43 +32,43 @@ function App() {
 			<Route
 				exact
 				path="/"
-				render={() => (
-					<div style={{ display: 'flex' }}>
+				render={ () => (
+					<div style={ { display: 'flex' } }>
 						<div
-							style={{
+							style={ {
 								width: '25%',
 								height: '100%',
 								overflowY: 'scroll',
-							}}
+							} }
 						>
 							<SensorsList
-								setSelectedDatastream={setSelectedDatastream}
+								setSelectedDatastream={ setSelectedDatastream }
 								setDatastreamComparisonList={
 									setDatastreamComparisonList
 								}
-								selectedSensors={selectedSensors}
-								setSelectedSensors={setSelectedSensors}
+								selectedSensors={ selectedSensors }
+								setSelectedSensors={ setSelectedSensors }
 							/>
 						</div>
-						<div style={{ width: '75%' }}>
+						<div style={ { width: '75%' } }>
 							{selectedDatastream && (
 								<DatastreamContent
-									datastream={selectedDatastream}
+									datastream={ selectedDatastream }
 								/>
 							)}
 						</div>
 					</div>
-				)}
+				) }
 			/>
 
 			<Route
 				path="/graphComparison"
-				render={() => (
+				render={ () => (
 					<ChartGraphComparison
-						dataStreams={datastreamComparisonList}
-						setComparisonList={setDatastreamComparisonList}
+						dataStreams={ datastreamComparisonList }
+						setComparisonList={ setDatastreamComparisonList }
 					/>
-				)}
+				) }
 			/>
 
 			<Route path="/sensor/:sensorName">

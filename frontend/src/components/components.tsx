@@ -77,19 +77,19 @@ function DatastreamContent({ datastream }: any) {
 			<p>Observed Property: {ObservedProperty.name}</p>
 			<p>
 				Observed Property Definition:{' '}
-				<a href={ObservedProperty.definition}>
+				<a href={ ObservedProperty.definition }>
 					{ObservedProperty.definition}
 				</a>
 			</p>
 			<p>Observed Property Description: {ObservedProperty.description}</p>
 
 			<h3>Observations:</h3>
-			<div style={{ overflowX: 'scroll', whiteSpace: 'nowrap' }}>
+			<div style={ { overflowX: 'scroll', whiteSpace: 'nowrap' } }>
 				{RenderObservations(Observations,unitOfMeasurement)}
 			</div>
 			<h3>Chart:</h3>
-			<div ref={chartContainer}>
-				<Line data={chartData} options={options} />
+			<div ref={ chartContainer }>
+				<Line data={ chartData } options={ options } />
 			</div>
 		</div>
 	);
@@ -106,19 +106,19 @@ function RenderObservations(Observations:any, unitOfMeasurement:any) {
 		<div>
 			{Observations.map((observation: { resultTime: string | null; result: string | null; observationId: any; }, index: Key | null | undefined) => (
 				<div
-					key={index}
-					style={{
+					key={ index }
+					style={ {
 						display: 'inline-block',
 						margin: '10px',
 						padding: '10px',
 						border: '1px solid gray',
 						backgroundColor: observation.resultTime === null || observation.result === null ? 'darkred' : 'none',
-					}}
+					} }
 				>
 					<p>{observation.resultTime !== null ? observation.resultTime.split('T')[0] : 'Result Time: null'}</p>
 					<p>{observation.resultTime !== null ? observation.resultTime.split('T')[1].split('.')[0] : 'Time: null'}</p>
 					<p>Result: {observation.result !== null ? observation.result + ' ' + unitOfMeasurement.symbol : 'Result: null'}</p>
-					<button onClick={() => flagBadObservation()}>
+					<button onClick={ () => flagBadObservation() }>
 					Flag data
 					</button>
 				</div>
@@ -135,8 +135,8 @@ function SensorsList({
 	selectedSensors,
 }: any) {
 	const [sensorName, setSensorName] = useState('hm sensor');
-	const [locationName, setLocationName] = useState('test location');
-	const [timeframe, setTimeframe] = useState('2021-01-01T11:47:16.206668Z/2023-11-05T23:40:05.463419Z');
+	const [locationName, setLocationName] = useState('locationtest');
+	const [timeframe, setTimeframe] = useState('2021-01-01/2023-11-05');
 	const [compareType, setCompareType] = useState(null);
 
 
@@ -191,26 +191,26 @@ function SensorsList({
 				<h4>Filter options:</h4>
 				<input
 					type="text"
-					value={sensorName}
-					onChange={(e) => setSensorName(e.target.value)}
+					value={ sensorName }
+					onChange={ (e) => setSensorName(e.target.value) }
 				/>
 				<span>Sensor Name</span>
 				<br />
 				<input
 					type="text"
-					value={timeframe}
-					onChange={(e) => setTimeframe(e.target.value)}
+					value={ timeframe }
+					onChange={ (e) => setTimeframe(e.target.value) }
 				/>
 				<span>Timeframe</span>
 				<br />
 				<input
 					type="text"
-					value={locationName}
-					onChange={(e) => setLocationName(e.target.value)}
+					value={ locationName }
+					onChange={ (e) => setLocationName(e.target.value) }
 				/>
 				<span>Location Name</span>
 				<br />
-				<button onClick={() => getSensors(sensorName,timeframe,locationName)}>Fetch Sensors</button>
+				<button onClick={ () => getSensors(sensorName,timeframe,locationName) }>Fetch Sensors</button>
 			</div>
 		);
 	
@@ -222,25 +222,25 @@ function SensorsList({
 			{selectedSensors ? ( // Check if filter returned any results
 				<div>
 					{selectedSensors.map((sensor: any) => (
-						<div key={sensor.name}>
+						<div key={ sensor.name }>
 							<h3>{sensor.name}</h3>
 							<p>{sensor['@iot.id']}</p>
 							<p>{sensor.description}</p>
 							<p>Datastreams:</p>
 							{sensor.Datastreams.map((datastream: any) => (
-								<div key={datastream.name}>
+								<div key={ datastream.name }>
 									<button
-										onClick={() =>
+										onClick={ () =>
 											getDatastream(datastream)
 										}
 									>
 										{datastream.name}
 									</button>
 									<button
-										onClick={() =>
+										onClick={ () =>
 											handleCompareBtnClick(datastream)
 										}
-										style={{
+										style={ {
 											backgroundColor:
 												isCompareBtnDisabled(
 													datastream.name,
@@ -248,11 +248,11 @@ function SensorsList({
 												)
 													? 'gray'
 													: 'green',
-										}}
-										disabled={isCompareBtnDisabled(
+										} }
+										disabled={ isCompareBtnDisabled(
 											datastream.name,
 											compareType
-										)}
+										) }
 									>
 										Add to compare
 									</button>

@@ -45,23 +45,23 @@ const PopupComponent = () => {
 			) : (
 				<Popup
 					trigger={
-						<button onClick={() => setIsOpen(true)}>
+						<button onClick={ () => setIsOpen(true) }>
                             Open Login Popup
 						</button>
 					}
-					open={isOpen}
-					modal={true}
+					open={ isOpen }
+					modal={ true }
 				>
 					<div className="custom-popup-content">
 						<h2>Login</h2>
-						<form onSubmit={handleSubmit}>
+						<form onSubmit={ handleSubmit }>
 							<label>
                                 Username:
 								<br />
 								<input
 									type="text"
-									value={username}
-									onChange={handleUsernameChange}
+									value={ username }
+									onChange={ handleUsernameChange }
 								/>
 							</label>
 							<label>
@@ -69,8 +69,8 @@ const PopupComponent = () => {
 								<br />
 								<input
 									type="password"
-									value={password}
-									onChange={handlePasswordChange}
+									value={ password }
+									onChange={ handlePasswordChange }
 								/>
 							</label>
 							<br />

@@ -47,13 +47,13 @@ function SensorPage() {
 	return (
 		<>
 			{sensor.value.map((sensor: SensorData) => (
-				<div key={sensor.name}>
+				<div key={ sensor.name }>
 					<h3>{sensor.name}</h3>
 					<p>{sensor['@iot.id']}</p>
 					<p>{sensor.description}</p>
 					<p>Datastreams:</p>
 					{sensor.Datastreams.map((datastream: Datastream) => (
-						<div key={datastream.name}>
+						<div key={ datastream.name }>
 							<button
 								// onClick={() => getDatastream(datastream)}
 							>

@@ -38,23 +38,23 @@ const RegisterComponent = () => {
 		<div>
 			<Popup
 				trigger={
-					<button onClick={() => setIsOpen(!isOpen)}>
+					<button onClick={ () => setIsOpen(!isOpen) }>
                         Register as a new user
 					</button>
 				}
-				open={isOpen}
-				modal={true}
+				open={ isOpen }
+				modal={ true }
 			>
 				<div className="custom-popup-content">
 					<h2>Register</h2>
-					<form onSubmit={handleSubmit}>
+					<form onSubmit={ handleSubmit }>
 						<label>
                             Username:
 							<br />
 							<input
 								type="text"
-								value={username}
-								onChange={handleUsernameChange}
+								value={ username }
+								onChange={ handleUsernameChange }
 							/>
 						</label>
 						<label>
@@ -62,8 +62,8 @@ const RegisterComponent = () => {
 							<br />
 							<input
 								type="password"
-								value={password}
-								onChange={handlePasswordChange}
+								value={ password }
+								onChange={ handlePasswordChange }
 							/>
 						</label>
 						<br />
