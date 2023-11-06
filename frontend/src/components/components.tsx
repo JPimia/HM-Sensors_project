@@ -3,237 +3,266 @@ import { useState, useRef } from "react";
 import { fetchSensors, fetchDatastreamContents } from "./fetches";
 import { Line } from "react-chartjs-2";
 import {
-    Chart,
-    CategoryScale,
-    LinearScale,
-    PointElement,
-    LineElement,
-    Title,
-    Tooltip,
-    Legend,
+	Chart,
+	CategoryScale,
+	LinearScale,
+	PointElement,
+	LineElement,
+	Title,
+	Tooltip,
+	Legend,
 } from "chart.js";
 
 function DatastreamContent({ datastream }: any) {
-    Chart.register(
-        CategoryScale,
-        LinearScale,
-        PointElement,
-        LineElement,
-        Title,
-        Tooltip,
-        Legend
-    );
-    const chartContainer = useRef(null);
+	Chart.register(
+		CategoryScale,
+		LinearScale,
+		PointElement,
+		LineElement,
+		Title,
+		Tooltip,
+		Legend
+	);
+	const chartContainer = useRef(null);
 
-    const {
-        name,
-        description,
-        unitOfMeasurement,
-        ObservedProperty,
-        Observations,
-    } = datastream;
+	const {
+		name,
+		description,
+		unitOfMeasurement,
+		ObservedProperty,
+		Observations,
+	} = datastream;
 
-    const chartData = {
-        labels: Observations.map((observation: any) => observation.resultTime),
-        datasets: [
-            {
-                label: "Observation Results",
-                data: Observations.map(
-                    (observation: any) => observation.result
-                ),
-                fill: false,
-                borderColor: "rgb(75, 192, 192)",
-                tension: 0.1,
-            },
-        ],
-    };
+	const chartData = {
+		labels: Observations.map((observation: any) => observation.resultTime),
+		datasets: [
+			{
+				label: "Observation Results",
+				data: Observations.map(
+					(observation: any) => observation.result
+				),
+				fill: false,
+				borderColor: "rgb(75, 192, 192)",
+				tension: 0.1,
+			},
+		],
+	};
 
-    const options = {
-        scales: {
-            x: {
-                title: {
-                    display: true,
-                    text: "Result Time",
-                },
-            },
-            y: {
-                title: {
-                    display: true,
-                    text: `Result (${unitOfMeasurement.symbol})`,
-                },
-            },
-        },
-    };
-    return (
-        <div>
-            <p>Name: {name}</p>
-            <p>Description: {description}</p>
-            <p>
-                Unit of Measurement: {unitOfMeasurement.name} (
-                {unitOfMeasurement.symbol})
-            </p>
-            <p>Observed Property: {ObservedProperty.name}</p>
-            <p>
-                Observed Property Definition:{" "}
-                <a href={ObservedProperty.definition}>
-                    {ObservedProperty.definition}
-                </a>
-            </p>
-            <p>Observed Property Description: {ObservedProperty.description}</p>
+	const options = {
+		scales: {
+			x: {
+				title: {
+					display: true,
+					text: "Result Time",
+				},
+			},
+			y: {
+				title: {
+					display: true,
+					text: `Result (${unitOfMeasurement.symbol})`,
+				},
+			},
+		},
+	};
+	return (
+		<div>
+			<p>Name: {name}</p>
+			<p>Description: {description}</p>
+			<p>
+				Unit of Measurement: {unitOfMeasurement.name} (
+				{unitOfMeasurement.symbol})
+			</p>
+			<p>Observed Property: {ObservedProperty.name}</p>
+			<p>
+				Observed Property Definition:{" "}
+				<a href={ObservedProperty.definition}>
+					{ObservedProperty.definition}
+				</a>
+			</p>
+			<p>Observed Property Description: {ObservedProperty.description}</p>
 
-            <h3>Observations:</h3>
-            <div style={{ overflowX: "scroll", whiteSpace: "nowrap" }}>
-                {Observations.map(
-                    (
-                        observation: {
-                            resultTime: string;
-                            result: string | number | null | undefined;
-                        },
-                        index: Key
-                    ) => (
-                        <div
-                            key={index}
-                            style={{
-                                display: "inline-block",
-                                margin: "10px",
-                                padding: "10px",
-                                border: "1px solid gray",
-                            }}
-                        >
-                            <p>Result Time: </p>
-                            <p>{observation.resultTime.split("T")[0]}</p>
-                            <p>
-                                {
-                                    observation.resultTime
-                                        .split("T")[1]
-                                        .split(".")[0]
-                                }
-                            </p>
-                            <p>
-                                Result: {observation.result}{" "}
-                                {unitOfMeasurement.symbol}
-                            </p>
-                        </div>
-                    )
-                )}
-            </div>
-            <h3>Chart:</h3>
-            <div ref={chartContainer}>
-                <Line data={chartData} options={options} />
-            </div>
-        </div>
-    );
+			<h3>Observations:</h3>
+			<div style={{ overflowX: "scroll", whiteSpace: "nowrap" }}>
+				{Observations.map(
+					(
+						observation: {
+							resultTime: string;
+							result: string | number | null | undefined;
+						},
+						index: Key
+					) => (
+						<div
+							key={index}
+							style={{
+								display: "inline-block",
+								margin: "10px",
+								padding: "10px",
+								border: "1px solid gray",
+							}}
+						>
+							<p>Result Time: </p>
+							<p>{observation.resultTime.split("T")[0]}</p>
+							<p>
+								{
+									observation.resultTime
+										.split("T")[1]
+										.split(".")[0]
+								}
+							</p>
+							<p>
+								Result: {observation.result}{" "}
+								{unitOfMeasurement.symbol}
+							</p>
+						</div>
+					)
+				)}
+			</div>
+			<h3>Chart:</h3>
+			<div ref={chartContainer}>
+				<Line data={chartData} options={options} />
+			</div>
+		</div>
+	);
 }
 
 function SensorsList({
-    setSelectedDatastream,
-    setDatastreamComparisonList,
-    setSelectedSensors,
-    selectedSensors,
+	setSelectedDatastream,
+	setDatastreamComparisonList,
+	setSelectedSensors,
+	selectedSensors,
 }: any) {
-    const [sensorName, setSensorName] = useState("hm sensor");
+	const [sensorName, setSensorName] = useState("hm sensor");
+	const [locationName, setLocationName] = useState("test location");
+	const [timeframe, setTimeframe] = useState("2021-01-01T11:47:16.206668Z/2023-11-05T23:40:05.463419Z");
+	const [compareType, setCompareType] = useState(null);
 
-    const [compareType, setCompareType] = useState(null);
 
-    async function handleCompareBtnClick(datastream: { [key: string]: any }) {
-        const fullDatastream = await fetchDatastreamContents(
-            datastream["@iot.selfLink"]
-        );
-        setCompareType(datastream.name);
-        setDatastreamComparisonList((prevList: any) => [
-            ...prevList,
-            fullDatastream,
-        ]);
-    }
+	async function handleCompareBtnClick(datastream: { [key: string]: any }) {
+		const fullDatastream = await fetchDatastreamContents(
+			datastream["@iot.selfLink"]
+		);
+		setCompareType(datastream.name);
+		setDatastreamComparisonList((prevList: any) => [
+			...prevList,
+			fullDatastream,
+		]);
+	}
 
-    async function getSensors(name: string) {
-        try {
-            const data = await fetchSensors(name);
-            setSelectedSensors(data.value);
-        } catch (error) {
-            console.error(error);
-        }
-    }
 
-    async function getDatastream(datastream: { [key: string]: any }) {
-        try {
-            const data = await fetchDatastreamContents(
-                datastream["@iot.selfLink"]
-            );
-            setSelectedDatastream(data);
-        } catch (error) {
-            console.error(error);
-        }
-    }
+	async function getSensors(name?: string, timeframe?: string, locationName?: string) {
+		try {
+			const data = await fetchSensors(name,timeframe,locationName);
+			setSelectedSensors(data.value);
+		} catch (error) {
+			console.error(error);
+		}
+	}
 
-    function isCompareBtnDisabled(
-        datastreamType: string,
-        compareType: string | null
-    ): boolean {
-        if (compareType === null) {
-            return false;
-        } else {
-            return datastreamType !== compareType;
-        }
-    }
 
-    return (
-        <div>
-            <input
-                type="text"
-                value={sensorName}
-                onChange={(e) => setSensorName(e.target.value)}
-            />
-            <button onClick={() => getSensors(sensorName)}>
-                Fetch Sensors
-            </button>
-            {selectedSensors ? ( // Check if filter returned any results
-                <div>
-                    {selectedSensors.map((sensor: any) => (
-                        <div key={sensor.name}>
-                            <h3>{sensor.name}</h3>
-                            <p>{sensor["@iot.id"]}</p>
-                            <p>{sensor.description}</p>
-                            <p>Datastreams:</p>
-                            {sensor.Datastreams.map((datastream: any) => (
-                                <div key={datastream.name}>
-                                    <button
-                                        onClick={() =>
-                                            getDatastream(datastream)
-                                        }
-                                    >
-                                        {datastream.name}
-                                    </button>
-                                    <button
-                                        onClick={() =>
-                                            handleCompareBtnClick(datastream)
-                                        }
-                                        style={{
-                                            backgroundColor:
-                                                isCompareBtnDisabled(
-                                                    datastream.name,
-                                                    compareType
-                                                )
-                                                    ? "gray"
-                                                    : "green",
-                                        }}
-                                        disabled={isCompareBtnDisabled(
-                                            datastream.name,
-                                            compareType
-                                        )}
-                                    >
-                                        Add to compare
-                                    </button>
-                                </div>
-                            ))}
-                        </div>
-                    ))}
-                </div>
-            ) : (
-                <p>No sensors found</p>
-            )}
-        </div>
-    );
+	async function getDatastream(datastream: { [key: string]: any }) {
+		try {
+			const data = await fetchDatastreamContents(
+				datastream["@iot.selfLink"]
+			);
+			setSelectedDatastream(data);
+		} catch (error) {
+			console.error(error);
+		}
+	}
+
+	
+	function isCompareBtnDisabled(
+		datastreamType: string,
+		compareType: string | null
+	): boolean {
+		if (compareType === null) {
+			return false;
+		} else {
+			return datastreamType !== compareType;
+		}
+	}
+
+	function InputFields():any {
+		return(
+		<div>
+			<h4>Filter options:</h4>
+			<input
+				type="text"
+				value={sensorName}
+				onChange={(e) => setSensorName(e.target.value)}
+			/>
+			<span>Sensor Name</span>
+			<br />
+			<input
+				type="text"
+				value={timeframe}
+				onChange={(e) => setTimeframe(e.target.value)}
+			/>
+			<span>Timeframe</span>
+			<br />
+			<input
+				type="text"
+				value={locationName}
+				onChange={(e) => setLocationName(e.target.value)}
+			/>
+			<span>Location Name</span>
+			<br />
+			<button onClick={() => getSensors(sensorName,timeframe,locationName)}>Fetch Sensors</button>
+		</div>
+	);
+	
+	}
+	return (
+		<div>
+			{InputFields()}
+			<br/>
+			{selectedSensors ? ( // Check if filter returned any results
+				<div>
+					{selectedSensors.map((sensor: any) => (
+						<div key={sensor.name}>
+							<h3>{sensor.name}</h3>
+							<p>{sensor["@iot.id"]}</p>
+							<p>{sensor.description}</p>
+							<p>Datastreams:</p>
+							{sensor.Datastreams.map((datastream: any) => (
+								<div key={datastream.name}>
+									<button
+										onClick={() =>
+											getDatastream(datastream)
+										}
+									>
+										{datastream.name}
+									</button>
+									<button
+										onClick={() =>
+											handleCompareBtnClick(datastream)
+										}
+										style={{
+											backgroundColor:
+												isCompareBtnDisabled(
+													datastream.name,
+													compareType
+												)
+													? "gray"
+													: "green",
+										}}
+										disabled={isCompareBtnDisabled(
+											datastream.name,
+											compareType
+										)}
+									>
+										Add to compare
+									</button>
+								</div>
+							))}
+						</div>
+					))}
+				</div>
+			) : (
+				<p>No sensors found</p>
+			)}
+		</div>
+	);
 }
 
 export { DatastreamContent, SensorsList };
