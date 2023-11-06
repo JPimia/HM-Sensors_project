@@ -83,18 +83,18 @@ function ChartGraphComparison({ dataStreams, setComparisonList }: any) {
 		},
 	};
 	return (
-		<div style={{ display: 'flex' }}>
+		<div style={ { display: 'flex' } }>
 			<div>
 				{selectedDataStreams.length > 0 ? (
 					<div>
 						<h3>Selected Data Streams:</h3>
 						<ul>
 							{selectedDataStreams.map((dataStream: any) => (
-								<li key={dataStream.name}>
+								<li key={ dataStream.name }>
 									<p>Name: {dataStream.name}</p>
 									<p>Iot.id: {dataStream['@iot.id']}</p>
 									<p>desc: {dataStream.description}</p>
-									<button onClick={() => removeDataStream(dataStream['@iot.id'])}>Remove</button>
+									<button onClick={ () => removeDataStream(dataStream['@iot.id']) }>Remove</button>
 								</li>
 							))}
 						</ul>
@@ -103,8 +103,8 @@ function ChartGraphComparison({ dataStreams, setComparisonList }: any) {
 					<p>No data streams selected.</p>
 				)}
 			</div>
-			<div style={{ width: '75%' }}>
-				<Line data={chartData} options={options}/>
+			<div style={ { width: '75%' } }>
+				<Line data={ chartData } options={ options }/>
 			</div>
 		</div>
 	);
