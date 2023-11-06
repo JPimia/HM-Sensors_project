@@ -4,6 +4,7 @@ import PopupComponent from './components/PopupComponent';
 import ChartGraphComparison from './components/chartGraphComparisons';
 import { BrowserRouter as Router, Route, Link, Routes } from 'react-router-dom';
 import SensorPage from './components/sensorPage';
+import RegisterComponent from './components/RegisterPopUp';
 
 function App() {
 	const [selectedDatastream, setSelectedDatastream] = useState(null);
@@ -15,8 +16,14 @@ function App() {
 	return (
 		<Router>
 			<div>
-				<div>
+				<div style={ { display: 'flex', marginBottom: '20px' } }>
 					<PopupComponent />
+					<Link
+						to="/register"
+						style={ { backgroundColor: 'yellow' } }
+					>
+                        Register
+					</Link>
 				</div>
 				<div style={ { display: 'flex', marginBottom: '20px' } }>
 					<Link to="/">Home view</Link>
@@ -68,6 +75,12 @@ function App() {
 							dataStreams={ datastreamComparisonList }
 							setComparisonList={ setDatastreamComparisonList }
 						/>
+					) }
+				/>
+				<Route
+					path="/register"
+					element={ (
+						<RegisterComponent/>
 					) }
 				/>
 				<Route path="/sensor/:sensorName" element={ <SensorPage /> } />

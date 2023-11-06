@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
-import Popup from 'reactjs-popup';
 import './PopupComponent.css';
 import bcrypt from 'bcryptjs-react';
 
 const RegisterComponent = () => {
 	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
-	const [isOpen, setIsOpen] = useState(false);
+	const [created, setCreated] = useState(false);
 
 	const handleUsernameChange = (event: {
         target: { value: React.SetStateAction<string> };
@@ -21,35 +20,28 @@ const RegisterComponent = () => {
 	};
 
 	const handleSubmit = (event: { preventDefault: () => void }) => {
+		// TODO: Check backend if username is available
 		// TODO: Send username and pass to the backend
+		event.preventDefault();
 		if (username && password) {
 			const saltRounds = 10;
 			const hashedPassword = bcrypt.hashSync(password, saltRounds);
 			console.log('Username:', username);
 			console.log('Encrypted Password:', hashedPassword);
-			setIsOpen(false); //please fucking close
-		} else {
-			// This is here until I figure out how to close this popup
-			event.preventDefault();
+			setCreated(true);
 		}
 	};
 
 	return (
 		<div>
-			<Popup
-				trigger={
-					<button onClick={ () => setIsOpen(!isOpen) }>
-                        Register as a new user
-					</button>
-				}
-				open={ isOpen }
-				modal={ true }
-			>
-				<div className="custom-popup-content">
+			{created ? (
+				<p>{`Username ${username} created.`}</p>
+			) : (
+				<div>
 					<h2>Register</h2>
 					<form onSubmit={ handleSubmit }>
 						<label>
-                            Username:
+                        Username:
 							<br />
 							<input
 								type="text"
@@ -58,6 +50,7 @@ const RegisterComponent = () => {
 							/>
 						</label>
 						<label>
+							<br />
                             Password:
 							<br />
 							<input
@@ -70,7 +63,7 @@ const RegisterComponent = () => {
 						<button type="submit">Register</button>
 					</form>
 				</div>
-			</Popup>
+			)}
 		</div>
 	);
 };
