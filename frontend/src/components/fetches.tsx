@@ -17,15 +17,10 @@ async function fetchUrl(url: string): Promise<any> {
 }
 
 
-async function fetchSensor(name?: string, timeFrame?: any[], location?: any): Promise<any> {
+async function fetchSensor(name: string): Promise<any> {
 	
-	let filterOptions = `filter=`
-	if (name) {
-		filterOptions += `name eq '${name}'`; // name equal to: {name}
-	}
-
 	const url = `https://gi3.gis.lrg.tum.de/frost/v1.1/Sensors?
-		$${filterOptions}&
+		$filter=name eq '${name}&
 		$expand=Datastreams`;
 
 	const response = await fetchUrl(url);
@@ -34,14 +29,29 @@ async function fetchSensor(name?: string, timeFrame?: any[], location?: any): Pr
 
 
 // Fetch a list of sensors using name as filter,
-async function fetchSensors(nameFilter: string): Promise<any> {
-    const url = `https://gi3.gis.lrg.tum.de/frost/v1.1/Sensors?
-		$top=10&
-		$filter=substringof(tolower('${nameFilter}'),tolower(name))&
-		$expand=Datastreams`;
+async function fetchSensors(name?: string, timeFrame?: string, location?: any): Promise<any> {
 
-    const response = await fetchUrl(url);
-    return response;
+	let filterOptions = `$filter=`;
+
+	if (name) {
+		filterOptions += `substringof(tolower('${name}'),tolower(name))`
+	}
+
+	if (timeFrame) {
+	// TODO:Add filter for timeFrame
+	}
+
+	if (location) {
+	// TODO:Add filter for location
+	}
+
+	const url = `https://gi3.gis.lrg.tum.de/frost/v1.1/Sensors?
+	$top=10&
+	${filterOptions}&
+	$expand=Datastreams`;
+
+	const response = await fetchUrl(url);
+	return response;
 }
 
 // Fetch contents of datastream using datastream -> '@iot.selfLink'
