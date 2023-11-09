@@ -14,6 +14,7 @@ import {
 	Tooltip,
 	Legend,
 } from 'chart.js';
+import { saveAs } from 'file-saver';
 
 function DatastreamContent({ datastream }: any) {
 	Chart.register(
@@ -82,7 +83,7 @@ function DatastreamContent({ datastream }: any) {
 				</a>
 			</p>
 			<p>Observed Property Description: {ObservedProperty.description}</p>
-
+			<button onClick={ () => exportObservationsToCSV(Observations) }>Save observations as CSV</button>
 			<h3>Observations:</h3>
 			<div style={ { overflowX: 'scroll', whiteSpace: 'nowrap' } }>
 				{RenderObservations(Observations,unitOfMeasurement)}
@@ -93,6 +94,18 @@ function DatastreamContent({ datastream }: any) {
 			</div>
 		</div>
 	);
+}
+
+function exportObservationsToCSV(Observations:any) {
+	// Create a CSV content string
+	const header = 'resultTime, result, observationId';
+	const csvContent = Observations.map((observation: { resultTime: string | null; result: string | null; observationId: any; }) => {
+		const { resultTime, result, observationId } = observation;
+		return `${resultTime || 'null'},${result || 'null'},${observationId || 'null'}`;
+	}).join('\n');
+	const csvData = `${header}\n${csvContent}`;
+	const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8' });
+	saveAs(blob, 'observations.csv');
 }
 
 // Render scrollable list of observations for datastreamcontent
