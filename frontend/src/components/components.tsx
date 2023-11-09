@@ -1,8 +1,13 @@
+/* eslint-disable react/no-unescaped-entities */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Key } from 'react';
+import { Key, useEffect } from 'react';
 import React from 'react';
 import { useState, useRef } from 'react';
-import { fetchSensors, fetchDatastreamContents } from './fetches';
+import { fetchSensors, fetchDatastreamContents, fetchObservations } from './fetches';
+import DatePicker from 'react-datepicker';
+import { registerLocale, setDefaultLocale } from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import de from 'date-fns/locale/de';
 import { Line } from 'react-chartjs-2';
 import {
 	Chart,
@@ -16,7 +21,54 @@ import {
 } from 'chart.js';
 import { saveAs } from 'file-saver';
 
+// Register german locale for datepicker
+registerLocale('de', de);
+setDefaultLocale('de');
+
 function DatastreamContent({ datastream }: any) {
+	const {
+		name,
+		description,
+		unitOfMeasurement,
+		ObservedProperty,
+	} = datastream;
+
+	
+	return (
+		<div>
+			<p>Name: {name}</p>
+			<p>Description: {description}</p>
+			<p>
+				Unit of Measurement: {unitOfMeasurement.name} (
+				{unitOfMeasurement.symbol})
+			</p>
+			<p>Observed Property: {ObservedProperty.name}</p>
+			<p>
+				Definition:{' '}
+				<a href={ ObservedProperty.definition }>
+					{ObservedProperty.definition}
+				</a>
+			</p>
+			<p>Description: {ObservedProperty.description}</p>
+			{RenderObservations(datastream)}
+		</div>
+	);
+}
+
+function exportObservationsToCSV(observations:any) {
+	// Create a CSV content string
+	const header = 'resultTime, result, observationId';
+	const csvContent = observations.map((observation: { resultTime: string | null; result: string | null; observationId: any; }) => {
+		const { resultTime, result, observationId } = observation;
+		return `${resultTime || 'null'},${result || 'null'},${observationId || 'null'}`;
+	}).join('\n');
+	const csvData = `${header}\n${csvContent}`;
+	const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8' });
+	saveAs(blob, 'observations.csv');
+}
+
+function RenderChart(observations: any[], unitOfMeasurement:any) {
+	const chartContainer = useRef(null);
 	Chart.register(
 		CategoryScale,
 		LinearScale,
@@ -26,22 +78,15 @@ function DatastreamContent({ datastream }: any) {
 		Tooltip,
 		Legend
 	);
-	const chartContainer = useRef(null);
-
-	const {
-		name,
-		description,
-		unitOfMeasurement,
-		ObservedProperty,
-		Observations,
-	} = datastream;
-
+	if (!observations) {
+		throw new Error('Observations cannot be null or undefined');
+	}
 	const chartData = {
-		labels: Observations.map((observation: any) => observation.resultTime),
+		labels: observations.map((observation: any) => observation.resultTime),
 		datasets: [
 			{
 				label: 'Observation Results',
-				data: Observations.map(
+				data: observations.map(
 					(observation: any) => observation.result
 				),
 				fill: false,
@@ -62,81 +107,97 @@ function DatastreamContent({ datastream }: any) {
 			y: {
 				title: {
 					display: true,
-					text: `Result (${unitOfMeasurement.symbol})`,
+					text: `Result (${unitOfMeasurement})`,
 				},
 			},
 		},
 	};
-	return (
-		<div>
-			<p>Name: {name}</p>
-			<p>Description: {description}</p>
-			<p>
-				Unit of Measurement: {unitOfMeasurement.name} (
-				{unitOfMeasurement.symbol})
-			</p>
-			<p>Observed Property: {ObservedProperty.name}</p>
-			<p>
-				Observed Property Definition:{' '}
-				<a href={ ObservedProperty.definition }>
-					{ObservedProperty.definition}
-				</a>
-			</p>
-			<p>Observed Property Description: {ObservedProperty.description}</p>
-			<button onClick={ () => exportObservationsToCSV(Observations) }>Save observations as CSV</button>
-			<h3>Observations:</h3>
-			<div style={ { overflowX: 'scroll', whiteSpace: 'nowrap' } }>
-				{RenderObservations(Observations,unitOfMeasurement)}
-			</div>
+	return(
+		<>
 			<h3>Chart:</h3>
 			<div ref={ chartContainer }>
 				<Line data={ chartData } options={ options } />
 			</div>
-		</div>
+		</>
 	);
 }
 
-function exportObservationsToCSV(Observations:any) {
-	// Create a CSV content string
-	const header = 'resultTime, result, observationId';
-	const csvContent = Observations.map((observation: { resultTime: string | null; result: string | null; observationId: any; }) => {
-		const { resultTime, result, observationId } = observation;
-		return `${resultTime || 'null'},${result || 'null'},${observationId || 'null'}`;
-	}).join('\n');
-	const csvData = `${header}\n${csvContent}`;
-	const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8' });
-	saveAs(blob, 'observations.csv');
-}
 
-// Render scrollable list of observations for datastreamcontent
-function RenderObservations(Observations:any, unitOfMeasurement:any) {
-	
-	function flagBadObservation() {
-		//TODO: send request to backend for toggling bad data flag of observation
-	}
+
+
+// Render observations stuff
+function RenderObservations(datastream:any) {
+	const [startDate, setStartDate] = useState(new Date());
+	const [endDate, setEndDate] = useState<Date | null>(null);
+	const [observations, setObservations] = useState(datastream.Observations);
+	const [nextLink, setNextLink] = useState();
+
+	useEffect(() => {
+		const handleFetch = async () => {
+			try {
+				const response = await fetchObservations(startDate, endDate, nextLink);
+				console.log(response['@iot.nextLink']);
+				if (response.value) {
+					setObservations(response.value);
+				}
+			} catch (error) {
+				console.log(error);
+			}
+		};
+		handleFetch();
+	}, [startDate, nextLink]);
 
 	return (
-		<div>
-			{Observations.map((observation: { resultTime: string | null; result: string | null; observationId: any; }, index: Key | null | undefined) => (
-				<div
-					key={ index }
-					style={ {
-						display: 'inline-block',
-						margin: '10px',
-						padding: '10px',
-						border: '1px solid gray',
-						backgroundColor: observation.resultTime === null || observation.result === null ? 'darkred' : 'none',
-					} }
-				>
-					<p>{observation.resultTime !== null ? observation.resultTime.split('T')[0] : 'Result Time: null'}</p>
-					<p>{observation.resultTime !== null ? observation.resultTime.split('T')[1].split('.')[0] : 'Time: null'}</p>
-					<p>Result: {observation.result !== null ? observation.result + ' ' + unitOfMeasurement.symbol : 'Result: null'}</p>
-					<button onClick={ () => flagBadObservation() }>
-					Flag data
-					</button>
+		<>
+			<h3>Observations:</h3>
+			<span>Filter observations by time (uses GMT +1/Berlin timezone)</span>
+			<div style={ { display: 'flex' } }>
+				<div>
+					<p>Start time: </p>
+					<DatePicker
+						selected={ startDate }
+						onChange={ (date: Date | null) => setStartDate(date!) }
+						dateFormat="yyyy-MM-dd HH:mm:ss"
+						timeInputLabel="Time:"
+						showTimeInput />
 				</div>
-			))}
-		</div>
+				<div>
+					<p>End time: Doesn't apply if empty</p>
+					<DatePicker
+						selected={ endDate }
+						onChange={ (date: Date | null) => setEndDate(date) }
+						dateFormat="yyyy-MM-dd HH:mm:ss"
+						timeInputLabel="Time:"
+						showTimeInput
+						placeholderText="End Date" />
+				</div>
+			</div>
+			<button onClick={ () => setStartDate(new Date()) }>Set start to current time</button>
+			<br />
+			<br />
+			<button onClick={ () => setNextLink(observations['@iot.nextLink']) }>More results</button>
+			<button onClick={ () => exportObservationsToCSV(observations) }>Save observations as CSV</button>
+			<div style={ { overflowX: 'scroll', whiteSpace: 'nowrap' } }>
+				{datastream.Observations.map((observation: { resultTime: string | null; result: string | null; observationId: any; }, index: Key | null | undefined) => (
+					<div
+						key={ index }
+						style={ {
+							display: 'inline-block',
+							margin: '10px',
+							padding: '10px',
+							border: '1px solid gray',
+							backgroundColor: observation.resultTime === null || observation.result === null ? 'darkred' : 'none',
+						} }
+					>
+						<p>{observation.resultTime !== null ? observation.resultTime.split('T')[0] : 'Result Time: null'}</p>
+						<p>{observation.resultTime !== null ? observation.resultTime.split('T')[1].split('.')[0] : 'Time: null'}</p>
+						<p>Result: {observation.result}</p>
+					</div>
+				))}
+			</div>
+			{RenderChart(observations,datastream.unitOfMeasurement)}
+		</>
+
 	);
 }
 
@@ -211,13 +272,6 @@ function SensorsList({
 				<br />
 				<input
 					type="text"
-					value={ timeframe }
-					onChange={ (e) => setTimeframe(e.target.value) }
-				/>
-				<span>Timeframe</span>
-				<br />
-				<input
-					type="text"
 					value={ locationName }
 					onChange={ (e) => setLocationName(e.target.value) }
 				/>
@@ -233,7 +287,10 @@ function SensorsList({
 			{InputFields()}
 			<br/>
 			{selectedSensors ? ( // Check if filter returned any results
-				<div>
+				<div style={ {
+					height: '100vh', // Set the height to the height of the screen
+					overflowY: 'auto' // Add scrollbars when the content overflows
+				} }>
 					{selectedSensors.map((sensor: any) => (
 						<div key={ sensor.name }>
 							<h3>{sensor.name}</h3>
@@ -280,5 +337,6 @@ function SensorsList({
 		</div>
 	);
 }
+
 
 export { DatastreamContent, SensorsList };

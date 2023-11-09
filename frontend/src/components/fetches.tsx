@@ -10,7 +10,6 @@ async function fetchUrl(url: string): Promise<any> {
 	try {
 		const response = await fetch(url);
 		const data = await response.json();
-		console.log('Response:', data);
 		return data;
 	} catch (error) {
 		console.log('Failed URL:', url);
@@ -56,18 +55,45 @@ async function fetchSensors(name?: string, timeFrame?: string, location?: any): 
 	return response;
 }
 
+
 // Fetch contents of datastream using datastream -> '@iot.selfLink'
-// TODO: PAGING use @iot.nextLink if using top=1;
 async function fetchDatastreamContents(datastream: string): Promise<any> {
 	const url = `${datastream}?
-	$select=name,description,observationType,unitOfMeasurement,@iot.id&
-	$expand=ObservedProperty,Observations(
-		$select=resultTime,result;
-		$orderby=phenomenonTime desc;
-		$top=20)`;
+	$select=name,description,observationType,unitOfMeasurement,@iot.id,Observations&
+	$expand=ObservedProperty,Observations($top=20)
+	`;
 
 	const response = await fetchUrl(url);
 	return response;
 }
 
-export { fetchSensors, fetchDatastreamContents, fetchSensor };
+
+async function fetchObservations(startDate:Date, endDate?:Date | null, nextUrl?:string): Promise<any>  {
+	
+	const formattedStartDate = startDate.toISOString();
+	const formattedEndDate = endDate ? endDate.toISOString() : null;
+	let url = nextUrl ? nextUrl : `
+	https://gi3.gis.lrg.tum.de/frost/v1.1/Datastreams(357)/Observations?
+	$top=20
+	&$select=resultTime,result
+	&$orderby=resultTime+desc
+	&$filter=resultTime+le+${formattedStartDate}
+	`;
+	
+
+	if (endDate) {
+		url += `+and+resultTime+ge+${formattedEndDate}`;
+	}
+
+	try {
+		const response = fetchUrl(url);
+		return response;
+	} catch (error) {
+		//
+	}
+
+
+
+}
+
+export { fetchSensors, fetchDatastreamContents, fetchSensor, fetchObservations };
