@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 /* 
 	FROST-server documentation, parameters etc.
 	https://fraunhoferiosb.github.io/FROST-Server/ 

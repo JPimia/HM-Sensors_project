@@ -1,5 +1,3 @@
-/* eslint-disable react/no-unescaped-entities */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Key, useEffect } from 'react';
 import React from 'react';
 import { useState, useRef } from 'react';
