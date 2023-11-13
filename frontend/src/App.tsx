@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { DatastreamContent, SensorsList } from './components/components';
+import { DatastreamContent } from './components/DatastreamContents';
+import  SensorsList  from './components/SensorsList';
 import PopupComponent from './components/PopupComponent';
 import ChartGraphComparison from './components/chartGraphComparisons';
 import { BrowserRouter as Router, Route, Link, Routes } from 'react-router-dom';

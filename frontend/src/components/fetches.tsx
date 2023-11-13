@@ -17,7 +17,7 @@ async function fetchUrl(url: string): Promise<any> {
 
 
 async function fetchSensor(name: string): Promise<any> {
-	
+
 	const url = `https://gi3.gis.lrg.tum.de/frost/v1.1/Sensors?
 		$filter=name eq '${name}'&
 		$expand=Datastreams`;
@@ -37,11 +37,11 @@ async function fetchSensors(name?: string, timeFrame?: string, location?: any): 
 	}
 
 	if (timeFrame) {
-	// TODO:Add filter for timeFrame
+		// TODO:Add filter for timeFrame
 	}
 
 	if (location) {
-	// TODO:Add filter for location
+		// TODO:Add filter for location
 	}
 
 	const url = `https://gi3.gis.lrg.tum.de/frost/v1.1/Sensors?
@@ -66,18 +66,21 @@ async function fetchDatastreamContents(datastream: string): Promise<any> {
 }
 
 
-async function fetchObservations(startDate:Date, endDate?:Date | null, nextUrl?:string): Promise<any>  {
-	
+// TODO: make startdate optional, default should not use timeframes
+async function fetchObservations(resultAmount: number, startDate: Date, endDate?: Date | null, nextUrl?: string | null): Promise<any> {
+	// Returns {value:[],@iot.nextLink:string}
+
 	const formattedStartDate = startDate.toISOString();
 	const formattedEndDate = endDate ? endDate.toISOString() : null;
+	// Use nextUrl if it exists
 	let url = nextUrl ? nextUrl : `
 	https://gi3.gis.lrg.tum.de/frost/v1.1/Datastreams(357)/Observations?
-	$top=20
+	$top=${resultAmount}
 	&$select=resultTime,result
 	&$orderby=resultTime+desc
 	&$filter=resultTime+le+${formattedStartDate}
 	`;
-	
+
 
 	if (endDate) {
 		url += `+and+resultTime+ge+${formattedEndDate}`;
