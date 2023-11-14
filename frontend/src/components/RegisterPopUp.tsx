@@ -24,8 +24,8 @@ const RegisterComponent = () => {
 		// TODO: Send username and pass to the backend
 		event.preventDefault();
 		if (username && password) {
-			const saltRounds = 10;
-			const hashedPassword = bcrypt.hashSync(password, saltRounds);
+			// const saltRounds = 10;
+			// const hashedPassword = bcrypt.hashSync(password, saltRounds);
 			
             try {
                 const response = await fetch('https://suzbt4f677.execute-api.eu-central-1.amazonaws.com/alpha/userInfoFunction', {
