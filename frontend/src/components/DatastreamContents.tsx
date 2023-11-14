@@ -41,7 +41,7 @@ function DatastreamContent({ datastream }: any) {
 function exportObservationsToCSV(observations: any) {
 	// Create a CSV content string
 	const header = "resultTime, result, observationId";
-	const csvContent = observations
+	const csvContent = observations.value
 		.map(
 			(observation: {
 				resultTime: string | null;
