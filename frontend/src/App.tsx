@@ -6,6 +6,7 @@ import ChartGraphComparison from './components/chartGraphComparisons';
 import { BrowserRouter as Router, Route, Link, Routes } from 'react-router-dom';
 import SensorPage from './components/sensorPage';
 import RegisterComponent from './components/RegisterPopUp';
+import GitLabAuth from './components/GitLabAuth';
 
 function App() {
 	const [selectedDatastream, setSelectedDatastream] = useState(null);
@@ -13,11 +14,15 @@ function App() {
 	const [datastreamComparisonList, setDatastreamComparisonList] = useState(
 		[]
 	);
+    const [user, setUser] = useState(null);
 
 	return (
 		<Router>
 			<div>
 				<div style={ { display: 'flex', marginBottom: '20px' } }>
+                {
+                //<GitLabAuth setUser={setUser}/>
+                }
 					<PopupComponent />
 					<Link
 						to="/register"
