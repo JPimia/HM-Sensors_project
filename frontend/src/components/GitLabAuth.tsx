@@ -22,7 +22,6 @@ const GitLabAuth = ( { setUser }: any) => {
 					}),
 				});
 				const data = await response.json();
-				// Use the data to fetch user information or store tokens in your application state.
 				setUserState(data);
                 console.log(data);
                 if (data.access_token) {
@@ -56,7 +55,6 @@ const GitLabAuth = ( { setUser }: any) => {
 			) : (
 				<div>
 					<h2>Logged In</h2>
-					{/* Display user information as needed */}
 				</div>
 			)}
 		</div>

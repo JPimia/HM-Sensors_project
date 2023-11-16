@@ -20,9 +20,11 @@ function App() {
 		<Router>
 			<div>
 				<div style={ { display: 'flex', marginBottom: '20px' } }>
+                
+                
                 {
-                //<GitLabAuth setUser={setUser}/>
-                }
+                    /*
+                    <GitLabAuth setUser={setUser}/>
 					<PopupComponent />
 					<Link
 						to="/register"
@@ -30,6 +32,9 @@ function App() {
 					>
                         Register
 					</Link>
+                    */
+                }
+
 				</div>
 				<div style={ { display: 'flex', marginBottom: '20px' } }>
 					<Link to="/">Home view</Link>
