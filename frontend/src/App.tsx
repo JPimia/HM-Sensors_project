@@ -18,39 +18,32 @@ function App() {
 
 	return (
 		<Router>
-			<div>
-				<div style={ { display: 'flex', marginBottom: '20px' } }>
-                
-                
-                {
-                    /*
-                    <GitLabAuth setUser={setUser}/>
-					<PopupComponent />
-					<Link
-						to="/register"
-						style={ { backgroundColor: 'yellow' } }
-					>
-                        Register
-					</Link>
-                    */
-                }
-
-				</div>
-				<div style={ { display: 'flex', marginBottom: '20px' } }>
-					<Link to="/">Home view</Link>
-					<Link
-						to="/graphComparison"
-						style={ { backgroundColor: 'green' } }
-					>
-                        Graph Comparison
-					</Link>
-				</div>
-			</div>
-
 			<Routes>
 				<Route
 					path="/"
-					element={ (
+					element={(
+					<div>
+						<div style={ { display: 'flex', marginBottom: '20px' } }>
+						{
+						//<GitLabAuth setUser={setUser}/>
+						}
+							<PopupComponent />
+							<Link
+								to="/register"
+								style={ { backgroundColor: 'yellow' } }
+							>
+								Register
+							</Link>
+						</div>
+						<div style={ { display: 'flex', marginBottom: '20px' } }>
+							<Link to="/">Home view</Link>
+							<Link
+								to="/graphComparison"
+								style={ { backgroundColor: 'green' } }
+							>
+								Graph Comparison
+							</Link>
+						</div>
 						<div style={ { display: 'flex' } }>
 							<div
 								style={ {
@@ -76,7 +69,8 @@ function App() {
 								)}
 							</div>
 						</div>
-					) }
+					</div>
+					)}
 				/>
 
 				<Route
