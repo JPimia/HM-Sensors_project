@@ -7,6 +7,9 @@ import { BrowserRouter as Router, Route, Link, Routes } from 'react-router-dom';
 import SensorPage from './components/sensorPage';
 import RegisterComponent from './components/RegisterPopUp';
 import GitLabAuth from './components/GitLabAuth';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import Navbar from 'react-bootstrap/Navbar';
+import Nav from 'react-bootstrap/Nav';
 
 function App() {
 	const [selectedDatastream, setSelectedDatastream] = useState(null);
@@ -18,6 +21,20 @@ function App() {
 
 	return (
 		<Router>
+			<div>
+				<Navbar bg="danger" variant="dark">
+					<Navbar.Brand href="/">SensorThings</Navbar.Brand>
+					<Navbar.Toggle aria-controls="basic-navbar-nav" />
+					<Navbar.Collapse id="basic-navbar-nav">
+					<Nav className="mr-auto">
+						<Nav.Link href="/">Home</Nav.Link>
+						<Nav.Link href="/graphComparison">Graph Comparison</Nav.Link>
+						<Nav.Link href="/register">Register</Nav.Link>
+						<Nav.Link href="/login">Login</Nav.Link>
+					</Nav>
+					</Navbar.Collapse>
+				</Navbar>
+			</div>
 			<Routes>
 				<Route
 					path="/"
