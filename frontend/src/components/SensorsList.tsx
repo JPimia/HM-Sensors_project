@@ -1,6 +1,7 @@
 import React from 'react';
 import { useState } from 'react';
 import { fetchSensors, fetchDatastreamContents } from './fetches';
+import '../CSS/SensorList.css'; 
 
 export default function SensorsList({ setSelectedDatastream,
 	setDatastreamComparisonList,
@@ -89,37 +90,42 @@ export default function SensorsList({ setSelectedDatastream,
 					overflowY: 'auto' // Add scrollbars when the content overflows
 				}}>
 					{selectedSensors.map((sensor: any) => (
-						<div key={sensor.name}>
-							<h3>{sensor.name}</h3>
-							<p>{sensor['@iot.id']}</p>
-							<p>{sensor.description}</p>
-							<p>Datastreams:</p>
-							{sensor.Datastreams.map((datastream: any) => (
-								<div key={datastream.name}>
-									<button
-										onClick={() => getDatastream(datastream)}
-									>
-										{datastream.name}
-									</button>
-									<button
-										onClick={() => handleCompareBtnClick(datastream)}
-										style={{
-											backgroundColor: isCompareBtnDisabled(
+						<div className="sensor-container" key={sensor.name}>
+							<div key={sensor.name}>
+								<div className='sensor-info'>
+									<h3 className='sensor-name'>{sensor.name}</h3>
+									<p>Sensor ID: {sensor['@iot.id']}</p>
+									<p>Description: {sensor.description}</p>
+								</div>
+								{sensor.Datastreams.map((datastream: any) => (
+									<div key={datastream.name} className='button-container'>
+										<button
+											onClick={() => getDatastream(datastream)}
+											className='red-button'
+										>
+											{datastream.name}
+										</button>
+										<button
+											onClick={() => handleCompareBtnClick(datastream)}
+											className='green-button'
+											style={{
+												backgroundColor: isCompareBtnDisabled(
+													datastream.name,
+													compareType
+												)
+													? 'gray'
+													: 'green',
+											}}
+											disabled={isCompareBtnDisabled(
 												datastream.name,
 												compareType
-											)
-												? 'gray'
-												: 'green',
-										}}
-										disabled={isCompareBtnDisabled(
-											datastream.name,
-											compareType
-										)}
-									>
-										Add to compare
-									</button>
-								</div>
-							))}
+											)}
+										>
+											Add to compare
+										</button>
+									</div>
+								))}
+							</div>
 						</div>
 					))}
 				</div>
