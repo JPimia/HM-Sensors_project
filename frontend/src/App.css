@@ -42,4 +42,5 @@ body {
   background-size: cover; /* Cover the entire viewport */
   background-position: center; /* Center the image */
   background-repeat: no-repeat; /* Do not repeat the image */
+  background-attachment: fixed;
 }

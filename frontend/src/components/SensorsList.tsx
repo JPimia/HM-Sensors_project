@@ -2,6 +2,7 @@ import React from 'react';
 import { useState } from 'react';
 import { fetchSensors, fetchDatastreamContents } from './fetches';
 import '../CSS/SensorList.css'; 
+import { Link } from 'react-router-dom';
 
 export default function SensorsList({ setSelectedDatastream,
 	setDatastreamComparisonList,
@@ -61,21 +62,28 @@ export default function SensorsList({ setSelectedDatastream,
 
 	function InputFields(): any {
 		return (
-			<div>
+			<div className='input-container'>
 				<h4>Filter options:</h4>
+				<span>Sensor Name</span>
 				<input
 					type="text"
 					value={sensorName}
 					onChange={(e) => setSensorName(e.target.value)} />
-				<span>Sensor Name</span>
+				
 				<br />
+				<span>Location Name</span>
 				<input
 					type="text"
 					value={locationName}
 					onChange={(e) => setLocationName(e.target.value)} />
-				<span>Location Name</span>
+
 				<br />
-				<button onClick={() => getSensors(sensorName, timeframe, locationName)}>Fetch Sensors</button>
+				<button onClick={() => getSensors(sensorName, timeframe, locationName)} className='buttons' style={{width: '100%'}}>Fetch Sensors</button>
+				<Link to="/graphComparison">
+					<button className='buttons' style={{ backgroundColor: 'green', width: '100%' }}>
+						Graph Comparison
+					</button>
+				</Link>
 			</div>
 		);
 

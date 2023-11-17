@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './PopupComponent.css';
 import bcrypt from 'bcryptjs-react';
+import '../CSS/RegisterPage.css';
 
 const RegisterComponent = () => {
 	const [username, setUsername] = useState('');
@@ -52,37 +53,39 @@ const RegisterComponent = () => {
 	};
 
 	return (
-		<div>
-			{created ? (
-				<p>{`Username ${username} created.`}</p>
-			) : (
-				<div>
-					<h2>Register</h2>
-					<form onSubmit={ handleSubmit }>
-						<label>
-                        Username:
+		<div className='body'>
+			<div className='register-container'>
+				{created ? (
+					<p>{`Username ${username} created.`}</p>
+				) : (
+					<div>
+						<h2>Register</h2>
+						<form onSubmit={ handleSubmit }>
+							<label>
+							Username:
+								<br />
+								<input
+									type="text"
+									value={ username }
+									onChange={ handleUsernameChange }
+								/>
+							</label>
+							<label>
+								<br />
+								Password:
+								<br />
+								<input
+									type="password"
+									value={ password }
+									onChange={ handlePasswordChange }
+								/>
+							</label>
 							<br />
-							<input
-								type="text"
-								value={ username }
-								onChange={ handleUsernameChange }
-							/>
-						</label>
-						<label>
-							<br />
-                            Password:
-							<br />
-							<input
-								type="password"
-								value={ password }
-								onChange={ handlePasswordChange }
-							/>
-						</label>
-						<br />
-						<button type="submit">Register</button>
-					</form>
-				</div>
-			)}
+							<button type="submit">Register</button>
+						</form>
+					</div>
+				)}
+			</div>
 		</div>
 	);
 };

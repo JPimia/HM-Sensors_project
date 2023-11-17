@@ -14,6 +14,7 @@ import NavDropdown from 'react-bootstrap/NavDropdown';
 import logo from './SensorLogo.png'
 import './CSS/Navbar.css';
 import './App.css';
+import './CSS/Filter.css';
 
 
 
@@ -37,15 +38,18 @@ function App() {
 							src={logo}
 							width={300}
 							alt="Sensor Logo"
-						/></Navbar.Brand>
+						/>
+					</Navbar.Brand>
+
 					<Navbar.Toggle aria-controls="basic-navbar-nav" />
+
 					<Navbar.Collapse id="basic-navbar-nav">
-					<Nav className="mr-auto">
-						<Nav.Link href="/" className="buttons">Home</Nav.Link>
-						<Nav.Link href="/graphComparison" className="buttons">Graph Comparison</Nav.Link>
-						<Nav.Link href="/register"  className="buttons">Register</Nav.Link>
-						{/* <Nav.Link onClick={() => setIsPopupVisible(!isPopupVisible)}>Login</Nav.Link> */}
-					</Nav>
+						<Nav className="mr-auto">
+							<Nav.Link href="/" className="buttons">Home</Nav.Link>
+							<Nav.Link href="/graphComparison" className="buttons">Graph Comparison</Nav.Link>
+							<Nav.Link href="/register"  className="buttons">Register</Nav.Link>
+							{/* <Nav.Link onClick={() => setIsPopupVisible(!isPopupVisible)}>Login</Nav.Link> */}
+						</Nav>
 					</Navbar.Collapse>
 
 					<NavDropdown 
@@ -73,27 +77,27 @@ function App() {
 				<Route
 					path="/"
 					element={(
-					<div>
+					<div className='main-container'>
 						<div style={ { display: 'flex', marginBottom: '20px' } }>
 						{
 						//<GitLabAuth setUser={setUser}/>
 						}
 							<PopupComponent />
-							<Link
+							{/* <Link
 								to="/register"
 								style={ { backgroundColor: 'yellow' } }
 							>
 								Register
-							</Link>
+							</Link> */}
 						</div>
-						<div style={ { display: 'flex', marginBottom: '20px' } }>
-							<Link to="/">Home view</Link>
+						<div style={ { display: 'flex', marginBottom: '0px' } }>
+							{/* <Link to="/">Home view</Link>
 							<Link
 								to="/graphComparison"
 								style={ { backgroundColor: 'green' } }
 							>
 								Graph Comparison
-							</Link>
+							</Link> */}
 						</div>
 						<div style={ { display: 'flex' } }>
 							<div
@@ -120,7 +124,6 @@ function App() {
 								)}
 							</div>
 						</div>
-						
 					</div>
 					)}
 				/>

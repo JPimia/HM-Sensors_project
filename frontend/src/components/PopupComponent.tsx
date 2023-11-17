@@ -44,11 +44,11 @@ const PopupComponent = () => {
 				<p>{`${username} is logged in.`}</p>
 			) : (
 				<Popup
-					trigger={
-						<button onClick={ () => setIsOpen(true) }>
-                            Open Login Popup
-						</button>
-					}
+					// trigger={
+					// 	<button onClick={ () => setIsOpen(true) }>
+                    //         Open Login Popup
+					// 	</button>
+					// }
 					open={ isOpen }
 					modal={ true }
 				>

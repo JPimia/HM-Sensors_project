@@ -1,0 +1,16 @@
+.body {
+    background-color: #ad3f3f;
+    height: calc(100vh - 80px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.register-container {
+    width: 30%;
+    height: 30%;
+    background-color: #c4aeae;
+    text-align: center;
+    padding: 40px;
+    border-radius: 10px;
+}
