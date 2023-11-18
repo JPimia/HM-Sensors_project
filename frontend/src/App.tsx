@@ -45,8 +45,8 @@ function App() {
 
 					<Navbar.Collapse id="basic-navbar-nav">
 						<Nav className="mr-auto">
-							<Nav.Link href="/" className="buttons">Home</Nav.Link>
-							<Nav.Link href="/graphComparison" className="buttons">Graph Comparison</Nav.Link>
+							<Nav.Link as={Link} to="/" className="buttons">Home</Nav.Link>
+							<Nav.Link as={Link} to="/graphComparison" className="buttons">Graph Comparison</Nav.Link>
 							<Nav.Link href="/register"  className="buttons">Register</Nav.Link>
 							{/* <Nav.Link onClick={() => setIsPopupVisible(!isPopupVisible)}>Login</Nav.Link> */}
 						</Nav>

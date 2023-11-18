@@ -120,6 +120,7 @@ function ChartGraphComparison({ dataStreams, setComparisonList }: any) {
 	};
 	return (
 		<div style={{ display: "flex" }}>
+			
 			<div>
 				{selectedDataStreams.length > 0 ? (
 					<div>
