@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 
 const GitLabAuth = ( { setUser }: any) => {
 	const [user, setUserState] = useState(null);
+    const [userName, setUserName] = useState(null);
 
 	useEffect(() => {
 		const fetchData = async (code: string) => {
@@ -22,11 +23,20 @@ const GitLabAuth = ( { setUser }: any) => {
 					}),
 				});
 				const data = await response.json();
-				setUserState(data);
                 console.log(data);
                 if (data.access_token) {
                     console.log("toimii")
+                    console.log(data.access_token)
                     setUser(data);
+                    const userProfile = await fetch('https://gitlab.lrz.de/api/v4/user', {
+                        headers: {
+                            'Authorization': `Bearer ${data.access_token}`,
+                        }
+                    }); 
+                    const userProfileData = await userProfile.json();
+                    console.log(userProfileData);
+                    setUserState(userProfileData)
+                    setUserName(userProfileData.name);
                 }
 			} catch (error) {
 				console.error("Error fetching data:", error);
@@ -54,7 +64,7 @@ const GitLabAuth = ( { setUser }: any) => {
 				<button onClick={handleLogin}>Login with GitLab</button>
 			) : (
 				<div>
-					<h2>Logged In</h2>
+					<h2>Welcome {userName}</h2>
 				</div>
 			)}
 		</div>
