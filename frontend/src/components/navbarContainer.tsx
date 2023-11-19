@@ -6,6 +6,8 @@ import NavDropdown from 'react-bootstrap/NavDropdown';
 import logo from '../images/SensorLogo.png';
 
 export function navbarContainer(): JSX.Element {
+    //en saanu navbar login nappia toimiin niinku pitäs
+    //const [isPopupVisible, setIsPopupVisible] = useState(false);
     return (
         <div>
             <Navbar className='custom-navbar'>
