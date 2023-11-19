@@ -79,16 +79,16 @@ export default function SensorsList() {
 					defaultValue="hm sensor"
 				/>
 
-				<span>Location Name</span>
+				{/* 				<span>Location Name</span>
 				<input
 					type="text"
 					ref={locationNameRef}
 					defaultValue="locationtest"
-				/>
+				/> */}
 
 				<div>
 					<div>
-						<p>Start time: </p>
+						<p>Start time</p>
 						<DatePicker
 							selected={startDate}
 							onChange={(date: Date | null) => setStartDate(date!)}
@@ -96,6 +96,7 @@ export default function SensorsList() {
 							timeInputLabel="Time:"
 							showTimeInput
 						/>
+						<p>Select sensors that have been active since specified time; empty = show all</p>
 					</div>
 				</div>
 				<button onClick={() => getSensors(sensorNameRef.current?.value, timeframeRef.current?.value, locationNameRef.current?.value)} className='buttons' style={{ width: '100%' }}>Fetch Sensors</button>
