@@ -4,6 +4,12 @@ import { fetchSensors, fetchDatastreamContents } from './fetches';
 import '../CSS/SensorList.css';
 import { Link } from 'react-router-dom';
 
+import DatePicker, { registerLocale, setDefaultLocale } from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import de from "date-fns/locale/de";
+registerLocale("de", de);
+setDefaultLocale("de");
+
 export default function SensorsList({ setSelectedDatastream,
 	setDatastreamComparisonList,
 	setSelectedSensors,
@@ -61,6 +67,9 @@ export default function SensorsList({ setSelectedDatastream,
 	}
 
 	function InputFields(): any {
+		const [startDate, setStartDate] = useState(new Date());
+		const [endDate, setEndDate] = useState<Date | null>(null);
+
 		return (
 			<div className='input-container'>
 				<h4>Filter options:</h4>
@@ -79,12 +88,29 @@ export default function SensorsList({ setSelectedDatastream,
 
 				<br />
 				<span>Timeframe: not implemented</span>
-				<input
-					type="text"
-					value={timeframe}
-					onChange={(e) => setTimeframe(e.target.value)} />
-
-				<br />
+				<div>
+					<div>
+						<p>Start time: </p>
+						<DatePicker
+							selected={startDate}
+							onChange={(date: Date | null) => setStartDate(date!)}
+							dateFormat="yyyy-MM-dd HH:mm:ss"
+							timeInputLabel="Time:"
+							showTimeInput
+						/>
+					</div>
+					<div>
+						<p>End time: Doesn't apply if empty</p>
+						<DatePicker
+							selected={endDate}
+							onChange={(date: Date | null) => setEndDate(date)}
+							dateFormat="yyyy-MM-dd HH:mm:ss"
+							timeInputLabel="Time:"
+							showTimeInput
+							placeholderText="End Date"
+						/>
+					</div>
+				</div>
 				<button onClick={() => getSensors(sensorName, timeframe, locationName)} className='buttons' style={{ width: '100%' }}>Fetch Sensors</button>
 				<Link to="/graphComparison">
 					<button className='buttons' style={{ backgroundColor: 'green', width: '100%' }}>

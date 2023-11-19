@@ -50,10 +50,6 @@ function SensorProvider({ children }: SensorProviderProps) {
 }
 
 
-
-
-
-
 // App.tsx
 function App() {
 
