@@ -53,7 +53,11 @@ export function RenderChart({ observations, unitOfMeasurement }: RenderChartProp
 	console.log("chartData");
 	console.log(observations);
 	const chartData: ChartData = {
-		labels: observations.map((observation: Observation) => observation.resultTime),
+		labels: observations.map((observation: any) => {
+			let date = new Date(observation.resultTime);
+			let formattedDate = date.toLocaleString('de-DE', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
+			return formattedDate;
+		}),
 		datasets: [
 			{
 				label: 'Observation Results',
