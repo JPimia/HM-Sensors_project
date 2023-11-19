@@ -1,155 +1,53 @@
 import React, { useState } from 'react';
-import { DatastreamContent } from './components/DatastreamContents';
-import  SensorsList  from './components/SensorsList';
 import PopupComponent from './components/PopupComponent';
 import ChartGraphComparison from './components/chartGraphComparisons';
-import { BrowserRouter as Router, Route, Link, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import SensorPage from './components/sensorPage';
 import RegisterComponent from './components/RegisterPopUp';
 import GitLabAuth from './components/GitLabAuth';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import Navbar from 'react-bootstrap/Navbar';
-import Nav from 'react-bootstrap/Nav';
-import NavDropdown from 'react-bootstrap/NavDropdown';
-import logo from './SensorLogo.png'
 import './CSS/Navbar.css';
 import './App.css';
 import './CSS/Filter.css';
+import { HomeComponent } from './components/HomeComponent';
+import { navbarContainer } from './components/navbarContainer';
 
 
 
-
-
+// App.tsx
 function App() {
 	const [selectedDatastream, setSelectedDatastream] = useState(null);
-	const [selectedSensors, setSelectedSensors] = useState([]);
-	const [datastreamComparisonList, setDatastreamComparisonList] = useState([]);
-    const [user, setUser] = useState(null);
+	const [selectedSensors, setSelectedSensors] = useState<any[]>([]);
+	const [datastreamComparisonList, setDatastreamComparisonList] = useState<any[]>([]);
+	const [user, setUser] = useState(null);
 
-	//en saanu navbar login nappia toimiin niinku pitäs
-	//const [isPopupVisible, setIsPopupVisible] = useState(false);
+	const homeComponentProps = {
+		selectedDatastream,
+		setSelectedDatastream,
+		selectedSensors,
+		setSelectedSensors,
+		setDatastreamComparisonList,
+	};
 
 	return (
 		<Router>
-			<div>
-				<Navbar className='custom-navbar'>
-					<Navbar.Brand href="/" className='brand'>
-						<img
-							src={logo}
-							width={300}
-							alt="Sensor Logo"
-						/>
-					</Navbar.Brand>
-
-					<Navbar.Toggle aria-controls="basic-navbar-nav" />
-
-					<Navbar.Collapse id="basic-navbar-nav">
-						<Nav className="mr-auto">
-							<Nav.Link as={Link} to="/" className="buttons">Home</Nav.Link>
-							<Nav.Link as={Link} to="/graphComparison" className="buttons">Graph Comparison</Nav.Link>
-							<Nav.Link href="/register"  className="buttons">Register</Nav.Link>
-							{/* <Nav.Link onClick={() => setIsPopupVisible(!isPopupVisible)}>Login</Nav.Link> */}
-						</Nav>
-					</Navbar.Collapse>
-
-					<NavDropdown 
-						title="Dropdown"
-						id="basic-nav-dropdown"
-						className="custom-dropdown">
-						
-						<NavDropdown.Item href="#action/3.1">Action</NavDropdown.Item>
-						<NavDropdown.Item href="#action/3.2">
-							Another action
-						</NavDropdown.Item>
-						<NavDropdown.Item href="#action/3.3">
-							Something
-						</NavDropdown.Item>
-						<NavDropdown.Divider />
-						<NavDropdown.Item href="#action/3.4">
-							Log out
-						</NavDropdown.Item>
-					</NavDropdown>
-
-				</Navbar>
-				{/* {isPopupVisible && <PopupComponent/>} */}
-			</div>
+			{navbarContainer()}
 			<Routes>
-				<Route
-					path="/"
-					element={(
-					<div className='main-container'>
-						<div style={ { display: 'flex', marginBottom: '20px' } }>
-						{
-						//<GitLabAuth setUser={setUser}/>
-						}
-							<PopupComponent />
-							{/* <Link
-								to="/register"
-								style={ { backgroundColor: 'yellow' } }
-							>
-								Register
-							</Link> */}
-						</div>
-						<div style={ { display: 'flex', marginBottom: '0px' } }>
-							{/* <Link to="/">Home view</Link>
-							<Link
-								to="/graphComparison"
-								style={ { backgroundColor: 'green' } }
-							>
-								Graph Comparison
-							</Link> */}
-						</div>
-						<div style={ { display: 'flex' } }>
-							<div
-								style={ {
-									width: '25%',
-									height: '100%',
-									overflowY: 'scroll',
-								} }
-							>
-								<SensorsList
-									setSelectedDatastream={ setSelectedDatastream }
-									setDatastreamComparisonList={
-										setDatastreamComparisonList
-									}
-									selectedSensors={ selectedSensors }
-									setSelectedSensors={ setSelectedSensors }
-								/>
-							</div>
-							<div style={ { width: '75%' } }>
-								{selectedDatastream && (
-									<DatastreamContent
-										datastream={ selectedDatastream }
-									/>
-								)}
-							</div>
-						</div>
-					</div>
-					)}
-				/>
+				<Route path="/" element={<HomeComponent {...homeComponentProps} />} />
 				<Route path="/login" element={<PopupComponent />} />
-				
 				<Route
 					path="/graphComparison"
-					element={ (
+					element={
 						<ChartGraphComparison
-							dataStreams={ datastreamComparisonList }
-							setComparisonList={ setDatastreamComparisonList }
+							dataStreams={datastreamComparisonList}
+							setComparisonList={setDatastreamComparisonList}
 						/>
-					) }
+					}
 				/>
-				<Route
-					path="/register"
-					element={ (
-						<RegisterComponent/>
-					) }
-				/>
-				<Route path="/sensor/:sensorName" element={ <SensorPage /> } />
-				
+				<Route path="/register" element={<RegisterComponent />} />
+				<Route path="/sensor/:sensorName" element={<SensorPage />} />
 			</Routes>
-			
 		</Router>
-		
 	);
 }
 

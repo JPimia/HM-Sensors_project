@@ -1,7 +1,7 @@
 import React from 'react';
 import { useState } from 'react';
 import { fetchSensors, fetchDatastreamContents } from './fetches';
-import '../CSS/SensorList.css'; 
+import '../CSS/SensorList.css';
 import { Link } from 'react-router-dom';
 
 export default function SensorsList({ setSelectedDatastream,
@@ -69,7 +69,7 @@ export default function SensorsList({ setSelectedDatastream,
 					type="text"
 					value={sensorName}
 					onChange={(e) => setSensorName(e.target.value)} />
-				
+
 				<br />
 				<span>Location Name</span>
 				<input
@@ -78,7 +78,14 @@ export default function SensorsList({ setSelectedDatastream,
 					onChange={(e) => setLocationName(e.target.value)} />
 
 				<br />
-				<button onClick={() => getSensors(sensorName, timeframe, locationName)} className='buttons' style={{width: '100%'}}>Fetch Sensors</button>
+				<span>Timeframe: not implemented</span>
+				<input
+					type="text"
+					value={timeframe}
+					onChange={(e) => setTimeframe(e.target.value)} />
+
+				<br />
+				<button onClick={() => getSensors(sensorName, timeframe, locationName)} className='buttons' style={{ width: '100%' }}>Fetch Sensors</button>
 				<Link to="/graphComparison">
 					<button className='buttons' style={{ backgroundColor: 'green', width: '100%' }}>
 						Graph Comparison
@@ -90,7 +97,7 @@ export default function SensorsList({ setSelectedDatastream,
 	}
 	return (
 		<div>
-			{InputFields()}
+			<InputFields />
 			<br />
 			{selectedSensors ? ( // Check if filter returned any results
 				<div style={{
