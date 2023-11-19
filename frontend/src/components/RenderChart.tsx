@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { useRef } from 'react';
 import { Line } from 'react-chartjs-2';
 import {
@@ -11,16 +11,13 @@ import {
 	Tooltip,
 	Legend
 } from 'chart.js';
+import { SensorContext } from '../App';
 
 type Observation = {
 	resultTime: string;
 	result: number;
 };
 
-type RenderChartProps = {
-	observations: Observation[];
-	unitOfMeasurement: any;
-};
 
 type ChartDataset = {
 	label: string;
@@ -35,9 +32,12 @@ type ChartData = {
 	datasets: ChartDataset[];
 };
 
-export function RenderChart({ observations, unitOfMeasurement }: RenderChartProps) {
+export function RenderChart() {
+	const {
+		selectedDatastream
+	} = useContext(SensorContext)!;
 	const chartContainer = useRef(null);
-	if (!observations) {
+	if (!selectedDatastream) {
 		console.log('observations is undefined');
 		return <p>No observations selected</p>;
 	}
@@ -50,10 +50,9 @@ export function RenderChart({ observations, unitOfMeasurement }: RenderChartProp
 		Tooltip,
 		Legend
 	);
-	console.log("chartData");
-	console.log(observations);
+
 	const chartData: ChartData = {
-		labels: observations.map((observation: any) => {
+		labels: selectedDatastream.Observations.map((observation: any) => {
 			let date = new Date(observation.resultTime);
 			let formattedDate = date.toLocaleString('de-DE', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
 			return formattedDate;
@@ -61,7 +60,7 @@ export function RenderChart({ observations, unitOfMeasurement }: RenderChartProp
 		datasets: [
 			{
 				label: 'Observation Results',
-				data: observations.map((observation: Observation) => observation.result),
+				data: selectedDatastream.Observations.map((observation: Observation) => observation.result),
 				fill: false,
 				borderColor: 'rgb(75, 192, 192)',
 				tension: 0.1,
@@ -80,14 +79,13 @@ export function RenderChart({ observations, unitOfMeasurement }: RenderChartProp
 			y: {
 				title: {
 					display: true,
-					text: `Result (${unitOfMeasurement.symbol})`,
+					text: `Result (${selectedDatastream.unitOfMeasurement.symbol})`,
 				},
 			},
 		},
 	};
 	return (
 		<>
-			<h3>Chart:</h3>
 			<div ref={chartContainer}>
 				<Line data={chartData} options={options} />
 			</div>
