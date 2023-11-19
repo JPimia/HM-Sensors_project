@@ -67,14 +67,14 @@ async function fetchDatastreamContents(datastream: string): Promise<any> {
 
 
 // TODO: make startdate optional, default should not use timeframes
-async function fetchObservations(resultAmount: number, startDate: Date, endDate?: Date | null, nextUrl?: string | null): Promise<any> {
+async function fetchObservations(id: number, resultAmount: number, startDate: Date, endDate?: Date | null, nextUrl?: string | null): Promise<any> {
 	// Returns {value:[],@iot.nextLink:string}
 
 	const formattedStartDate = startDate.toISOString();
 	const formattedEndDate = endDate ? endDate.toISOString() : null;
 	// Use nextUrl if it exists
 	let url = nextUrl ? nextUrl : `
-	https://gi3.gis.lrg.tum.de/frost/v1.1/Datastreams(357)/Observations?
+	https://gi3.gis.lrg.tum.de/frost/v1.1/Datastreams(${id})/Observations?
 	$top=${resultAmount}
 	&$select=resultTime,result
 	&$orderby=resultTime+desc
@@ -85,7 +85,6 @@ async function fetchObservations(resultAmount: number, startDate: Date, endDate?
 	if (endDate) {
 		url += `+and+resultTime+ge+${formattedEndDate}`;
 	}
-
 	try {
 		const response = fetchUrl(url);
 		return response;

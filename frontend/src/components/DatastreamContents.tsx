@@ -1,27 +1,27 @@
-import React, { Key, useEffect, useState } from "react";
+import React, { Key, useContext, useEffect, useState } from "react";
 import { fetchObservations } from "./fetches";
 import DatePicker, { registerLocale, setDefaultLocale } from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import de from "date-fns/locale/de";
 import { RenderChart } from "./RenderChart";
 import { exportObservations } from "./exportObservations";
+import { SensorContext } from "../App";
 
 // Register german locale for datepicker
 registerLocale("de", de);
 setDefaultLocale("de");
 
-function DatastreamContent({ datastream }: any) {
-	const { name, description, unitOfMeasurement, ObservedProperty } = datastream;
+function DatastreamContent() {
+	const {
+		selectedDatastream
+	} = useContext(SensorContext)!;
+	const { name, description, unitOfMeasurement, ObservedProperty } = selectedDatastream;
 
-	// Reformat observation object to avoid having to re-fetch the data
-	const observations = {
-		value: datastream.Observations,
-		"@iot.nextLink": datastream["Observations@iot.nextLink"],
-	};
+
 
 	return (
 		<div>
-			<p>Name: {name}</p>
+			<p>Name: {name} id: {selectedDatastream["@iot.id"]}</p>
 			<p>Description: {description}</p>
 			<p>
 				Unit of Measurement: {unitOfMeasurement.name} (
@@ -33,15 +33,19 @@ function DatastreamContent({ datastream }: any) {
 				<a href={ObservedProperty.definition}>{ObservedProperty.definition}</a>
 			</p>
 			<p>Description: {ObservedProperty.description}</p>
-			<RenderObservations datastreamObservations={observations} unitOfMeasurement={unitOfMeasurement} />
+			<RenderObservations />
 		</div>
 	);
+
+
 }
 
 // Render observations stuff
-function RenderObservations(
-	{ datastreamObservations, unitOfMeasurement }: { datastreamObservations: any; unitOfMeasurement: any; }) {
-	const [observations, setObservations] = useState(datastreamObservations);
+function RenderObservations() {
+	const {
+		selectedDatastream
+	} = useContext(SensorContext)!;
+	const [observations, setObservations] = useState(selectedDatastream.Observations);
 	const [startDate, setStartDate] = useState(new Date());
 	const [endDate, setEndDate] = useState<Date | null>(null);
 	const [resultAmount, setResultAmount] = useState(20);
@@ -49,15 +53,18 @@ function RenderObservations(
 	const [isFetchObservations, setIsFetchObserevations] = useState(false);
 	const [downloadType, setDownloadType] = useState("csv");
 
+
 	useEffect(() => {
 		const handleFetch = async () => {
 			try {
 				const response = await fetchObservations(
+					selectedDatastream["@iot.id"],
 					resultAmount,
 					startDate,
 					endDate,
 					nextLink
 				);
+				console.log(response);
 				if (response) {
 					setObservations(response);
 				}
@@ -70,8 +77,7 @@ function RenderObservations(
 			setIsFetchObserevations(false)
 		}
 
-	}, [startDate, endDate, nextLink, resultAmount, isFetchObservations]);
-
+	}, [startDate, endDate, nextLink, resultAmount, isFetchObservations, selectedDatastream]);
 
 	return (
 		<>
@@ -111,18 +117,21 @@ function RenderObservations(
 				Fetch observations
 			</button>
 			<br />
-			<button onClick={() => {
-				setNextLink(observations["@iot.nextLink"])
-				setIsFetchObserevations(true);
-			}}>
-				Show next results ( forward by: )
-			</button>{<input
+			<p>Amount of results per page:</p>
+			<input
 				type="number"
 				placeholder="20"
 				value={resultAmount}
 				onChange={(e) => setResultAmount(parseInt(e.target.value))}
-			/>}
+			/>
 			<br />
+			<br />
+			<button onClick={() => {
+				setNextLink(observations["@iot.nextLink"])
+				setIsFetchObserevations(true);
+			}}>
+				Show next page
+			</button>
 			<div style={{ display: "flex" }}>
 				<button onClick={() => exportObservations(observations, downloadType)}>
 					Save observations as
@@ -138,11 +147,14 @@ function RenderObservations(
 			<div style={{ overflowX: "scroll", whiteSpace: "nowrap" }}>
 				<ObservationList observations={observations.value} />
 			</div>
-			<RenderChart observations={observations.value} unitOfMeasurement={unitOfMeasurement} />
+			<RenderChart observations={observations.value} unitOfMeasurement={selectedDatastream.unitOfMeasurement} />
 		</>
 	);
 
 	function ObservationList({ observations }: { observations: { resultTime: string, result: number }[] }): any {
+		if (observations === undefined) {
+			return null;
+		}
 		try {
 			return observations.map(
 				(

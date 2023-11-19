@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { useState } from 'react';
 import { fetchSensors, fetchDatastreamContents } from './fetches';
 import '../CSS/SensorList.css';
@@ -7,18 +7,17 @@ import { Link } from 'react-router-dom';
 import DatePicker, { registerLocale, setDefaultLocale } from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import de from "date-fns/locale/de";
+import { SensorContext } from '../App';
 registerLocale("de", de);
 setDefaultLocale("de");
 
-export default function SensorsList({ setSelectedDatastream,
-	setDatastreamComparisonList,
-	setSelectedSensors,
-	selectedSensors, }: any) {
+export default function SensorsList() {
+	const { setSelectedSensors, setSelectedDatastream, setDatastreamComparisonList, selectedSensors } = useContext(SensorContext)!;
 
 	const [sensorName, setSensorName] = useState('hm sensor');
 	const [locationName, setLocationName] = useState('locationtest');
 	const [timeframe, setTimeframe] = useState('2021-01-01/2023-11-05');
-	const [compareType, setCompareType] = useState(null);
+	const [compareType, setCompareType] = useState(null);//TODO: Move to app.tsx
 
 
 	async function handleCompareBtnClick(datastream: { [key: string]: any; }) {
@@ -44,6 +43,7 @@ export default function SensorsList({ setSelectedDatastream,
 
 
 	async function getDatastream(datastream: { [key: string]: any; }) {
+
 		try {
 			const data = await fetchDatastreamContents(
 				datastream['@iot.selfLink']

@@ -22,8 +22,25 @@ type RenderChartProps = {
 	unitOfMeasurement: any;
 };
 
+type ChartDataset = {
+	label: string;
+	data: number[];
+	fill: boolean;
+	borderColor: string;
+	tension: number;
+};
+
+type ChartData = {
+	labels: string[];
+	datasets: ChartDataset[];
+};
+
 export function RenderChart({ observations, unitOfMeasurement }: RenderChartProps) {
 	const chartContainer = useRef(null);
+	if (!observations) {
+		console.log('observations is undefined');
+		return <p>No observations selected</p>;
+	}
 	Chart.register(
 		CategoryScale,
 		LinearScale,
@@ -33,15 +50,14 @@ export function RenderChart({ observations, unitOfMeasurement }: RenderChartProp
 		Tooltip,
 		Legend
 	);
-
-	const chartData = {
-		labels: observations.map((observation: any) => observation.resultTime),
+	console.log("chartData");
+	console.log(observations);
+	const chartData: ChartData = {
+		labels: observations.map((observation: Observation) => observation.resultTime),
 		datasets: [
 			{
 				label: 'Observation Results',
-				data: observations.map(
-					(observation: any) => observation.result
-				),
+				data: observations.map((observation: Observation) => observation.result),
 				fill: false,
 				borderColor: 'rgb(75, 192, 192)',
 				tension: 0.1,

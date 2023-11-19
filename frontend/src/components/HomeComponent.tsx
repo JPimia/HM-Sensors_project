@@ -7,10 +7,7 @@ import { SensorContext } from '../App';
 
 export function HomeComponent() {
     const {
-        selectedDatastream, setSelectedDatastream,
-        selectedSensors, setSelectedSensors,
-        datastreamComparisonList, setDatastreamComparisonList,
-        user, setUser
+        selectedDatastream
     } = useContext(SensorContext)!;
 
 
@@ -45,15 +42,11 @@ export function HomeComponent() {
                         overflowY: 'scroll',
                     }}
                 >
-                    <SensorsList
-                        setSelectedDatastream={setSelectedDatastream}
-                        setDatastreamComparisonList={setDatastreamComparisonList}
-                        selectedSensors={selectedSensors}
-                        setSelectedSensors={setSelectedSensors} />
+                    <SensorsList />
                 </div>
                 <div style={{ width: '75%' }}>
                     {selectedDatastream ? (
-                        <DatastreamContent datastream={selectedDatastream} />
+                        <DatastreamContent />
                     ) : null}
                 </div>
             </div>
