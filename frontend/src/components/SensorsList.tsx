@@ -14,9 +14,6 @@ setDefaultLocale("de");
 export default function SensorsList() {
 	const { setSelectedSensors, setSelectedDatastream, setDatastreamComparisonList, selectedSensors } = useContext(SensorContext)!;
 
-	const [sensorName, setSensorName] = useState('hm sensor');
-	const [locationName, setLocationName] = useState('locationtest');
-	const [timeframe, setTimeframe] = useState('2021-01-01/2023-11-05');
 	const [compareType, setCompareType] = useState(null);//TODO: Move to app.tsx
 
 
@@ -68,7 +65,9 @@ export default function SensorsList() {
 
 	function InputFields(): any {
 		const [startDate, setStartDate] = useState(new Date());
-		const [endDate, setEndDate] = useState<Date | null>(null);
+		const sensorNameRef = React.useRef<HTMLInputElement>(null);
+		const locationNameRef = React.useRef<HTMLInputElement>(null);
+		const timeframeRef = React.useRef<HTMLInputElement>(null);
 
 		return (
 			<div className='input-container'>
@@ -76,18 +75,17 @@ export default function SensorsList() {
 				<span>Sensor Name</span>
 				<input
 					type="text"
-					value={sensorName}
-					onChange={(e) => setSensorName(e.target.value)} />
+					ref={sensorNameRef}
+					defaultValue="hm sensor"
+				/>
 
-				<br />
 				<span>Location Name</span>
 				<input
 					type="text"
-					value={locationName}
-					onChange={(e) => setLocationName(e.target.value)} />
+					ref={locationNameRef}
+					defaultValue="locationtest"
+				/>
 
-				<br />
-				<span>Timeframe: not implemented</span>
 				<div>
 					<div>
 						<p>Start time: </p>
@@ -99,19 +97,8 @@ export default function SensorsList() {
 							showTimeInput
 						/>
 					</div>
-					<div>
-						<p>End time: Doesn't apply if empty</p>
-						<DatePicker
-							selected={endDate}
-							onChange={(date: Date | null) => setEndDate(date)}
-							dateFormat="yyyy-MM-dd HH:mm:ss"
-							timeInputLabel="Time:"
-							showTimeInput
-							placeholderText="End Date"
-						/>
-					</div>
 				</div>
-				<button onClick={() => getSensors(sensorName, timeframe, locationName)} className='buttons' style={{ width: '100%' }}>Fetch Sensors</button>
+				<button onClick={() => getSensors(sensorNameRef.current?.value, timeframeRef.current?.value, locationNameRef.current?.value)} className='buttons' style={{ width: '100%' }}>Fetch Sensors</button>
 				<Link to="/graphComparison">
 					<button className='buttons' style={{ backgroundColor: 'green', width: '100%' }}>
 						Graph Comparison
