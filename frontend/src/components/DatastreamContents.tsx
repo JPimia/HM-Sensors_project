@@ -3,8 +3,8 @@ import { fetchObservations } from "./fetches";
 import DatePicker, { registerLocale, setDefaultLocale } from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import de from "date-fns/locale/de";
-import { saveAs } from "file-saver";
 import { RenderChart } from "./RenderChart";
+import { exportObservations } from "./exportObservations";
 
 // Register german locale for datepicker
 registerLocale("de", de);
@@ -33,35 +33,9 @@ function DatastreamContent({ datastream }: any) {
 				<a href={ObservedProperty.definition}>{ObservedProperty.definition}</a>
 			</p>
 			<p>Description: {ObservedProperty.description}</p>
-			{RenderObservations({ datastreamObservations: observations, unitOfMeasurement })}
+			<RenderObservations datastreamObservations={observations} unitOfMeasurement={unitOfMeasurement} />
 		</div>
 	);
-}
-
-function exportObservations(observations: any, downloadType: String) {
-    console.log(downloadType);
-    if(downloadType ==="csv"){
-        const header = "observationId, resultTime, result";
-        const csvContent = observations.value
-            .map(
-                (observation: {
-                    "@iot.id": number;
-                    resultTime: string | null;
-                    result: string | null;
-                }) => {
-                    const { "@iot.id": observationId, resultTime, result } = observation;
-                    return `${observationId || "null"},${resultTime || "null"},${result || "null"}`;
-                }
-            )
-            .join("\n");
-        const csvData = `${header}\n${csvContent}`;
-        const blob = new Blob([csvData], { type: "text/csv;charset=utf-8" });
-        saveAs(blob, "observations.csv");
-    } else if(downloadType === "json") {
-        const jsonContent = JSON.stringify(observations.value, null, 2);
-        const blob = new Blob([jsonContent], { type: "application/json;charset=utf-8" });
-        saveAs(blob, "observations.json");
-    }
 }
 
 // Render observations stuff
@@ -73,7 +47,7 @@ function RenderObservations(
 	const [resultAmount, setResultAmount] = useState(20);
 	const [nextLink, setNextLink] = useState<undefined | null>();
 	const [isFetchObservations, setIsFetchObserevations] = useState(false);
-    const [downloadType, setDownloadType] = useState("csv");
+	const [downloadType, setDownloadType] = useState("csv");
 
 	useEffect(() => {
 		const handleFetch = async () => {
@@ -149,18 +123,18 @@ function RenderObservations(
 				onChange={(e) => setResultAmount(parseInt(e.target.value))}
 			/>}
 			<br />
-            <div style={{ display: "flex" }}>
-			<button onClick={() => exportObservations(observations, downloadType)}>
-				Save observations as
-			</button>
-            <select
-                value={downloadType}
-                onChange={(e) => setDownloadType(e.target.value)
-                }>
-                <option value="csv">CSV</option>
-                <option value="json">JSON</option>
-            </select>
-            </div>
+			<div style={{ display: "flex" }}>
+				<button onClick={() => exportObservations(observations, downloadType)}>
+					Save observations as
+				</button>
+				<select
+					value={downloadType}
+					onChange={(e) => setDownloadType(e.target.value)
+					}>
+					<option value="csv">CSV</option>
+					<option value="json">JSON</option>
+				</select>
+			</div>
 			<div style={{ overflowX: "scroll", whiteSpace: "nowrap" }}>
 				<ObservationList observations={observations.value} />
 			</div>

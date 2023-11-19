@@ -34,8 +34,6 @@ export function RenderChart({ observations, unitOfMeasurement }: RenderChartProp
 		Legend
 	);
 
-	console.log("chartData:")
-	console.log(observations)
 	const chartData = {
 		labels: observations.map((observation: any) => observation.resultTime),
 		datasets: [

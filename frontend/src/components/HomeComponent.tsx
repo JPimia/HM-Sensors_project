@@ -1,21 +1,18 @@
-import React from 'react';
+import React, { useContext, useState } from 'react';
 import { DatastreamContent } from './DatastreamContents';
 import SensorsList from './SensorsList';
 import PopupComponent from './PopupComponent';
+import { SensorContext } from '../App';
 
 
-type HomeComponentProps = {
-    selectedDatastream: any;
-    setSelectedDatastream: React.Dispatch<React.SetStateAction<any>>;
-    selectedSensors: any[];
-    setSelectedSensors: React.Dispatch<React.SetStateAction<any[]>>;
-    setDatastreamComparisonList: React.Dispatch<React.SetStateAction<any[]>>;
-};
-
-export function HomeComponent(props: HomeComponentProps) {
+export function HomeComponent() {
     const {
-        selectedDatastream, setSelectedDatastream, selectedSensors, setSelectedSensors, setDatastreamComparisonList,
-    } = props;
+        selectedDatastream, setSelectedDatastream,
+        selectedSensors, setSelectedSensors,
+        datastreamComparisonList, setDatastreamComparisonList,
+        user, setUser
+    } = useContext(SensorContext)!;
+
 
     return (
         <div className='main-container'>
@@ -55,10 +52,9 @@ export function HomeComponent(props: HomeComponentProps) {
                         setSelectedSensors={setSelectedSensors} />
                 </div>
                 <div style={{ width: '75%' }}>
-                    {selectedDatastream && (
-                        <DatastreamContent
-                            datastream={selectedDatastream} />
-                    )}
+                    {selectedDatastream ? (
+                        <DatastreamContent datastream={selectedDatastream} />
+                    ) : null}
                 </div>
             </div>
         </div>
