@@ -106,7 +106,7 @@ function DatastreamContent() {
 		<>
 			<div style={{ display: "flex", width: "100%" }}>
 				<div style={{ width: "50%" }}>
-					<h3>Datastream:</h3>
+					<h3>Datastream</h3>
 					<p>Name: {name} id: {selectedDatastream["@iot.id"]}</p>
 					<p>Description: {description}</p>
 					<p>
@@ -121,33 +121,40 @@ function DatastreamContent() {
 					<p>Description: {ObservedProperty.description}</p>
 				</div>
 				<div style={{ width: "50%" }}>
-					<h3>Observations:</h3>
-					<div style={{ display: "flex" }}>
-						<div>
-							<p>Start time: Doesn't apply if empty</p>
-							<DatePicker
-								selected={endDate}
-								onChange={(date: Date | null) => setEndDate(date)}
-								dateFormat="yyyy-MM-dd HH:mm:ss"
-								timeInputLabel="Time:"
-								showTimeInput
-								placeholderText="End Date"
-							/>
-						</div>
-						<div>
-							<p>End time</p>
-							<DatePicker
-								selected={startDate}
-								onChange={(date: Date | null) => setStartDate(date!)}
-								dateFormat="yyyy-MM-dd HH:mm:ss"
-								timeInputLabel="Time:"
-								showTimeInput
-							/>
-						</div>
+					<h3>Observations</h3>
+					<div>
+						<span style={{ marginBottom: '5px' }}>Show results from selected date onwards. Doesn't apply if empty. </span>
+						<br />
+						<DatePicker
+							selected={endDate}
+							onChange={(date: Date | null) => setEndDate(date)}
+							dateFormat="yyyy-MM-dd HH:mm:ss"
+							timeInputLabel="Time:"
+							showTimeInput
+							placeholderText="2000-01-01 00:00:00"
+						/>
 					</div>
-					<button onClick={() => setStartDate(new Date())}>
-						Set end to current time
-					</button>
+					<div>
+						<span style={{ marginBottom: '5px' }}>Show results until selected date.</span>
+						<br />
+						<DatePicker
+							selected={startDate}
+							onChange={(date: Date | null) => setStartDate(date!)}
+							dateFormat="yyyy-MM-dd HH:mm:ss"
+							timeInputLabel="Time:"
+							showTimeInput
+						/>					<button onClick={() => setStartDate(new Date())}>
+							Set to current time
+						</button>
+					</div>
+					<span style={{ marginBottom: '5px' }}>Amount of results to show per page:</span>
+					<br />
+					<input
+						type="number"
+						placeholder="20"
+						value={resultAmount}
+						onChange={(e) => setResultAmount(parseInt(e.target.value))}
+					/>
 					<br />
 					<button onClick={() => {
 						setNextLink(null)
@@ -156,32 +163,26 @@ function DatastreamContent() {
 						Fetch observations
 					</button>
 					<br />
-					<p>Amount of results to show per page:</p>
-					<input
-						type="number"
-						placeholder="20"
-						value={resultAmount}
-						onChange={(e) => setResultAmount(parseInt(e.target.value))}
-					/>
-					<br />
-					<br />
-					<button onClick={() => {
-						setNextLink(observations["@iot.nextLink"])
-						setIsFetchObserevations(true);
-					}}>
-						Show next page
-					</button>
-					<div style={{ display: "flex" }}>
-						<button onClick={() => exportObservations(observations, downloadType)}>
-							Save observations as
+					<p>Next page will show next n resuls</p>
+					<div style={{ display: 'flex' }}>
+						<button onClick={() => {
+							setNextLink(observations["@iot.nextLink"])
+							setIsFetchObserevations(true);
+						}}>
+							Show next page
 						</button>
-						<select
-							value={downloadType}
-							onChange={(e) => setDownloadType(e.target.value)
-							}>
-							<option value="csv">CSV</option>
-							<option value="json">JSON</option>
-						</select>
+						<div style={{ display: "flex" }}>
+							<button onClick={() => exportObservations(observations, downloadType)}>
+								Save observations as
+							</button>
+							<select
+								value={downloadType}
+								onChange={(e) => setDownloadType(e.target.value)
+								}>
+								<option value="csv">CSV</option>
+								<option value="json">JSON</option>
+							</select>
+						</div>
 					</div>
 				</div>
 			</div>
