@@ -13,7 +13,7 @@ export function HomeComponent() {
 
     return (
         <div className='main-container'>
-            <div style={{ display: 'flex', marginBottom: '20px' }}>
+            <div style={{ display: 'flex' }}>
                 {
                     //<GitLabAuth setUser={setUser}/>
                 }

@@ -73,22 +73,23 @@ export default function SensorsList() {
 			<div className='input-container'>
 				<h4>Filter options:</h4>
 				<span>Sensor Name</span>
+				<p>Search for sensors using name as filter, leave empty to show all.</p>
 				<input
 					type="text"
 					ref={sensorNameRef}
 					defaultValue="hm sensor"
 				/>
 
-				<span>Location Name</span>
+				{/* 				<span>Location Name</span>
 				<input
 					type="text"
 					ref={locationNameRef}
 					defaultValue="locationtest"
-				/>
+				/> */}
 
-				<div>
+				{/* 				<div>
 					<div>
-						<p>Start time: </p>
+						<p>Start time: Will show sensors that have recorded activity since specified time</p>
 						<DatePicker
 							selected={startDate}
 							onChange={(date: Date | null) => setStartDate(date!)}
@@ -97,7 +98,7 @@ export default function SensorsList() {
 							showTimeInput
 						/>
 					</div>
-				</div>
+				</div> */}
 				<button onClick={() => getSensors(sensorNameRef.current?.value, timeframeRef.current?.value, locationNameRef.current?.value)} className='buttons' style={{ width: '100%' }}>Fetch Sensors</button>
 				<Link to="/graphComparison">
 					<button className='buttons' style={{ backgroundColor: 'green', width: '100%' }}>
@@ -111,7 +112,6 @@ export default function SensorsList() {
 	return (
 		<div>
 			<InputFields />
-			<br />
 			{selectedSensors ? ( // Check if filter returned any results
 				<div style={{
 					height: '100vh',
@@ -122,8 +122,8 @@ export default function SensorsList() {
 							<div key={sensor.name}>
 								<div className='sensor-info'>
 									<h3 className='sensor-name'>{sensor.name}</h3>
-									<p>Sensor ID: {sensor['@iot.id']}</p>
-									<p>Description: {sensor.description}</p>
+									<span style={{ marginBottom: '5px' }}>Sensor ID: {sensor['@iot.id']}</span>
+									<span style={{ marginBottom: '5px' }}>Description: {sensor.description}</span>
 								</div>
 								{sensor.Datastreams.map((datastream: any) => (
 									<div key={datastream.name} className='button-container'>

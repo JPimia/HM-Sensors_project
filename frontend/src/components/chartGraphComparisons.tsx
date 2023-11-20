@@ -17,7 +17,6 @@ function randomizeBorderColor() {
 	const red = Math.floor(Math.random() * 256);
 	const green = Math.floor(Math.random() * 256);
 	const blue = Math.floor(Math.random() * 256);
-
 	return `rgb(${red}, ${green}, ${blue})`;
 }
 
@@ -57,7 +56,6 @@ function exportObservations(observations: any, downloadType: String) {
 	}
 }
 
-
 function ChartGraphComparison() {
 	Chart.register(
 		CategoryScale,
@@ -69,28 +67,25 @@ function ChartGraphComparison() {
 		Legend
 	);
 	const { datastreamComparisonList, setDatastreamComparisonList } = useContext(SensorContext)!;
-
 	const [downloadType, setDownloadType] = useState("csv");
-
 	function removeDataStream(iotId: string) {
 		const updatedDataStreams = datastreamComparisonList.filter(
 			(dataStream: any) => dataStream['@iot.id'] !== iotId
 		);
 		setDatastreamComparisonList(updatedDataStreams);
 	}
-
 	console.log('dataStreams:', datastreamComparisonList);
-
 	const chartData: any = {
 		labels: [],
 		datasets: [],
 	};
-
 	datastreamComparisonList.forEach((datastream: any) => {
-
 		// add labels
-		chartData.labels = datastream.Observations.map((observation: any) => observation.resultTime);
-
+		chartData.labels = datastream.Observations.map((observation: any) => {
+			let date = new Date(observation.resultTime);
+			let formattedDate = date.toLocaleString('de-DE', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
+			return formattedDate;
+		});
 		// add dataset
 		chartData.datasets.push({
 			label: datastream['@iot.id'],
@@ -100,7 +95,6 @@ function ChartGraphComparison() {
 			tension: 0.1,
 		});
 	});
-
 	const options = {
 		scales: {
 			x: {
@@ -147,7 +141,7 @@ function ChartGraphComparison() {
 						<h3>Selected Data Streams:</h3>
 						<ul>
 							{datastreamComparisonList.map((dataStream: any) => (
-								<li key={dataStream["@iot.id"]}>
+								<li key={dataStream["@iot.id"] + dataStream.name}>
 									<p>Name: {dataStream.name}</p>
 									<p>Iot.id: {dataStream["@iot.id"]}</p>
 									<p>desc: {dataStream.description}</p>

@@ -12,6 +12,7 @@ import {
 	Legend
 } from 'chart.js';
 
+
 type Observation = {
 	resultTime: string;
 	result: number;
@@ -37,10 +38,12 @@ type ChartData = {
 
 export function RenderChart({ observations, unitOfMeasurement }: RenderChartProps) {
 	const chartContainer = useRef(null);
+	console.log("Rendering chart ")
 	if (!observations) {
 		console.log('observations is undefined');
 		return <p>No observations selected</p>;
 	}
+
 	Chart.register(
 		CategoryScale,
 		LinearScale,
@@ -50,10 +53,13 @@ export function RenderChart({ observations, unitOfMeasurement }: RenderChartProp
 		Tooltip,
 		Legend
 	);
-	console.log("chartData");
-	console.log(observations);
+
 	const chartData: ChartData = {
-		labels: observations.map((observation: Observation) => observation.resultTime),
+		labels: observations.map((observation: any) => {
+			let date = new Date(observation.resultTime);
+			let formattedDate = date.toLocaleString('de-DE', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
+			return formattedDate;
+		}),
 		datasets: [
 			{
 				label: 'Observation Results',
@@ -83,7 +89,6 @@ export function RenderChart({ observations, unitOfMeasurement }: RenderChartProp
 	};
 	return (
 		<>
-			<h3>Chart:</h3>
 			<div ref={chartContainer}>
 				<Line data={chartData} options={options} />
 			</div>
