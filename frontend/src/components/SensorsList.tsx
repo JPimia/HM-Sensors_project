@@ -86,9 +86,9 @@ export default function SensorsList() {
 					defaultValue="locationtest"
 				/> */}
 
-				<div>
+				{/* 				<div>
 					<div>
-						<p>Start time</p>
+						<p>Start time: Will show sensors that have recorded activity since specified time</p>
 						<DatePicker
 							selected={startDate}
 							onChange={(date: Date | null) => setStartDate(date!)}
@@ -96,9 +96,8 @@ export default function SensorsList() {
 							timeInputLabel="Time:"
 							showTimeInput
 						/>
-						<p>Select sensors that have been active since specified time; empty = show all</p>
 					</div>
-				</div>
+				</div> */}
 				<button onClick={() => getSensors(sensorNameRef.current?.value, timeframeRef.current?.value, locationNameRef.current?.value)} className='buttons' style={{ width: '100%' }}>Fetch Sensors</button>
 				<Link to="/graphComparison">
 					<button className='buttons' style={{ backgroundColor: 'green', width: '100%' }}>
@@ -112,7 +111,6 @@ export default function SensorsList() {
 	return (
 		<div>
 			<InputFields />
-			<br />
 			{selectedSensors ? ( // Check if filter returned any results
 				<div style={{
 					height: '100vh',

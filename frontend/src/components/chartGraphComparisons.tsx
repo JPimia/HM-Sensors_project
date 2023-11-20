@@ -141,7 +141,7 @@ function ChartGraphComparison() {
 						<h3>Selected Data Streams:</h3>
 						<ul>
 							{datastreamComparisonList.map((dataStream: any) => (
-								<li key={dataStream["@iot.id"]}>
+								<li key={dataStream["@iot.id"] + dataStream.name}>
 									<p>Name: {dataStream.name}</p>
 									<p>Iot.id: {dataStream["@iot.id"]}</p>
 									<p>desc: {dataStream.description}</p>

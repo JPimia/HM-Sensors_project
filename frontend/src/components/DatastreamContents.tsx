@@ -15,6 +15,7 @@ function DatastreamContent() {
 		selectedDatastream
 	} = useContext(SensorContext)!;
 	const { name, description, unitOfMeasurement, ObservedProperty } = selectedDatastream;
+	// Wrap observations in a similar object as the response for fetchObservations
 	const [observations, setObservations] = useState({ value: selectedDatastream.Observations, "@iot.nextLink": null });
 	const [startDate, setStartDate] = useState(new Date());
 	const [endDate, setEndDate] = useState<Date | null>(null);
@@ -104,7 +105,7 @@ function DatastreamContent() {
 	return (
 		<>
 			<div style={{ display: "flex", width: "100%" }}>
-				<div style={{ width: "50%", marginRight: "10px" }}>
+				<div style={{ width: "50%" }}>
 					<h3>Datastream:</h3>
 					<p>Name: {name} id: {selectedDatastream["@iot.id"]}</p>
 					<p>Description: {description}</p>

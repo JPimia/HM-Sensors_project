@@ -24,12 +24,12 @@ export function NavbarContainer(): JSX.Element {
                     <Nav className="mr-auto">
                         <Nav.Link as={Link} to="/" className="buttons">Home</Nav.Link>
                         <Nav.Link as={Link} to="/graphComparison" className="buttons">Graph Comparison</Nav.Link>
-                        <Nav.Link href="/register" className="buttons">Register</Nav.Link>
+                        {/* <Nav.Link href="/register" className="buttons">Register</Nav.Link> */}
                         {/* <Nav.Link onClick={() => setIsPopupVisible(!isPopupVisible)}>Login</Nav.Link> */}
                     </Nav>
                 </Navbar.Collapse>
 
-                <NavDropdown
+                {/*                 <NavDropdown
                     title="Dropdown"
                     id="basic-nav-dropdown"
                     className="custom-dropdown">
@@ -45,7 +45,7 @@ export function NavbarContainer(): JSX.Element {
                     <NavDropdown.Item href="#action/3.4">
                         Log out
                     </NavDropdown.Item>
-                </NavDropdown>
+                </NavDropdown> */}
 
             </Navbar>
             {/* {isPopupVisible && <PopupComponent/>} */}
