@@ -57,6 +57,11 @@ function App() {
 		<SensorProvider>
 			<Router>
 				<NavbarContainer />
+                {
+                    // commented out because it uses http://localhost:3000/ as it's callback url
+                    // move outside of tis block to test
+                    // <GitLabAuth />
+                }
 				<Routes>
 					<Route path="/" element={<HomeComponent />} />
 					<Route path="/login" element={<PopupComponent />} />

@@ -1,8 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import { SensorContext } from "../App";
 
-const GitLabAuth = ( { setUser }: any) => {
+const GitLabAuth = () => {
 	const [user, setUserState] = useState(null);
     const [userName, setUserName] = useState(null);
+    const { setUser } = useContext(SensorContext)!;
 
 	useEffect(() => {
 		const fetchData = async (code: string) => {
@@ -27,7 +29,6 @@ const GitLabAuth = ( { setUser }: any) => {
                 if (data.access_token) {
                     console.log("toimii")
                     console.log(data.access_token)
-                    setUser(data);
                     const userProfile = await fetch('https://gitlab.lrz.de/api/v4/user', {
                         headers: {
                             'Authorization': `Bearer ${data.access_token}`,
@@ -35,14 +36,24 @@ const GitLabAuth = ( { setUser }: any) => {
                     }); 
                     const userProfileData = await userProfile.json();
                     console.log(userProfileData);
+                    setUser(userProfileData);
                     setUserState(userProfileData)
                     setUserName(userProfileData.name);
+                    localStorage.setItem('user', JSON.stringify(userProfileData));
                 }
 			} catch (error) {
 				console.error("Error fetching data:", error);
 			}
 		};
         
+
+        const storedUser = localStorage.getItem('user');
+        if (storedUser) {
+            const storedUserData = JSON.parse(storedUser);
+            setUser(storedUserData);
+            setUserState(storedUserData);
+            setUserName(storedUserData.name);
+        }
 
 		const urlParams = new URLSearchParams(window.location.search);
 		const code = urlParams.get("code");
