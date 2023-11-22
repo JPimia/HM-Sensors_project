@@ -99,7 +99,7 @@ export default function SensorsList() {
 						/>
 					</div>
 				</div> */}
-				<button onClick={() => getSensors(sensorNameRef.current?.value, timeframeRef.current?.value, locationNameRef.current?.value)} className='buttons' style={{ width: '100%' }}>Fetch Sensors</button>
+				<button onClick={() => getSensors(sensorNameRef.current?.value, timeframeRef.current?.value, locationNameRef.current?.value)} className='buttons' style={{ width: '100%', marginTop: "10px", marginBottom: "10px"}}>Fetch Sensors</button>
 				<Link to="/graphComparison">
 					<button className='buttons' style={{ backgroundColor: 'green', width: '100%' }}>
 						Graph Comparison
@@ -111,12 +111,12 @@ export default function SensorsList() {
 	}
 	return (
 		<div>
-			<InputFields />
+			<div>
+				<InputFields />
+			</div>
+			
 			{selectedSensors ? ( // Check if filter returned any results
-				<div style={{
-					height: '100vh',
-					overflowY: 'auto' // Add scrollbars when the content overflows
-				}}>
+				<div className='sensors-container'>
 					{selectedSensors.map((sensor: any) => (
 						<div className="sensor-container" key={sensor.name}>
 							<div key={sensor.name}>

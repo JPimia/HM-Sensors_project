@@ -104,7 +104,7 @@ function DatastreamContent() {
 
 	return (
 		<>
-			<div style={{ display: "flex", width: "100%" }}>
+			<div style={{ display: "flex", width: "100%", marginLeft: "10px" }}>
 				<div style={{ width: "50%" }}>
 					<h3>Datastream</h3>
 					<p>Name: {name} id: {selectedDatastream["@iot.id"]}</p>
@@ -187,7 +187,7 @@ function DatastreamContent() {
 				</div>
 			</div>
 			<div>
-				<div style={{ overflowX: "scroll", whiteSpace: "nowrap" }}>
+				<div style={{ overflowX: "scroll", whiteSpace: "nowrap", marginLeft: "10px" }}>
 					{observationList}
 				</div>
 				{renderChartMemo}

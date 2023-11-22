@@ -39,7 +39,7 @@ export function HomeComponent() {
                     style={{
                         width: '25%',
                         height: '100%',
-                        overflowY: 'scroll',
+                        
                     }}
                 >
                     <SensorsList />
