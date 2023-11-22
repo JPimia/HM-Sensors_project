@@ -69,6 +69,13 @@ const GitLabAuth = () => {
 			"https://gitlab.lrz.de/oauth/authorize?client_id=dd765912b52b6ab5d8a3c19c77a50a1761a17e940aa8bd34280abc67637b27fe&redirect_uri=http://localhost:3000/&response_type=code&scope=api";
 	};
 
+    const handleLogOut= () => {
+        setUser(null);
+        setUserName(null);
+        setUserState(null);
+        localStorage.clear();
+    }
+
 	return (
 		<div>
 			{!user ? (
@@ -76,6 +83,7 @@ const GitLabAuth = () => {
 			) : (
 				<div>
 					<h2>Welcome {userName}</h2>
+                    <button onClick={handleLogOut}>Log out</button>
 				</div>
 			)}
 		</div>
