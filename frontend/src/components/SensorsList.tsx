@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
-import { useState } from 'react';
-import { fetchSensors, fetchDatastreamContents } from './fetches';
+import { useState, useEffect } from 'react';
+import { fetchSensors, fetchDatastreamContents, fetchSensorNames } from './fetches';
 import '../CSS/SensorList.css';
 import { Link } from 'react-router-dom';
 
@@ -68,17 +68,102 @@ export default function SensorsList() {
 		const sensorNameRef = React.useRef<HTMLInputElement>(null);
 		const locationNameRef = React.useRef<HTMLInputElement>(null);
 		const timeframeRef = React.useRef<HTMLInputElement>(null);
+        const [sensorNames, setSensorNames] = useState([]);
+        const [userInput, setUserInput] = useState('');
+        const [suggestions, setSuggestions] = useState([]);
 
+        
+        const handleInputChange = () => {
+                const input = sensorNameRef.current?.value || '';
+                setUserInput(input);
+
+                const filteredSuggestions = sensorNames.filter((name : string) =>
+                    name.toLowerCase().includes(input.toLowerCase())
+                );
+
+                setSuggestions(filteredSuggestions);
+        };
+
+        const handleSuggestionClick = (suggestion: string) => {
+                setSuggestions([]);
+                getSensors(
+                    suggestion,
+                    timeframeRef.current?.value,
+                    locationNameRef.current?.value
+                )
+        };
+
+        useEffect(() => {
+            const handleFetch = async () => {
+                try {
+                    const sensorNameObject = await fetchSensorNames();
+                    const sensorNameArray = sensorNameObject.value.map((item: { name: any; }) => item.name);
+                    setSensorNames(sensorNameArray);
+                } catch (error) {
+                    console.log(error);
+                }
+            };
+            handleFetch();
+        }, []);
+    
 		return (
-			<div className='input-container'>
+			<div className="input-container">
 				<h4>Filter options:</h4>
 				<span>Sensor Name</span>
-				<p>Search for sensors using name as filter, leave empty to show all.</p>
-				<input
-					type="text"
-					ref={sensorNameRef}
-					defaultValue="hm sensor"
-				/>
+				<p>
+					Search for sensors using name as filter, leave empty to show
+					all.
+				</p>
+                <button
+					onClick={() =>
+						getSensors(
+							sensorNameRef.current?.value,
+							timeframeRef.current?.value,
+							locationNameRef.current?.value
+						)
+					}
+					className="buttons"
+					style={{
+						width: "100%",
+						marginTop: "10px",
+						marginBottom: "10px",
+					}}
+				>
+					Search for sensors
+				</button>
+                <div className="dropdown-container">
+                    <input
+                        type="text"
+                        ref={sensorNameRef}
+                        value={userInput}
+                        onChange={handleInputChange}
+                        placeholder="Type to search..."
+                    />
+                    <ul className="dropdown-list">
+                        {
+                            // Currently only shows the first 10 items in the suggestion array
+                        }
+                        {suggestions.slice(0, 10).map((suggestion, index) => (
+                            <li
+                                key={index}
+                                onClick={() => handleSuggestionClick(suggestion)}
+                            >
+                                {suggestion}
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+                {
+                    /*
+                        original search input field
+                        <input
+                            type="text"
+                            ref={sensorNameRef}
+                            defaultValue="hm sensor"
+                        />
+                    */
+                }
+
 
 				{/* 				<span>Location Name</span>
 				<input
@@ -99,9 +184,11 @@ export default function SensorsList() {
 						/>
 					</div>
 				</div> */}
-				<button onClick={() => getSensors(sensorNameRef.current?.value, timeframeRef.current?.value, locationNameRef.current?.value)} className='buttons' style={{ width: '100%', marginTop: "10px", marginBottom: "10px"}}>Fetch Sensors</button>
 				<Link to="/graphComparison">
-					<button className='buttons' style={{ backgroundColor: 'green', width: '100%' }}>
+					<button
+						className="buttons"
+						style={{ backgroundColor: "green", width: "100%" }}
+					>
 						Graph Comparison
 					</button>
 				</Link>

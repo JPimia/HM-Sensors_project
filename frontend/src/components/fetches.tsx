@@ -15,6 +15,16 @@ async function fetchUrl(url: string): Promise<any> {
 	}
 }
 
+async function fetchSensorNames(): Promise<any>{
+    try {
+        // Fetches 1000 sensor names
+		const response = await fetch("https://gi3.gis.lrg.tum.de/frost/v1.1/Sensors?$select=name&$top=1000");
+		const data = await response.json();
+		return data;
+	} catch (error) {
+		throw new Error('Failed to fetch URL: ' + error);
+	}
+}
 
 async function fetchSensor(name: string): Promise<any> {
 
@@ -100,4 +110,4 @@ async function fetchObservations(id: number, resultAmount: number, startDate: Da
 
 }
 
-export { fetchSensors, fetchDatastreamContents, fetchSensor, fetchObservations };
+export { fetchSensors, fetchDatastreamContents, fetchSensor, fetchObservations, fetchSensorNames };
