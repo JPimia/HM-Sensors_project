@@ -104,7 +104,7 @@ function DatastreamContent() {
 
 	return (
 		<>
-			<div style={{ display: "flex", width: "100%", marginLeft: "10px" }}>
+			<div style={{ display: "flex", width: "100%", paddingLeft: "10px" }}>
 				<div style={{ width: "50%" }}>
 					<h3>Datastream</h3>
 					<p>Name: {name} id: {selectedDatastream["@iot.id"]}</p>
@@ -116,7 +116,11 @@ function DatastreamContent() {
 					<p>Observed Property: {ObservedProperty.name}</p>
 					<p>
 						Definition:{" "}
-						<a href={ObservedProperty.definition}>{ObservedProperty.definition}</a>
+						<a href={ObservedProperty.definition}>
+							{ObservedProperty.definition.length > 25 
+								? ObservedProperty.definition.substring(0, 25) + "..."
+								: ObservedProperty.definition}
+						</a>
 					</p>
 					<p>Description: {ObservedProperty.description}</p>
 				</div>

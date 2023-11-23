@@ -36,15 +36,11 @@ export function HomeComponent() {
             </div>
             <div style={{ display: 'flex' }}>
                 <div
-                    style={{
-                        width: '25%',
-                        height: '100%',
-                        
-                    }}
+                    
                 >
                     <SensorsList />
                 </div>
-                <div style={{ width: '75%' }}>
+                <div style={{  overflowY: "hidden", overflowX: "scroll" }}>
                     {selectedDatastream ? (
                         <DatastreamContent />
                     ) : null}
