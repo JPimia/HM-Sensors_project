@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, memo } from 'react';
 import { fetchSensors, fetchDatastreamContents, fetchSensorNames } from './fetches';
 import '../CSS/SensorList.css';
 import { Link, useNavigate } from 'react-router-dom';
@@ -44,7 +44,7 @@ export default function SensorsList() {
 		return compareType !== null && datastreamType !== compareType;
 	}
 
-	function InputFields(): any {
+	const InputFields = memo(function InputFields(): any {
 		const [startDate, setStartDate] = useState(new Date());
 		const sensorNameRef = React.useRef<HTMLInputElement>(null);
 		const locationNameRef = React.useRef<HTMLInputElement>(null);
@@ -52,7 +52,6 @@ export default function SensorsList() {
         const [sensorNames, setSensorNames] = useState([]);
         const [userInput, setUserInput] = useState('');
         const [suggestions, setSuggestions] = useState([]);
-
         
         const handleInputChange = () => {
                 const input = sensorNameRef.current?.value || '';
@@ -67,6 +66,7 @@ export default function SensorsList() {
 
         const handleSuggestionClick = (suggestion: string) => {
                 setSuggestions([]);
+                setUserInput(suggestion);
                 getSensors(
                     suggestion,
                     timeframeRef.current?.value,
@@ -99,6 +99,7 @@ export default function SensorsList() {
 						value={userInput}
 						onChange={handleInputChange}
 						placeholder="Type to search..."
+                        defaultValue={sensorNameRef.current?.value}
 					/>
 					<ul className="dropdown-list">
 						{
@@ -160,7 +161,7 @@ export default function SensorsList() {
 				</div>
 			</div>
 		);
-	}
+	});
 
 	return (
 		<div>
