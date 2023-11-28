@@ -19,10 +19,12 @@ interface SelectedSensorsState {
 	selectedDatastream: any | null;
 	datastreamComparisonList: any[];
 	user: any | null;
+    locationData: any[];
 	setSelectedSensors: React.Dispatch<React.SetStateAction<any[]>>;
 	setSelectedDatastream: React.Dispatch<React.SetStateAction<any | null>>;
 	setDatastreamComparisonList: React.Dispatch<React.SetStateAction<any[]>>;
 	setUser: React.Dispatch<React.SetStateAction<any | null>>;
+    setLocationData: React.Dispatch<React.SetStateAction<any[]>>;
 }
 
 export const SensorContext = createContext<SelectedSensorsState | undefined>(undefined);
@@ -36,6 +38,7 @@ function SensorProvider({ children }: SensorProviderProps) {
 	const [selectedSensors, setSelectedSensors] = useState<any[]>([]);
 	const [datastreamComparisonList, setDatastreamComparisonList] = useState<any[]>([]);
 	const [user, setUser] = useState<any | null>(null);
+    const [locationData, setLocationData] = useState<any[]>([]);
 
 	return (
 		<SensorContext.Provider
@@ -43,7 +46,8 @@ function SensorProvider({ children }: SensorProviderProps) {
 				selectedDatastream, setSelectedDatastream,
 				selectedSensors, setSelectedSensors,
 				datastreamComparisonList, setDatastreamComparisonList,
-				user, setUser
+				user, setUser,
+                locationData, setLocationData
 			}}>
 			{children}
 		</SensorContext.Provider>

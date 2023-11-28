@@ -110,4 +110,4 @@ async function fetchObservations(id: number, resultAmount: number, startDate: Da
 
 }
 
-export { fetchSensors, fetchDatastreamContents, fetchSensor, fetchObservations, fetchSensorNames };
+export { fetchSensors, fetchDatastreamContents, fetchSensor, fetchObservations, fetchSensorNames, fetchUrl };

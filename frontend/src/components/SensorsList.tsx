@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { useState, useEffect, useMemo, memo } from 'react';
-import { fetchSensors, fetchDatastreamContents, fetchSensorNames } from './fetches';
+import { fetchSensors, fetchDatastreamContents, fetchSensorNames, fetchUrl } from './fetches';
 import '../CSS/SensorList.css';
 import { Link, useNavigate } from 'react-router-dom';
 import DatePicker, { registerLocale, setDefaultLocale } from "react-datepicker";
@@ -12,7 +12,7 @@ registerLocale("de", de);
 setDefaultLocale("de");
 
 export default function SensorsList() {
-	const { setSelectedSensors, setSelectedDatastream, setDatastreamComparisonList, selectedSensors } = useContext(SensorContext)!;
+	const { setSelectedSensors, setSelectedDatastream, setDatastreamComparisonList, selectedSensors} = useContext(SensorContext)!;
 	const [compareType, setCompareType] = useState(null);
 	const navigate = useNavigate(); // Use useNavigate instead of useHistory
 
@@ -22,10 +22,28 @@ export default function SensorsList() {
 		setDatastreamComparisonList((prevList: any) => [...prevList, fullDatastream]);
 	}
 
-	async function getSensors(name?: string, timeframe?: string, locationName?: string) {
+	async function getSensors(name?: string, timeframe?: string, locationName?: String, locations?: any) {
 		try {
-			const data = await fetchSensors(name, timeframe, locationName);
-			setSelectedSensors(data.value);
+            const data = await fetchSensors(name, timeframe, locationName);
+            const sensorsWithLocations = data.value.map((sensor: { name: any; }) => {
+                // Find the corresponding location based on sensorName
+                const matchingLocation = locations.find((location: { sensorName: any; }) => location.sensorName === sensor.name);
+    
+                // If a matching location is found, add Room and Faculty properties to the sensor
+                if (matchingLocation) {
+                    return {
+                        ...sensor,
+                        Room: matchingLocation.Room,
+                        Faculty: matchingLocation.Faculty,
+                    };
+                }
+    
+                // If no matching location is found, return the sensor as is
+                return sensor;
+            });
+			setSelectedSensors(sensorsWithLocations);
+            console.log(sensorsWithLocations);
+            console.log(locations);
 		} catch (error) {
 			console.error(error);
 		}
@@ -51,6 +69,8 @@ export default function SensorsList() {
 		const [sensorNames, setSensorNames] = useState([]);
 		const [userInput, setUserInput] = useState('');
 		const [suggestions, setSuggestions] = useState([]);
+        const [locations, setLocations] = useState<any[]>([]);
+
 
 		const handleInputChange = () => {
 			const input = sensorNameRef.current?.value || '';
@@ -69,7 +89,8 @@ export default function SensorsList() {
 			getSensors(
 				suggestion,
 				timeframeRef.current?.value,
-				locationNameRef.current?.value
+				locationNameRef.current?.value,
+                locations
 			)
 		};
 
@@ -79,6 +100,14 @@ export default function SensorsList() {
 					const sensorNameObject = await fetchSensorNames();
 					const sensorNameArray = sensorNameObject.value.map((item: { name: any; }) => item.name);
 					setSensorNames(sensorNameArray);
+                    const locationDataJson = await fetchUrl("https://suzbt4f677.execute-api.eu-central-1.amazonaws.com/alpha/userInfoFunction");
+                    const locationDataObject = JSON.parse(locationDataJson.body);
+                    const cleanedDataArray = locationDataObject.map((item: { sensorName: string; }) => {
+                        // Remove '\n' from the 'sensorName' property
+                        item.sensorName = item.sensorName.replace(/\n/g, '');
+                        return item;
+                    });
+                    setLocations(cleanedDataArray);
 				} catch (error) {
 					console.log(error);
 				}
@@ -87,10 +116,12 @@ export default function SensorsList() {
 		}, []);
 
 		return (
-
-			<div className='input-container'>
+			<div className="input-container">
 				<h4>Sensor explorer</h4>
-				<p>Search for sensors using name as filter, leave empty to show all.</p>
+				<p>
+					Search for sensors using name as filter, leave empty to show
+					all.
+				</p>
 				<div className="dropdown-container">
 					<input
 						type="text"
@@ -107,24 +138,23 @@ export default function SensorsList() {
 						{suggestions.slice(0, 10).map((suggestion, index) => (
 							<li
 								key={index}
-								onClick={() => handleSuggestionClick(suggestion)}
+								onClick={() =>
+									handleSuggestionClick(suggestion)
+								}
 							>
 								{suggestion}
 							</li>
 						))}
 					</ul>
 				</div>
-				{
-					/*
+				{/*
 						original search input field
 						<input
 							type="text"
 							ref={sensorNameRef}
 							defaultValue="hm sensor"
 						/>
-					*/
-				}
-
+					*/}
 
 				{/* 				<span>Location Name</span>
 				<input
@@ -150,11 +180,25 @@ export default function SensorsList() {
 					ref={sensorNameRef}
 					defaultValue="hm sensor"
 				/> */}
-				<div className='input-container-buttons'>
-					<button onClick={() => getSensors(sensorNameRef.current?.value, timeframeRef.current?.value, locationNameRef.current?.value)} className='input-container-red-button' style={{ marginTop: "10px", marginBottom: "10px" }}>
+				<div className="input-container-buttons">
+					<button
+						onClick={() =>
+							getSensors(
+								sensorNameRef.current?.value,
+								timeframeRef.current?.value,
+								locationNameRef.current?.value,
+								locations
+							)
+						}
+						className="input-container-red-button"
+						style={{ marginTop: "10px", marginBottom: "10px" }}
+					>
 						Fetch Sensors
 					</button>
-					<button onClick={() => navigate('/graphComparison')} className='input-container-green-button'>
+					<button
+						onClick={() => navigate("/graphComparison")}
+						className="input-container-green-button"
+					>
 						Graph Comparison
 					</button>
 				</div>
@@ -168,12 +212,18 @@ export default function SensorsList() {
 			{selectedSensors ? (
 				<div className='sensors-container'>
 					{selectedSensors.map((sensor: any) => (
-						<div className="sensor-container" key={sensor.name}>
+						<div className="sensor-container" key={sensor['@iot.id']}>
 							<div key={sensor.name}>
 								<div className='sensor-info'>
 									<h3 className='sensor-name'>{sensor.name}</h3>
 									<span style={{ marginBottom: '5px' }}>Sensor ID: {sensor['@iot.id']}</span>
 									<span style={{ marginBottom: '5px' }}>Description: {sensor.description}</span>
+                                    {sensor.Room && (
+                                        <>
+                                            <span style={{ marginBottom: '5px' }}>Faculty: {sensor.Faculty}</span>
+                                            <span style={{ marginBottom: '5px' }}>Room: {sensor.Room}</span>
+                                        </>
+                                    )}
 								</div>
 								{sensor.Datastreams.map((datastream: any) => (
 									<div key={datastream.name} className='button-container'>
