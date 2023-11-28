@@ -11,6 +11,7 @@ import './App.css';
 import './CSS/Filter.css';
 import { HomeComponent } from './components/HomeComponent';
 import { NavbarContainer } from './components/navbarContainer';
+import DatasetViewer from './components/DatasetViewer';
 
 
 interface SelectedSensorsState {
@@ -57,11 +58,11 @@ function App() {
 		<SensorProvider>
 			<Router>
 				<NavbarContainer />
-                {
-                    // commented out because it uses http://localhost:3000/ as it's callback url
-                    // move outside of tis block to test
-                    // <GitLabAuth />
-                }
+				{
+					// commented out because it uses http://localhost:3000/ as it's callback url
+					// move outside of tis block to test
+					// <GitLabAuth />
+				}
 				<Routes>
 					<Route path="/" element={<HomeComponent />} />
 					<Route path="/login" element={<PopupComponent />} />
@@ -71,6 +72,7 @@ function App() {
 							<ChartGraphComparison />
 						}
 					/>
+					<Route path="/selectedDataset" element={<DatasetViewer />} />
 					<Route path="/register" element={<RegisterComponent />} />
 					<Route path="/sensor/:sensorName" element={<SensorPage />} />
 				</Routes>

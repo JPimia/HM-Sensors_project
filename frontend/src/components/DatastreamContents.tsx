@@ -21,7 +21,7 @@ function DatastreamContent() {
 	const [endDate, setEndDate] = useState<Date | null>(null);
 	const [resultAmount, setResultAmount] = useState(20);
 	const [nextLink, setNextLink] = useState<undefined | null>();
-	const [isFetchObservations, setIsFetchObserevations] = useState(false);
+	const [isFetchObservations, setIsFetchObserevations] = useState(true);
 	const [downloadType, setDownloadType] = useState("csv");
 
 	useEffect(() => {
@@ -56,7 +56,7 @@ function DatastreamContent() {
 				unitOfMeasurement={selectedDatastream.unitOfMeasurement}
 			/>
 		);
-	}, [observations.value, selectedDatastream.unitOfMeasurement]);
+	}, [observations.value, selectedDatastream.unitOfMeasurement,]);
 
 
 	const observationList = useMemo(() => {
@@ -117,7 +117,7 @@ function DatastreamContent() {
 					<p>
 						Definition:{" "}
 						<a href={ObservedProperty.definition}>
-							{ObservedProperty.definition.length > 25 
+							{ObservedProperty.definition.length > 25
 								? ObservedProperty.definition.substring(0, 25) + "..."
 								: ObservedProperty.definition}
 						</a>

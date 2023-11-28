@@ -24,19 +24,19 @@ export default function SensorsList() {
 
 	async function getSensors(name?: string, timeframe?: string, locationName?: string) {
 		try {
-		const data = await fetchSensors(name, timeframe, locationName);
-		setSelectedSensors(data.value);
+			const data = await fetchSensors(name, timeframe, locationName);
+			setSelectedSensors(data.value);
 		} catch (error) {
-		console.error(error);
+			console.error(error);
 		}
 	}
 
 	async function getDatastream(datastream: { [key: string]: any }) {
 		try {
-		const data = await fetchDatastreamContents(datastream['@iot.selfLink']);
-		setSelectedDatastream(data);
+			const data = await fetchDatastreamContents(datastream['@iot.selfLink']);
+			setSelectedDatastream(data);
 		} catch (error) {
-		console.error(error);
+			console.error(error);
 		}
 	}
 
@@ -45,52 +45,51 @@ export default function SensorsList() {
 	}
 
 	const InputFields = memo(function InputFields(): any {
-		const [startDate, setStartDate] = useState(new Date());
 		const sensorNameRef = React.useRef<HTMLInputElement>(null);
 		const locationNameRef = React.useRef<HTMLInputElement>(null);
 		const timeframeRef = React.useRef<HTMLInputElement>(null);
-        const [sensorNames, setSensorNames] = useState([]);
-        const [userInput, setUserInput] = useState('');
-        const [suggestions, setSuggestions] = useState([]);
-        
-        const handleInputChange = () => {
-                const input = sensorNameRef.current?.value || '';
-                setUserInput(input);
+		const [sensorNames, setSensorNames] = useState([]);
+		const [userInput, setUserInput] = useState('');
+		const [suggestions, setSuggestions] = useState([]);
 
-                const filteredSuggestions = sensorNames.filter((name : string) =>
-                    name.toLowerCase().includes(input.toLowerCase())
-                );
+		const handleInputChange = () => {
+			const input = sensorNameRef.current?.value || '';
+			setUserInput(input);
 
-                setSuggestions(filteredSuggestions);
-        };
+			const filteredSuggestions = sensorNames.filter((name: string) =>
+				name.toLowerCase().includes(input.toLowerCase())
+			);
 
-        const handleSuggestionClick = (suggestion: string) => {
-                setSuggestions([]);
-                setUserInput(suggestion);
-                getSensors(
-                    suggestion,
-                    timeframeRef.current?.value,
-                    locationNameRef.current?.value
-                )
-        };
+			setSuggestions(filteredSuggestions);
+		};
 
-        useEffect(() => {
-            const handleFetch = async () => {
-                try {
-                    const sensorNameObject = await fetchSensorNames();
-                    const sensorNameArray = sensorNameObject.value.map((item: { name: any; }) => item.name);
-                    setSensorNames(sensorNameArray);
-                } catch (error) {
-                    console.log(error);
-                }
-            };
-            handleFetch();
-        }, []);
-    
+		const handleSuggestionClick = (suggestion: string) => {
+			setSuggestions([]);
+			setUserInput(suggestion);
+			getSensors(
+				suggestion,
+				timeframeRef.current?.value,
+				locationNameRef.current?.value
+			)
+		};
+
+		useEffect(() => {
+			const handleFetch = async () => {
+				try {
+					const sensorNameObject = await fetchSensorNames();
+					const sensorNameArray = sensorNameObject.value.map((item: { name: any; }) => item.name);
+					setSensorNames(sensorNameArray);
+				} catch (error) {
+					console.log(error);
+				}
+			};
+			handleFetch();
+		}, []);
+
 		return (
-			
+
 			<div className='input-container'>
-				<h4>Filter options:</h4>
+				<h4>Sensor explorer</h4>
 				<p>Search for sensors using name as filter, leave empty to show all.</p>
 				<div className="dropdown-container">
 					<input
@@ -99,7 +98,7 @@ export default function SensorsList() {
 						value={userInput}
 						onChange={handleInputChange}
 						placeholder="Type to search..."
-                        defaultValue={sensorNameRef.current?.value}
+						defaultValue={sensorNameRef.current?.value}
 					/>
 					<ul className="dropdown-list">
 						{
@@ -165,41 +164,41 @@ export default function SensorsList() {
 
 	return (
 		<div>
-		<InputFields />
-		{selectedSensors ? (
-			<div className='sensors-container'>
-			{selectedSensors.map((sensor: any) => (
-				<div className="sensor-container" key={sensor.name}>
-				<div key={sensor.name}>
-					<div className='sensor-info'>
-					<h3 className='sensor-name'>{sensor.name}</h3>
-					<span style={{ marginBottom: '5px' }}>Sensor ID: {sensor['@iot.id']}</span>
-					<span style={{ marginBottom: '5px' }}>Description: {sensor.description}</span>
-					</div>
-					{sensor.Datastreams.map((datastream: any) => (
-					<div key={datastream.name} className='button-container'>
-						<button onClick={() => getDatastream(datastream)} className='red-button'>
-						{datastream.name}
-						</button>
-						<button
-						onClick={() => handleCompareBtnClick(datastream)}
-						className='green-button'
-						style={{
-							backgroundColor: isCompareBtnDisabled(datastream.name, compareType) ? 'gray' : 'green',
-						}}
-						disabled={isCompareBtnDisabled(datastream.name, compareType)}
-						>
-						Add to compare
-						</button>
-					</div>
+			<InputFields />
+			{selectedSensors ? (
+				<div className='sensors-container'>
+					{selectedSensors.map((sensor: any) => (
+						<div className="sensor-container" key={sensor.name}>
+							<div key={sensor.name}>
+								<div className='sensor-info'>
+									<h3 className='sensor-name'>{sensor.name}</h3>
+									<span style={{ marginBottom: '5px' }}>Sensor ID: {sensor['@iot.id']}</span>
+									<span style={{ marginBottom: '5px' }}>Description: {sensor.description}</span>
+								</div>
+								{sensor.Datastreams.map((datastream: any) => (
+									<div key={datastream.name} className='button-container'>
+										<button onClick={() => getDatastream(datastream)} className='red-button'>
+											{datastream.name}
+										</button>
+										<button
+											onClick={() => handleCompareBtnClick(datastream)}
+											className='green-button'
+											style={{
+												backgroundColor: isCompareBtnDisabled(datastream.name, compareType) ? 'gray' : 'green',
+											}}
+											disabled={isCompareBtnDisabled(datastream.name, compareType)}
+										>
+											Add to compare
+										</button>
+									</div>
+								))}
+							</div>
+						</div>
 					))}
 				</div>
-				</div>
-			))}
-			</div>
-		) : (
-			<p>No sensors found</p>
-		)}
+			) : (
+				<p>No sensors found</p>
+			)}
 		</div>
 	);
 }

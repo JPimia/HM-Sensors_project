@@ -36,16 +36,23 @@ export function HomeComponent() {
             </div>
             <div style={{ display: 'flex' }}>
                 <div
-                    
+
                 >
                     <SensorsList />
                 </div>
-                <div style={{  overflowY: "hidden", overflowX: "scroll" }}>
+                <div style={{ overflowY: "hidden", overflowX: "scroll" }}>
                     {selectedDatastream ? (
                         <DatastreamContent />
-                    ) : null}
+                    ) : <div>
+                        <p>####################################################################################################</p>
+                        <p>Landing page stuff goes here</p>
+                        <p>INstructions for stuff</p>
+                        <p>maybe some links and stuff</p>
+                        <p>Tell us what to add</p>
+                        <p>####################################################################################################</p>
+                    </div>}
                 </div>
             </div>
-        </div>
+        </div >
     );
 }

@@ -1,0 +1,28 @@
+{
+	"parser": "@typescript-eslint/parser",
+	"plugins": [
+		"react",
+		"@typescript-eslint"
+	],
+	"extends": [
+		"eslint:recommended",
+		"plugin:react/recommended",
+		"plugin:@typescript-eslint/recommended"
+	],
+	"settings": {
+		"react": {
+		"version": "detect"
+		}
+	},
+	"rules": {
+    "semi": ["error", "always"],
+    "quotes": ["error", "single"],
+    "indent": ["error", "tab"],
+    "comma-dangle": ["error", "only-multiline"],
+	"@typescript-eslint/no-unused-vars": "warn",
+	"react/jsx-filename-extension": ["warn", { "extensions": [".jsx", ".tsx"] }],
+	"react/jsx-one-expression-per-line": "off",
+	"react/jsx-curly-spacing": ["error", {"when": "always", "allowMultiline": true}],
+	"no-mixed-spaces-and-tabs": "error"
+	}
+}
