@@ -6,6 +6,7 @@ import de from "date-fns/locale/de";
 import { RenderChart } from "./RenderChart";
 import { exportObservations } from "./exportObservations";
 import { SensorContext } from "../App";
+import "../CSS/ObservationButtons.css";
 
 registerLocale("de", de);
 setDefaultLocale("de");
@@ -147,7 +148,8 @@ function DatastreamContent() {
 							dateFormat="yyyy-MM-dd HH:mm:ss"
 							timeInputLabel="Time:"
 							showTimeInput
-						/>					<button onClick={() => setStartDate(new Date())}>
+						/>
+						<button onClick={() => setStartDate(new Date())} className="button">
 							Set to current time
 						</button>
 					</div>
@@ -158,12 +160,13 @@ function DatastreamContent() {
 						placeholder="20"
 						value={resultAmount}
 						onChange={(e) => setResultAmount(parseInt(e.target.value))}
+						className="input"
 					/>
-					<br />
+					
 					<button onClick={() => {
 						setNextLink(null)
 						setIsFetchObserevations(true);
-					}}>
+					}} className="button">
 						Fetch observations
 					</button>
 					<br />
@@ -172,17 +175,17 @@ function DatastreamContent() {
 						<button onClick={() => {
 							setNextLink(observations["@iot.nextLink"])
 							setIsFetchObserevations(true);
-						}}>
+						}} className="button" style={{marginLeft: "-1px"}}>
 							Show next page
 						</button>
-						<div style={{ display: "flex" }}>
-							<button onClick={() => exportObservations(observations, downloadType)}>
+						<div style={{ display: "flex" }} >
+							<button onClick={() => exportObservations(observations, downloadType)} className="button" style={{marginLeft: "-1px"}}>
 								Save observations as
 							</button>
 							<select
 								value={downloadType}
 								onChange={(e) => setDownloadType(e.target.value)
-								}>
+								} className="select">
 								<option value="csv">CSV</option>
 								<option value="json">JSON</option>
 							</select>
