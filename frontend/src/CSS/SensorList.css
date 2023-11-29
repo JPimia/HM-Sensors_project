@@ -45,16 +45,43 @@
     flex-wrap: wrap; /* Allow buttons to wrap to the next line if needed */
 }
 
-.red-button,
-.green-button {
+.red-button {
     flex-grow: 1;
     height: 35px;
     border-radius: 4px;
     margin: 0.2rem; /* Add margin between buttons */
     max-width: calc(48%); /* Ensure equal width for buttons with margin */
-    overflow: hidden; 
-    white-space: nowrap; 
-    text-overflow: ellipsis; 
+    overflow: hidden; /* Prevent text overflow */
+    white-space: nowrap;
+    border: 2px solid #979797;
+    border-radius: 10px;
+    text-overflow: ellipsis;
+    transition: transform 0.1s ease-in-out; /* Add a smooth transition effect */
+}
+
+.red-button:active {
+  transform: translateY(2px); /* Shift the button downward by 2 pixels when pressed */
+}
+
+.green-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-grow: 1;
+    height: 35px;
+    border-radius: 4px;
+    margin: 0.2rem; /* Add margin between buttons */
+    max-width: calc(50%); /* Ensure equal width for buttons with margin */
+    overflow: hidden; /* Prevent text overflow fff*/
+    white-space: nowrap;
+    border: 2px solid #979797;
+    border-radius: 10px;
+    text-overflow: ellipsis;
+    transition: transform 0.1s ease-in-out; /* Add a smooth transition effect */
+}
+
+.green-button:active {
+  transform: translateY(2px); /* Shift the button downward by 2 pixels when pressed */
 }
 
 .red-button {
