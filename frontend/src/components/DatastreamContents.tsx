@@ -74,9 +74,13 @@ function DatastreamContent() {
 						key={index}
 						style={{
 							display: "inline-block",
-							margin: "10px",
+							marginRight: "10px",
+							marginTop: "10px",
+							marginBottom: "10px",
+							marginLeft: "0px",
 							padding: "10px",
 							border: "1px solid gray",
+							borderRadius: "10px",
 							backgroundColor:
 								observation.resultTime === null || observation.result === null
 									? "darkred"

@@ -12,7 +12,6 @@ import {
 	Legend
 } from 'chart.js';
 
-
 type Observation = {
 	resultTime: string;
 	result: number;
