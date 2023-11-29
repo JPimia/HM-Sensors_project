@@ -162,7 +162,7 @@ function ChartGraphComparison() {
 					<p>No data streams selected.</p>
 				)}
 			</div>
-			<div style={{ width: "75%" }}>
+			<div style={{ width: "100%" }}>
 				<Line data={chartData} options={options} />
 			</div>
 		</div>

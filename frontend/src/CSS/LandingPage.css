@@ -1,0 +1,15 @@
+.landing-text {
+    background: linear-gradient(
+    to bottom right,
+    rgba(192, 149, 149, 0.8) 0%,
+    rgba(177, 166, 166, 0.6) 50%,
+    rgba(235, 105, 105, 0.8) 100%
+    );
+    height: 100%;
+    width: 100%;
+    padding: 0.5rem;
+    border: 4px solid #ccc;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Add a subtle shadow */
+    transition: box-shadow 0.3s ease; /* Add a smooth transition effect on box-shadow */
+}

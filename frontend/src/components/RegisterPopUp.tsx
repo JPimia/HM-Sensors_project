@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './PopupComponent.css';
 import bcrypt from 'bcryptjs-react';
-import '../CSS/RegisterPage.css';
+
 
 const RegisterComponent = () => {
 	const [username, setUsername] = useState('');

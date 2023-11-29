@@ -38,7 +38,7 @@
 }
 
 body {
-  background-color: rgb(241, 223, 223);
+  background-color: rgb(238, 221, 221);
   background-size: cover; /* Cover the entire viewport */
   background-position: center; /* Center the image */
   background-repeat: no-repeat; /* Do not repeat the image */

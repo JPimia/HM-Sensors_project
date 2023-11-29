@@ -231,7 +231,7 @@ export default function SensorsList() {
 	});
 
 	return (
-		<div>
+		<div style={{display: 'flex', flexDirection: "column", width: "25%"}}>
 			<InputFields />
 			{selectedSensors ? (
 				<div className='sensors-container'>
