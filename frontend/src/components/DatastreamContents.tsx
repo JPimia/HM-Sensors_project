@@ -137,6 +137,7 @@ function DatastreamContent() {
 							timeInputLabel="Time:"
 							showTimeInput
 							placeholderText="2000-01-01 00:00:00"
+							className="input"
 						/>
 					</div>
 					<div>
@@ -148,6 +149,7 @@ function DatastreamContent() {
 							dateFormat="yyyy-MM-dd HH:mm:ss"
 							timeInputLabel="Time:"
 							showTimeInput
+							className="input"
 						/>
 						<button onClick={() => setStartDate(new Date())} className="button">
 							Set to current time
