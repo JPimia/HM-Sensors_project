@@ -36,7 +36,7 @@ export function HomeComponent() {
             </Link> */}
 			</div>
 				<SensorsList />
-				<div style={{ overflowY: "hidden", overflowX: "hidden", width: "100%", paddingRight: "10px" }}>
+				<div style={{ overflowY: "scroll", overflowX: "hidden", width: "100%", paddingRight: "10px" }}>
 					{selectedDatastream ? (
 						<DatastreamContent />
 					) : (
