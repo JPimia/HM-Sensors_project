@@ -60,7 +60,7 @@ async function fetchSensors(name?: string, timeFrame?: string, location?: any): 
 
 	const url = `https://gi3.gis.lrg.tum.de/frost/v1.1/Sensors?
 	${filterOptions}
-	$top=10&
+	$top=1000&
 	$expand=Datastreams`;
 
 	const response = await fetchUrl(url);

@@ -22,14 +22,12 @@ export default function SensorsList() {
 		setDatastreamComparisonList((prevList: any) => [...prevList, fullDatastream]);
 	}
 
-	async function getSensors(name?: string, timeframe?: string, locationName?: String, locations?: any) {
+	async function getSensors(name?: string, timeframe?: string, locationName?: String, locations?: any, filter?: string) {
 		try {
             const data = await fetchSensors(name, timeframe, locationName);
-            const sensorsWithLocations = data.value.map((sensor: { name: any; }) => {
-                // Find the corresponding location based on sensorName
+            let sensorsWithLocations = data.value.map((sensor: { name: any; }) => {
+                // Looks for the corresponding location based on sensorName
                 const matchingLocation = locations.find((location: { sensorName: any; }) => location.sensorName === sensor.name);
-    
-                // If a matching location is found, add Room and Faculty properties to the sensor
                 if (matchingLocation) {
                     return {
                         ...sensor,
@@ -41,9 +39,12 @@ export default function SensorsList() {
                 // If no matching location is found, return the sensor as is
                 return sensor;
             });
+            if(filter && filter !== "Any"){
+                sensorsWithLocations = sensorsWithLocations.filter((sensor: { Faculty: string; }) => sensor.Faculty === filter);
+            }
+            
+            sensorsWithLocations.sort((a: { name: string; }, b: { name: any; }) => a.name.localeCompare(b.name));
 			setSelectedSensors(sensorsWithLocations);
-            console.log(sensorsWithLocations);
-            console.log(locations);
 		} catch (error) {
 			console.error(error);
 		}
@@ -70,6 +71,8 @@ export default function SensorsList() {
 		const [userInput, setUserInput] = useState('');
 		const [suggestions, setSuggestions] = useState([]);
         const [locations, setLocations] = useState<any[]>([]);
+        const [faculties, setFaculties] = useState<any[]>([]);
+        const [filter, setFilter] = useState('Any');
 
 
 		const handleInputChange = () => {
@@ -90,7 +93,8 @@ export default function SensorsList() {
 				suggestion,
 				timeframeRef.current?.value,
 				locationNameRef.current?.value,
-                locations
+                locations,
+                filter
 			)
 		};
 
@@ -103,11 +107,19 @@ export default function SensorsList() {
                     const locationDataJson = await fetchUrl("https://suzbt4f677.execute-api.eu-central-1.amazonaws.com/alpha/userInfoFunction");
                     const locationDataObject = JSON.parse(locationDataJson.body);
                     const cleanedDataArray = locationDataObject.map((item: { sensorName: string; }) => {
-                        // Remove '\n' from the 'sensorName' property
+                        // Remove '\n' from the 'sensorName' property that was added to some of them accidentally
                         item.sensorName = item.sensorName.replace(/\n/g, '');
                         return item;
                     });
                     setLocations(cleanedDataArray);
+                    const facultyArray: string[] = [];
+					cleanedDataArray.forEach((item: { Faculty: string }) => {
+						if (!facultyArray.includes(item.Faculty)) {
+							facultyArray.push(item.Faculty);
+						}
+					});
+                    facultyArray.sort();
+                    setFaculties(facultyArray);
 				} catch (error) {
 					console.log(error);
 				}
@@ -129,7 +141,6 @@ export default function SensorsList() {
 						value={userInput}
 						onChange={handleInputChange}
 						placeholder="Type to search..."
-						defaultValue={sensorNameRef.current?.value}
 					/>
 					<ul className="dropdown-list">
 						{
@@ -180,6 +191,18 @@ export default function SensorsList() {
 					ref={sensorNameRef}
 					defaultValue="hm sensor"
 				/> */}
+                <p>Filter results based on the faculty:</p>
+				<select
+					value={filter}
+					onChange={(e) => setFilter(e.target.value)}
+				>
+					<option value="Any">Any</option>
+					{faculties.map((faculty, index) => (
+						<option key={index} onClick={() => setFilter(faculty)}>
+							{faculty}
+						</option>
+					))}
+				</select>
 				<div className="input-container-buttons">
 					<button
 						onClick={() =>
@@ -187,7 +210,8 @@ export default function SensorsList() {
 								sensorNameRef.current?.value,
 								timeframeRef.current?.value,
 								locationNameRef.current?.value,
-								locations
+								locations,
+                                filter
 							)
 						}
 						className="input-container-red-button"
