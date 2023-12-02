@@ -12,7 +12,7 @@ registerLocale("de", de);
 setDefaultLocale("de");
 
 export default function SensorsList() {
-	const { setSelectedSensors, setSelectedDatastream, setDatastreamComparisonList, selectedSensors} = useContext(SensorContext)!;
+	const { setSelectedSensors, setSelectedDatastream, setDatastreamComparisonList, selectedSensors, user} = useContext(SensorContext)!;
 	const [compareType, setCompareType] = useState(null);
 	const navigate = useNavigate(); // Use useNavigate instead of useHistory
 
@@ -44,7 +44,11 @@ export default function SensorsList() {
             }
             
             sensorsWithLocations.sort((a: { name: string; }, b: { name: any; }) => a.name.localeCompare(b.name));
-			setSelectedSensors(sensorsWithLocations);
+            if(user){
+                setSelectedSensors(sensorsWithLocations);
+            } else {
+                setSelectedSensors(data.value);
+            }
 		} catch (error) {
 			console.error(error);
 		}
@@ -191,18 +195,26 @@ export default function SensorsList() {
 					ref={sensorNameRef}
 					defaultValue="hm sensor"
 				/> */}
-                <p>Filter results based on the faculty:</p>
-				<select
-					value={filter}
-					onChange={(e) => setFilter(e.target.value)}
-				>
-					<option value="Any">Any</option>
-					{faculties.map((faculty, index) => (
-						<option key={index} onClick={() => setFilter(faculty)}>
-							{faculty}
-						</option>
-					))}
-				</select>
+				{user ? (
+					<div>
+						<p>Filter results based on the faculty:</p>
+						<select
+							value={filter}
+							onChange={(e) => setFilter(e.target.value)}
+						>
+							<option value="Any">Any</option>
+							{faculties.map((faculty, index) => (
+								<option
+									key={index}
+									onClick={() => setFilter(faculty)}
+								>
+									{faculty}
+								</option>
+							))}
+						</select>
+					</div>
+				) : null}
+
 				<div className="input-container-buttons">
 					<button
 						onClick={() =>
@@ -211,7 +223,7 @@ export default function SensorsList() {
 								timeframeRef.current?.value,
 								locationNameRef.current?.value,
 								locations,
-                                filter
+								filter
 							)
 						}
 						className="input-container-red-button"
