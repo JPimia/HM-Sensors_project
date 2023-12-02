@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, ReactNode, Dispatch, FC, SetStateAction } from 'react';
+import React, { createContext, useState, useContext, ReactNode, Dispatch, FC, SetStateAction, useEffect } from 'react';
 import PopupComponent from './components/PopupComponent';
 import ChartGraphComparison from './components/chartGraphComparisons';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
@@ -12,6 +12,8 @@ import './CSS/Filter.css';
 import { HomeComponent } from './components/HomeComponent';
 import { NavbarContainer } from './components/navbarContainer';
 import DatasetViewer from './components/DatasetViewer';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
 
 interface SelectedSensorsState {
@@ -19,12 +21,12 @@ interface SelectedSensorsState {
 	selectedDatastream: any | null;
 	datastreamComparisonList: any[];
 	user: any | null;
-    locationData: any[];
+	locationData: any[];
 	setSelectedSensors: React.Dispatch<React.SetStateAction<any[]>>;
 	setSelectedDatastream: React.Dispatch<React.SetStateAction<any | null>>;
 	setDatastreamComparisonList: React.Dispatch<React.SetStateAction<any[]>>;
 	setUser: React.Dispatch<React.SetStateAction<any | null>>;
-    setLocationData: React.Dispatch<React.SetStateAction<any[]>>;
+	setLocationData: React.Dispatch<React.SetStateAction<any[]>>;
 }
 
 export const SensorContext = createContext<SelectedSensorsState | undefined>(undefined);
@@ -38,7 +40,7 @@ function SensorProvider({ children }: SensorProviderProps) {
 	const [selectedSensors, setSelectedSensors] = useState<any[]>([]);
 	const [datastreamComparisonList, setDatastreamComparisonList] = useState<any[]>([]);
 	const [user, setUser] = useState<any | null>(null);
-    const [locationData, setLocationData] = useState<any[]>([]);
+	const [locationData, setLocationData] = useState<any[]>([]);
 
 	return (
 		<SensorContext.Provider
@@ -47,7 +49,7 @@ function SensorProvider({ children }: SensorProviderProps) {
 				selectedSensors, setSelectedSensors,
 				datastreamComparisonList, setDatastreamComparisonList,
 				user, setUser,
-                locationData, setLocationData
+				locationData, setLocationData
 			}}>
 			{children}
 		</SensorContext.Provider>
@@ -55,7 +57,6 @@ function SensorProvider({ children }: SensorProviderProps) {
 }
 
 
-// App.tsx
 function App() {
 
 	return (
@@ -76,7 +77,11 @@ function App() {
 							<ChartGraphComparison />
 						}
 					/>
-					<Route path="/selectedDataset" element={<DatasetViewer />} />
+					<Route path="/selectedDataset" element={
+						<LocalizationProvider dateAdapter={AdapterDayjs}>
+							<DatasetViewer />
+						</LocalizationProvider>
+					} />
 					<Route path="/register" element={<RegisterComponent />} />
 					<Route path="/sensor/:sensorName" element={<SensorPage />} />
 				</Routes>

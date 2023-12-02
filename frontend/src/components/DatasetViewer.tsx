@@ -1,20 +1,184 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react';
-import { useTable, Column, useFilters } from 'react-table';
+import React, { useMemo, useContext, useState, useEffect } from 'react';
+import { MaterialReactTable, useMaterialReactTable, type MRT_ColumnDef } from 'material-react-table';
 import { SensorContext } from '../App';
+import { mkConfig, generateCsv, download } from 'export-to-csv';
+import { Button } from '@mui/material';
+import FileDownloadIcon from '@mui/icons-material/FileDownload';
 
-interface Data {
-	[key: string]: any;
-}
 
 function DatasetViewer() {
-	const {
-		selectedSensors
-	} = useContext(SensorContext)!;
-
-	// const [fullSensorData, setullSensorData] = useState<any[]>([]);
+	const { selectedSensors } = useContext(SensorContext)!;
 	const [tableContent, setTableContent] = useState<any[]>([]);
+	const [filterSelectOptions, setFilterSelectOptions] = useState<{ [key: string]: any[] }>({});
 
-	const fetchData = useCallback(async () => {
+	// Create table content and filter select options
+	useEffect(() => {
+		let newTableContent: any[] = [];
+		let newFilterSelectOptions: any = {
+			sensorId: [],
+			sensorName: [],
+			faculty: [],
+			room: [],
+			datastreamId: [],
+			datastreamName: [],
+			unitOfMeasurement: [],
+		};
+
+		selectedSensors.forEach((sensor: Sensor) => {
+			sensor.Datastreams.forEach((datastream: Datastream) => {
+				newTableContent.push({
+					sensorId: sensor['@iot.id'],
+					sensorName: sensor.name,
+					faculty: sensor.Faculty || '',
+					room: sensor.Room || '',
+					datastreamId: datastream['@iot.id'],
+					datastreamName: datastream.name,
+					unitOfMeasurement: datastream.unitOfMeasurement.name,
+					datastreamDescription: datastream.description,
+				});
+				newFilterSelectOptions.sensorId.push(sensor['@iot.id']);
+				newFilterSelectOptions.sensorName.push(sensor.name);
+				newFilterSelectOptions.faculty.push(sensor.Faculty || '');
+				newFilterSelectOptions.room.push(sensor.Room || '');
+				newFilterSelectOptions.datastreamId.push(datastream['@iot.id']);
+				newFilterSelectOptions.datastreamName.push(datastream.name);
+				newFilterSelectOptions.unitOfMeasurement.push(datastream.unitOfMeasurement.name);
+			});
+		});
+
+		setTableContent(newTableContent);
+
+		for (let key in newFilterSelectOptions) {
+			newFilterSelectOptions[key] = Array.from(new Set(newFilterSelectOptions[key]));
+		}
+		setFilterSelectOptions(newFilterSelectOptions);
+	}, [selectedSensors]);
+
+
+
+
+	const columns = useMemo<MRT_ColumnDef<any>[]>(() => [
+		{
+			id: 'sensorId',
+			header: 'Sensor ID',
+			accessorFn: (row) => row.sensorId,
+			filterVariant: 'multi-select',
+			filterSelectOptions: filterSelectOptions.sensorId,
+		},
+		{
+			id: 'sensorName',
+			header: 'Sensor Name',
+			accessorFn: (row) => row.sensorName,
+			filterVariant: 'multi-select',
+			filterSelectOptions: filterSelectOptions.sensorName,
+		},
+		{
+			id: 'faculty',
+			header: 'Faculty',
+			accessorFn: (row) => row.faculty,
+			filterVariant: 'multi-select',
+			filterSelectOptions: filterSelectOptions.faculty,
+		},
+		{
+			id: 'room',
+			header: 'Room',
+			accessorFn: (row) => row.room,
+			filterVariant: 'multi-select',
+			filterSelectOptions: filterSelectOptions.room,
+		},
+		{
+			id: 'datastreamId',
+			header: 'Datastream ID',
+			accessorFn: (row) => row.datastreamId,
+			filterVariant: 'multi-select',
+			filterSelectOptions: filterSelectOptions.datastreamId,
+		},
+		{
+			id: 'datastreamName',
+			header: 'Datastream Name',
+			accessorFn: (row) => row.datastreamName,
+			filterVariant: 'multi-select',
+			filterSelectOptions: filterSelectOptions.datastreamName,
+		},
+		{
+			id: 'unitOfMeasurement',
+			header: 'Unit of Measurement',
+			accessorFn: (row) => row.unitOfMeasurement,
+			filterVariant: 'multi-select',
+			filterSelectOptions: filterSelectOptions.unitOfMeasurement,
+		},
+	], [filterSelectOptions]);
+
+	const data = tableContent.map((row: any, index: number) => ({
+		id: index,
+		sensorId: row.sensorId,
+		sensorName: row.sensorName,
+		faculty: row.faculty,
+		room: row.room,
+		datastreamId: row.datastreamId,
+		datastreamName: row.datastreamName,
+		unitOfMeasurement: row.unitOfMeasurement,
+		timeRange: '', // This should be replaced with the actual data
+	}));
+
+	const table = useMaterialReactTable({
+		columns,
+		data,
+		enablePagination: false, // Enabling will break table for some unknown reason
+		initialState: { showColumnFilters: true },
+		renderTopToolbarCustomActions: () => (
+			<Button
+				onClick={() => handleExportRows(data)}
+				startIcon={<FileDownloadIcon />}
+			>
+				Export All Data
+			</Button>
+		),
+	});
+
+	return (
+		<div style={{ height: 400, width: '100%' }}>
+			<MaterialReactTable table={table} />
+		</div>
+	);
+}
+
+interface UnitOfMeasurement {
+	name: string;
+	symbol: string;
+	definition: string;
+}
+
+interface Datastream {
+	'@iot.selfLink': string;
+	'@iot.id': number;
+	name: string;
+	description: string;
+	observationType: string;
+	unitOfMeasurement: UnitOfMeasurement;
+	observedArea: {
+		type: string;
+		coordinates: [number, number];
+	};
+	phenomenonTime: string;
+	resultTime: string;
+}
+
+interface Sensor {
+	'@iot.selfLink': string;
+	'@iot.id': number;
+	name: string;
+	description: string;
+	encodingType: string;
+	metadata: string;
+	Datastreams: Datastream[];
+	'Datastreams@iot.navigationLink': string;
+	Room: string;
+	Faculty: string;
+}
+
+/*
+const fetchData = useCallback(async () => {
 		let allDatastreamsData: any = [];
 		for (const sensor of selectedSensors) {
 			try {
@@ -39,134 +203,7 @@ function DatasetViewer() {
 			}
 		}
 	}, [selectedSensors]);
-
-	useEffect(() => {
-		setTableContent([]);
-		fetchData();
-	}, [fetchData]);
-
-	function RenderTable() {
-		const columns = React.useMemo<Column<Data>[]>(() => [
-			{
-				Header: 'Datastream ID',
-				accessor: 'datastreamId',
-				Filter: SelectColumnFilter,
-				filter: 'equals',
-			},
-			{
-				Header: 'Sensor Name',
-				accessor: 'sensorName',
-				Filter: SelectColumnFilter,
-				filter: 'equals',
-			},
-			{
-				Header: 'Datastream Name',
-				accessor: 'datastreamName',
-				Filter: SelectColumnFilter,
-				filter: 'equals',
-			},
-			{
-				Header: 'Datastream Description',
-				accessor: 'datastreamDescription',
-				Filter: SelectColumnFilter,
-				filter: 'equals',
-			},
-			{
-				Header: 'Unit of Measurement',
-				accessor: 'unitOfMeasurement.name',
-				Filter: SelectColumnFilter,
-				filter: 'equals',
-			},
-		], []);
-
-		const {
-			getTableProps,
-			getTableBodyProps,
-			headerGroups,
-			rows,
-			prepareRow,
-		} = useTable<Data>({ columns, data: tableContent }, useFilters);
-
-		return (
-			<div>
-				<table {...getTableProps()} style={{ width: '100%', margin: '0 auto' }}>
-					<thead>
-						{headerGroups.map(headerGroup => (
-							<tr {...headerGroup.getHeaderGroupProps()}>
-								{headerGroup.headers.map((column: any) => (
-									<th {...column.getHeaderProps()}>
-										{column.render('Header')}
-										{column.canFilter ? column.render('Filter') : null}
-									</th>
-								))}
-							</tr>
-						))}
-					</thead>
-					<tbody {...getTableBodyProps()}>
-						{rows.map(row => {
-							prepareRow(row);
-							return (
-								<tr {...row.getRowProps()}>
-									{row.cells.map(cell => (
-										<td {...cell.getCellProps()}>{cell.render('Cell')}</td>
-									))}
-								</tr>
-							);
-						})}
-					</tbody>
-				</table>
-			</div>
-		);
-	}
-
-	return (
-		<div>
-			<RenderTable />
-		</div>
-	);
-}
-
-
-
-// Define a default UI for filtering
-interface FilterProps {
-	column: {
-		filterValue: string;
-		setFilter: (filterValue: string | undefined) => void;
-		preFilteredRows: any[];
-		id: string;
-	};
-}
-
-function SelectColumnFilter({
-	column: { filterValue, setFilter, preFilteredRows, id },
-}: FilterProps) {
-	// Get dropdown menu contents
-	const options = React.useMemo(() => {
-		const options = new Set<any>();
-		preFilteredRows.forEach(row => {
-			options.add(row.values[id]);
-		});
-		return Array.from(options);
-	}, [id, preFilteredRows]);
-
-	// Render dropdown menu
-	return (
-		<select
-			value={filterValue}
-			onChange={e => {
-				setFilter(e.target.value || undefined);
-			}}
-		>
-			<option value="">All</option>
-			{options.map((option, i) => (
-				<option key={i} value={option}>
-					{option}
-				</option>
-			))}
-		</select>
-	);
-}
+*/
 
 async function fetchDatastreamContents(datastream: string): Promise<any> {
 	const url = `${datastream}?
@@ -188,5 +225,18 @@ async function fetchUrl(url: string): Promise<any> {
 		throw new Error('Failed to fetch URL: ' + error);
 	}
 }
+
+const handleExportRows = (rows: any[]) => {
+	const rowData = rows.map((row) => row);
+	const csv = generateCsv(csvConfig)(rowData);
+	download(csvConfig)(csv);
+};
+
+const csvConfig = mkConfig({
+	fieldSeparator: ',',
+	decimalSeparator: '.',
+	useKeysAsHeaders: true,
+});
+
 
 export default DatasetViewer;
