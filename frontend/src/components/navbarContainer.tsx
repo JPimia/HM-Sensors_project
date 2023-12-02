@@ -5,6 +5,7 @@ import Nav from 'react-bootstrap/Nav';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import logo from '../images/SensorLogo.png';
 import { SensorContext } from '../App';
+import GitLabAuth from './GitLabAuth';
 
 export function NavbarContainer(): JSX.Element {
 	const {
@@ -31,6 +32,7 @@ export function NavbarContainer(): JSX.Element {
 						<Nav.Link as={Link} to="/selectedDataset" className="buttons">Download</Nav.Link>
 						{/* <Nav.Link href="/register" className="buttons">Register</Nav.Link> */}
 						{/* <Nav.Link onClick={() => setIsPopupVisible(!isPopupVisible)}>Login</Nav.Link> */}
+                        
 					</Nav>
 				</Navbar.Collapse>
 
@@ -51,7 +53,13 @@ export function NavbarContainer(): JSX.Element {
 						Log out
 					</NavDropdown.Item>
 				</NavDropdown> */}
-
+                {
+                    process.env.REACT_APP_GITLAB_CLIENT_ID ? (
+                        <div>
+                            <GitLabAuth />
+                        </div>
+                    ) : null
+                }
 			</Navbar>
 			{/* {isPopupVisible && <PopupComponent/>} */}
 		</div>
