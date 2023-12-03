@@ -1,20 +1,21 @@
 import React, { useMemo, useContext, useState, useEffect } from 'react';
-import { MaterialReactTable, useMaterialReactTable, type MRT_ColumnDef } from 'material-react-table';
+import { MaterialReactTable, useMaterialReactTable, type MRT_ColumnDef, MRT_Row, MRT_RowData } from 'material-react-table';
 import { SensorContext } from '../App';
 import { mkConfig, generateCsv, download } from 'export-to-csv';
-import { Button } from '@mui/material';
+import { Box, Button } from '@mui/material';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
+import { type FilterFn } from '@tanstack/react-table';
 
 
 function DatasetViewer() {
 	const { selectedSensors } = useContext(SensorContext)!;
-	const [tableContent, setTableContent] = useState<any[]>([]);
-	const [filterSelectOptions, setFilterSelectOptions] = useState<{ [key: string]: any[] }>({});
+	const [tableContent, setTableContent] = useState<TableContent[]>([]);
+	const [filterSelectOptions, setFilterSelectOptions] = useState<{ [key: string]: string[] }>({});
 
 	// Create table content and filter select options
 	useEffect(() => {
-		let newTableContent: any[] = [];
-		let newFilterSelectOptions: any = {
+		let newTableContent: TableContent[] = [];
+		let newFilterSelectOptions: { [key: string]: string[] } = {
 			sensorId: [],
 			sensorName: [],
 			faculty: [],
@@ -34,13 +35,13 @@ function DatasetViewer() {
 					datastreamId: datastream['@iot.id'],
 					datastreamName: datastream.name,
 					unitOfMeasurement: datastream.unitOfMeasurement.name,
-					datastreamDescription: datastream.description,
+					//datastreamDescription: datastream.description,
 				});
-				newFilterSelectOptions.sensorId.push(sensor['@iot.id']);
+				newFilterSelectOptions.sensorId.push(sensor['@iot.id'].toString());
 				newFilterSelectOptions.sensorName.push(sensor.name);
 				newFilterSelectOptions.faculty.push(sensor.Faculty || '');
 				newFilterSelectOptions.room.push(sensor.Room || '');
-				newFilterSelectOptions.datastreamId.push(datastream['@iot.id']);
+				newFilterSelectOptions.datastreamId.push(datastream['@iot.id'].toString());
 				newFilterSelectOptions.datastreamName.push(datastream.name);
 				newFilterSelectOptions.unitOfMeasurement.push(datastream.unitOfMeasurement.name);
 			});
@@ -52,16 +53,35 @@ function DatasetViewer() {
 			newFilterSelectOptions[key] = Array.from(new Set(newFilterSelectOptions[key]));
 		}
 		setFilterSelectOptions(newFilterSelectOptions);
+		console.log(newFilterSelectOptions);
 	}, [selectedSensors]);
 
 
+	type TableContent = {
+		sensorId: number;
+		sensorName: string;
+		faculty: string;
+		room: string;
+		datastreamId: number;
+		datastreamName: string;
+		unitOfMeasurement: string;
+	};
 
+	// Had to write custom filterFn
+	const arrExactMatch: FilterFn<any> = (
+		row,
+		columnId: string,
+		filterValue: string[]
+	) => {
+		if (filterValue.length === 0) return true;
+		return filterValue.includes(row.getValue(columnId));
+	}
 
-	const columns = useMemo<MRT_ColumnDef<any>[]>(() => [
+	const columns = useMemo<MRT_ColumnDef<TableContent>[]>(() => [
 		{
 			id: 'sensorId',
 			header: 'Sensor ID',
-			accessorFn: (row) => row.sensorId,
+			accessorFn: (row) => row.sensorId.toString(), // filters use string values
 			filterVariant: 'multi-select',
 			filterSelectOptions: filterSelectOptions.sensorId,
 		},
@@ -70,41 +90,43 @@ function DatasetViewer() {
 			header: 'Sensor Name',
 			accessorFn: (row) => row.sensorName,
 			filterVariant: 'multi-select',
+			filterFn: arrExactMatch,
 			filterSelectOptions: filterSelectOptions.sensorName,
 		},
 		{
-			id: 'faculty',
+			accessorKey: 'faculty',
 			header: 'Faculty',
-			accessorFn: (row) => row.faculty,
 			filterVariant: 'multi-select',
+			filterFn: arrExactMatch,
 			filterSelectOptions: filterSelectOptions.faculty,
 		},
 		{
-			id: 'room',
+			accessorKey: 'room',
 			header: 'Room',
-			accessorFn: (row) => row.room,
 			filterVariant: 'multi-select',
+			filterFn: arrExactMatch,
 			filterSelectOptions: filterSelectOptions.room,
 		},
 		{
 			id: 'datastreamId',
 			header: 'Datastream ID',
-			accessorFn: (row) => row.datastreamId,
+			accessorFn: (row) => row.datastreamId.toString(),
 			filterVariant: 'multi-select',
+			filterFn: arrExactMatch,
 			filterSelectOptions: filterSelectOptions.datastreamId,
 		},
 		{
-			id: 'datastreamName',
+			accessorKey: 'datastreamName',
 			header: 'Datastream Name',
-			accessorFn: (row) => row.datastreamName,
 			filterVariant: 'multi-select',
+			filterFn: arrExactMatch,
 			filterSelectOptions: filterSelectOptions.datastreamName,
 		},
 		{
-			id: 'unitOfMeasurement',
+			accessorKey: 'unitOfMeasurement',
 			header: 'Unit of Measurement',
-			accessorFn: (row) => row.unitOfMeasurement,
 			filterVariant: 'multi-select',
+			filterFn: arrExactMatch,
 			filterSelectOptions: filterSelectOptions.unitOfMeasurement,
 		},
 	], [filterSelectOptions]);
@@ -121,18 +143,65 @@ function DatasetViewer() {
 		timeRange: '', // This should be replaced with the actual data
 	}));
 
+	const csvConfig = mkConfig({
+		fieldSeparator: ',',
+		decimalSeparator: '.',
+		useKeysAsHeaders: true,
+	});
+
+	const handleExportRows = (rows: MRT_Row<TableContent>[]) => {
+		const rowData = rows.map((row) => row.original);
+		const csv = generateCsv(csvConfig)(rowData);
+		download(csvConfig)(csv);
+	}
+
 	const table = useMaterialReactTable({
 		columns,
 		data,
 		enablePagination: false, // Enabling will break table for some unknown reason
-		initialState: { showColumnFilters: true },
-		renderTopToolbarCustomActions: () => (
-			<Button
-				onClick={() => handleExportRows(data)}
-				startIcon={<FileDownloadIcon />}
+		enableRowSelection: true,
+		columnFilterDisplayMode: 'popover',
+		paginationDisplayMode: 'pages',
+		positionToolbarAlertBanner: 'bottom',
+		renderTopToolbarCustomActions: ({ table }) => (
+			<Box
+				sx={{
+					display: 'flex',
+					gap: '16px',
+					padding: '8px',
+					flexWrap: 'wrap',
+				}}
 			>
-				Export All Data
-			</Button>
+				<Button
+					disabled={table.getRowModel().rows.length === 0}
+					//export all rows as seen on the screen (respects pagination, sorting, filtering, etc.)
+					onClick={() => handleExportRows(table.getRowModel().rows)}
+					startIcon={<FileDownloadIcon />}
+				>
+					Export All Data
+				</Button>
+				{// Pagination is disabled, so this button is useless
+				/*<Button
+					disabled={table.getPrePaginationRowModel().rows.length === 0}
+					//export all rows, including from the next page, (still respects filtering and sorting)
+					onClick={() =>
+						handleExportRows(table.getPrePaginationRowModel().rows)
+					}
+					startIcon={<FileDownloadIcon />}
+				>
+					Export All Rows
+				</Button> */}
+				<Button
+					disabled={
+						!table.getIsSomeRowsSelected() && !table.getIsAllRowsSelected()
+					}
+					//only export selected rows
+					onClick={() => handleExportRows(table.getSelectedRowModel().rows)}
+					startIcon={<FileDownloadIcon />}
+				>
+					Export Selected Rows
+				</Button>
+			</Box>
 		),
 	});
 
@@ -194,7 +263,7 @@ const fetchData = useCallback(async () => {
 						observations
 					};
 				});
-
+	
 				const datastreamsData = await Promise.all(datastreamPromises);
 				allDatastreamsData = [...allDatastreamsData, ...datastreamsData];
 				setTableContent(allDatastreamsData);
@@ -226,17 +295,7 @@ async function fetchUrl(url: string): Promise<any> {
 	}
 }
 
-const handleExportRows = (rows: any[]) => {
-	const rowData = rows.map((row) => row);
-	const csv = generateCsv(csvConfig)(rowData);
-	download(csvConfig)(csv);
-};
 
-const csvConfig = mkConfig({
-	fieldSeparator: ',',
-	decimalSeparator: '.',
-	useKeysAsHeaders: true,
-});
 
 
 export default DatasetViewer;
