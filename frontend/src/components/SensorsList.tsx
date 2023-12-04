@@ -7,6 +7,7 @@ import { registerLocale, setDefaultLocale } from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import de from "date-fns/locale/de";
 import { SensorContext } from '../App';
+import "../CSS/InputContainer.css";
 
 registerLocale("de", de);
 setDefaultLocale("de");
@@ -107,13 +108,13 @@ export default function SensorsList() {
 		useEffect(() => {
             const handleClickOutside = (event: MouseEvent) => {
                 const dropdownContainer = document.querySelector('.dropdown-container');
-          
+
                 if (dropdownContainer && !dropdownContainer.contains(event.target as Node)) {
-                  setDropdownOpen(false);
+					setDropdownOpen(false);
                 }
-              };
-          
-              document.addEventListener('click', handleClickOutside);
+			};
+
+			document.addEventListener('click', handleClickOutside);
             
 			const handleFetch = async () => {
 				try {
@@ -144,12 +145,12 @@ export default function SensorsList() {
 
             return () => {
                 document.removeEventListener('click', handleClickOutside);
-              };
+			};
 		}, []);
 
         const toggleDropdown = () => {
             setDropdownOpen(!dropdownOpen);
-          };
+		};
 
 		return (
 			<div className="input-container">
@@ -167,6 +168,7 @@ export default function SensorsList() {
                             onChange={handleInputChange}
                             placeholder="Type to search..."
                             onClick={toggleDropdown}
+							className='input'
                         />
                         <button
                             onClick={() =>
@@ -185,17 +187,17 @@ export default function SensorsList() {
                         </button>
                     </div>
                     {dropdownOpen && (
-          <ul className="dropdown-list">
-            {suggestions.slice(0, 10).map((suggestion, index) => (
-              <li
-                key={index}
-                onClick={() => handleSuggestionClick(suggestion)}
-              >
-                {suggestion}
-              </li>
-            ))}
-          </ul>
-        )}
+						<ul className="dropdown-list">
+							{suggestions.slice(0, 10).map((suggestion, index) => (
+							<li
+								key={index}
+								onClick={() => handleSuggestionClick(suggestion)}
+							>
+								{suggestion}
+							</li>
+							))}
+						</ul>
+					)}
 				</div>
 				{/*
 						original search input field
@@ -231,12 +233,13 @@ export default function SensorsList() {
 					defaultValue="hm sensor"
 				/> */}
 				{user ? (
-					<div className="filter-container">
-						<p style={{marginRight: 25}}>Filter results based on the faculty:</p>
+					<div style={{display: "flex"}}>
+						<p style={{width: "71%", height: "5px", marginTop: "10px"}}>Filter results based on the faculty:</p>
 						<select
 							value={filter}
 							onChange={(e) => setFilter(e.target.value)}
                             style={{height: 30}}
+							className='select'
 						>
 							<option value="Any">Any</option>
 							{faculties.map((faculty, index) => (
