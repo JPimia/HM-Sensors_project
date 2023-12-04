@@ -1,9 +1,9 @@
 import React, { useContext } from 'react';
-import { useState, useEffect, useMemo, memo } from 'react';
+import { useState, useEffect, memo } from 'react';
 import { fetchSensors, fetchDatastreamContents, fetchSensorNames, fetchUrl } from './fetches';
 import '../CSS/SensorList.css';
-import { Link, useNavigate } from 'react-router-dom';
-import DatePicker, { registerLocale, setDefaultLocale } from "react-datepicker";
+import { useNavigate } from 'react-router-dom';
+import { registerLocale, setDefaultLocale } from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import de from "date-fns/locale/de";
 import { SensorContext } from '../App';
@@ -12,7 +12,7 @@ registerLocale("de", de);
 setDefaultLocale("de");
 
 export default function SensorsList() {
-	const { setSelectedSensors, setSelectedDatastream, setDatastreamComparisonList, selectedSensors, user} = useContext(SensorContext)!;
+	const { setSelectedSensors, setSelectedDatastream, setDatastreamComparisonList, selectedSensors, user } = useContext(SensorContext)!;
 	const [compareType, setCompareType] = useState(null);
 	const navigate = useNavigate(); // Use useNavigate instead of useHistory
 
@@ -24,31 +24,31 @@ export default function SensorsList() {
 
 	async function getSensors(name?: string, timeframe?: string, locationName?: String, locations?: any, filter?: string) {
 		try {
-            const data = await fetchSensors(name, timeframe, locationName);
-            let sensorsWithLocations = data.value.map((sensor: { name: any; }) => {
-                // Looks for the corresponding location based on sensorName
-                const matchingLocation = locations.find((location: { sensorName: any; }) => location.sensorName === sensor.name);
-                if (matchingLocation) {
-                    return {
-                        ...sensor,
-                        Room: matchingLocation.Room,
-                        Faculty: matchingLocation.Faculty,
-                    };
-                }
-    
-                // If no matching location is found, return the sensor as is
-                return sensor;
-            });
-            if(filter && filter !== "Any"){
-                sensorsWithLocations = sensorsWithLocations.filter((sensor: { Faculty: string; }) => sensor.Faculty === filter);
-            }
-            
-            sensorsWithLocations.sort((a: { name: string; }, b: { name: any; }) => a.name.localeCompare(b.name));
-            if(user){
-                setSelectedSensors(sensorsWithLocations);
-            } else {
-                setSelectedSensors(data.value);
-            }
+			const data = await fetchSensors(name, timeframe, locationName);
+			let sensorsWithLocations = data.value.map((sensor: { name: any; }) => {
+				// Looks for the corresponding location based on sensorName
+				const matchingLocation = locations.find((location: { sensorName: any; }) => location.sensorName === sensor.name);
+				if (matchingLocation) {
+					return {
+						...sensor,
+						Room: matchingLocation.Room,
+						Faculty: matchingLocation.Faculty,
+					};
+				}
+
+				// If no matching location is found, return the sensor as is
+				return sensor;
+			});
+			if (filter && filter !== "Any") {
+				sensorsWithLocations = sensorsWithLocations.filter((sensor: { Faculty: string; }) => sensor.Faculty === filter);
+			}
+
+			sensorsWithLocations.sort((a: { name: string; }, b: { name: any; }) => a.name.localeCompare(b.name));
+			if (user) {
+				setSelectedSensors(sensorsWithLocations);
+			} else {
+				setSelectedSensors(data.value);
+			}
 		} catch (error) {
 			console.error(error);
 		}
@@ -74,9 +74,9 @@ export default function SensorsList() {
 		const [sensorNames, setSensorNames] = useState([]);
 		const [userInput, setUserInput] = useState('');
 		const [suggestions, setSuggestions] = useState([]);
-        const [locations, setLocations] = useState<any[]>([]);
-        const [faculties, setFaculties] = useState<any[]>([]);
-        const [filter, setFilter] = useState('Any');
+		const [locations, setLocations] = useState<any[]>([]);
+		const [faculties, setFaculties] = useState<any[]>([]);
+		const [filter, setFilter] = useState('Any');
 
 
 		const handleInputChange = () => {
@@ -97,8 +97,8 @@ export default function SensorsList() {
 				suggestion,
 				timeframeRef.current?.value,
 				locationNameRef.current?.value,
-                locations,
-                filter
+				locations,
+				filter
 			)
 		};
 
@@ -108,22 +108,22 @@ export default function SensorsList() {
 					const sensorNameObject = await fetchSensorNames();
 					const sensorNameArray = sensorNameObject.value.map((item: { name: any; }) => item.name);
 					setSensorNames(sensorNameArray);
-                    const locationDataJson = await fetchUrl("https://suzbt4f677.execute-api.eu-central-1.amazonaws.com/alpha/userInfoFunction");
-                    const locationDataObject = JSON.parse(locationDataJson.body);
-                    const cleanedDataArray = locationDataObject.map((item: { sensorName: string; }) => {
-                        // Remove '\n' from the 'sensorName' property that was added to some of them accidentally
-                        item.sensorName = item.sensorName.replace(/\n/g, '');
-                        return item;
-                    });
-                    setLocations(cleanedDataArray);
-                    const facultyArray: string[] = [];
+					const locationDataJson = await fetchUrl("https://suzbt4f677.execute-api.eu-central-1.amazonaws.com/alpha/userInfoFunction");
+					const locationDataObject = JSON.parse(locationDataJson.body);
+					const cleanedDataArray = locationDataObject.map((item: { sensorName: string; }) => {
+						// Remove '\n' from the 'sensorName' property that was added to some of them accidentally
+						item.sensorName = item.sensorName.replace(/\n/g, '');
+						return item;
+					});
+					setLocations(cleanedDataArray);
+					const facultyArray: string[] = [];
 					cleanedDataArray.forEach((item: { Faculty: string }) => {
 						if (!facultyArray.includes(item.Faculty)) {
 							facultyArray.push(item.Faculty);
 						}
 					});
-                    facultyArray.sort();
-                    setFaculties(facultyArray);
+					facultyArray.sort();
+					setFaculties(facultyArray);
 				} catch (error) {
 					console.log(error);
 				}
@@ -243,7 +243,7 @@ export default function SensorsList() {
 	});
 
 	return (
-		<div style={{display: 'flex', flexDirection: "column", width: "25%"}}>
+		<div style={{ display: 'flex', flexDirection: "column", width: "25%" }}>
 			<InputFields />
 			{selectedSensors ? (
 				<div className='sensors-container'>
@@ -254,12 +254,12 @@ export default function SensorsList() {
 									<h3 className='sensor-name'>{sensor.name}</h3>
 									<span style={{ marginBottom: '5px' }}>Sensor ID: {sensor['@iot.id']}</span>
 									<span style={{ marginBottom: '5px' }}>Description: {sensor.description}</span>
-                                    {sensor.Room && (
-                                        <>
-                                            <span style={{ marginBottom: '5px' }}>Faculty: {sensor.Faculty}</span>
-                                            <span style={{ marginBottom: '5px' }}>Room: {sensor.Room}</span>
-                                        </>
-                                    )}
+									{sensor.Room && (
+										<>
+											<span style={{ marginBottom: '5px' }}>Faculty: {sensor.Faculty}</span>
+											<span style={{ marginBottom: '5px' }}>Room: {sensor.Room}</span>
+										</>
+									)}
 								</div>
 								{sensor.Datastreams.map((datastream: any) => (
 									<div key={datastream.name} className='button-container'>
