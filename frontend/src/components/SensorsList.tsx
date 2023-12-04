@@ -77,6 +77,7 @@ export default function SensorsList() {
 		const [locations, setLocations] = useState<any[]>([]);
 		const [faculties, setFaculties] = useState<any[]>([]);
 		const [filter, setFilter] = useState('Any');
+        const [dropdownOpen, setDropdownOpen] = useState(false);
 
 
 		const handleInputChange = () => {
@@ -104,6 +105,16 @@ export default function SensorsList() {
 		};
 
 		useEffect(() => {
+            const handleClickOutside = (event: MouseEvent) => {
+                const dropdownContainer = document.querySelector('.dropdown-container');
+          
+                if (dropdownContainer && !dropdownContainer.contains(event.target as Node)) {
+                  setDropdownOpen(false);
+                }
+              };
+          
+              document.addEventListener('click', handleClickOutside);
+            
 			const handleFetch = async () => {
 				try {
 					const sensorNameObject = await fetchSensorNames();
@@ -130,7 +141,15 @@ export default function SensorsList() {
 				}
 			};
 			handleFetch();
+
+            return () => {
+                document.removeEventListener('click', handleClickOutside);
+              };
 		}, []);
+
+        const toggleDropdown = () => {
+            setDropdownOpen(!dropdownOpen);
+          };
 
 		return (
 			<div className="input-container">
@@ -147,6 +166,7 @@ export default function SensorsList() {
                             value={userInput}
                             onChange={handleInputChange}
                             placeholder="Type to search..."
+                            onClick={toggleDropdown}
                         />
                         <button
                             onClick={() =>
@@ -164,21 +184,18 @@ export default function SensorsList() {
                             Search
                         </button>
                     </div>
-					<ul className="dropdown-list">
-						{
-							// Currently only shows the first 10 items in the suggestion array
-						}
-						{suggestions.slice(0, 10).map((suggestion, index) => (
-							<li
-								key={index}
-								onClick={() =>
-									handleSuggestionClick(suggestion)
-								}
-							>
-								{suggestion}
-							</li>
-						))}
-					</ul>
+                    {dropdownOpen && (
+          <ul className="dropdown-list">
+            {suggestions.slice(0, 10).map((suggestion, index) => (
+              <li
+                key={index}
+                onClick={() => handleSuggestionClick(suggestion)}
+              >
+                {suggestion}
+              </li>
+            ))}
+          </ul>
+        )}
 				</div>
 				{/*
 						original search input field
