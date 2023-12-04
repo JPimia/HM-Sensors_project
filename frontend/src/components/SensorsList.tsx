@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { useState, useEffect, memo } from 'react';
-import { fetchSensors, fetchDatastreamContents, fetchSensorNames, fetchUrl } from './fetches';
+import { fetchSensors, fetchDatastreamContents, fetchSensorNames, fetchUrl, fetchSensor } from './fetches';
 import '../CSS/SensorList.css';
 import { useNavigate } from 'react-router-dom';
 import { registerLocale, setDefaultLocale } from "react-datepicker";
@@ -22,9 +22,9 @@ export default function SensorsList() {
 		setDatastreamComparisonList((prevList: any) => [...prevList, fullDatastream]);
 	}
 
-	async function getSensors(name?: string, timeframe?: string, locationName?: String, locations?: any, filter?: string) {
+	async function getSensors(name?: string, timeframe?: string, locationName?: String, locations?: any, filter?: string, dropdown?: boolean) {
 		try {
-			const data = await fetchSensors(name, timeframe, locationName);
+			const data = await fetchSensors(name, dropdown);
 			let sensorsWithLocations = data.value.map((sensor: { name: any; }) => {
 				// Looks for the corresponding location based on sensorName
 				const matchingLocation = locations.find((location: { sensorName: any; }) => location.sensorName === sensor.name);
@@ -98,7 +98,8 @@ export default function SensorsList() {
 				timeframeRef.current?.value,
 				locationNameRef.current?.value,
 				locations,
-				filter
+				filter,
+                true
 			)
 		};
 
@@ -154,7 +155,8 @@ export default function SensorsList() {
                                     timeframeRef.current?.value,
                                     locationNameRef.current?.value,
                                     locations,
-                                    filter
+                                    filter,
+                                    false
                                 )
                             }
                             className="input-container-red-button"
