@@ -15,9 +15,9 @@ async function fetchUrl(url: string): Promise<any> {
 	}
 }
 
-async function fetchSensorNames(): Promise<any>{
-    try {
-        // Fetches 1000 sensor names
+async function fetchSensorNames(): Promise<any> {
+	try {
+		// Fetches 1000 sensor names
 		const response = await fetch("https://gi3.gis.lrg.tum.de/frost/v1.1/Sensors?$select=name&$top=1000");
 		const data = await response.json();
 		return data;
@@ -80,11 +80,12 @@ async function fetchDatastreamContents(datastream: string): Promise<any> {
 }
 
 
-// TODO: make startdate optional, default should not use timeframes
-async function fetchObservations(id: number, resultAmount: number, startDate: Date, endDate?: Date | null, nextUrl?: string | null): Promise<any> {
+
+
+async function fetchObservations(id: number, resultAmount: number, startDate?: Date | null, endDate?: Date | null, nextUrl?: string | null): Promise<any> {
 	// Returns {value:[],@iot.nextLink:string}
 
-	const formattedStartDate = startDate.toISOString();
+	const formattedStartDate = startDate ? startDate.toISOString() : null;
 	const formattedEndDate = endDate ? endDate.toISOString() : null;
 	// Use nextUrl if it exists
 	let url = nextUrl ? nextUrl : `

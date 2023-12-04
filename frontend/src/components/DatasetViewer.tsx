@@ -1,16 +1,29 @@
-import React, { useMemo, useContext, useState, useEffect } from 'react';
-import { MaterialReactTable, useMaterialReactTable, type MRT_ColumnDef, MRT_Row, MRT_RowData } from 'material-react-table';
+import React, { useMemo, useContext, useState, useEffect, useRef, } from 'react';
+import { MaterialReactTable, useMaterialReactTable, type MRT_ColumnDef, MRT_Row, } from 'material-react-table';
 import { SensorContext } from '../App';
 import { mkConfig, generateCsv, download } from 'export-to-csv';
 import { Box, Button } from '@mui/material';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import { type FilterFn } from '@tanstack/react-table';
-
+import moment from 'moment';
+import DatePicker, { registerLocale, setDefaultLocale } from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import de from "date-fns/locale/de";
+import { fetchObservations } from './fetches';
+registerLocale("de", de);
+setDefaultLocale("de");
 
 function DatasetViewer() {
 	const { selectedSensors } = useContext(SensorContext)!;
 	const [tableContent, setTableContent] = useState<TableContent[]>([]);
 	const [filterSelectOptions, setFilterSelectOptions] = useState<{ [key: string]: string[] }>({});
+	const [loadingStatus, setLoadingStatus] = useState<{ initiated: boolean; loading: boolean; time: number; }>({ initiated: false, loading: false, time: 0 });
+	const intervalRef = useRef<NodeJS.Timeout | null>(null);
+	const [resultAmount, setResultAmount] = useState(1000);
+	const [startDate, setStartDate] = useState<Date | null>(new Date());
+	const [endDate, setEndDate] = useState<Date | null>(null);
+
+
 
 	// Create table content and filter select options
 	useEffect(() => {
@@ -35,6 +48,7 @@ function DatasetViewer() {
 					datastreamId: datastream['@iot.id'],
 					datastreamName: datastream.name,
 					unitOfMeasurement: datastream.unitOfMeasurement.name,
+					datastreamUrl: datastream['@iot.selfLink'],
 					//datastreamDescription: datastream.description,
 				});
 				newFilterSelectOptions.sensorId.push(sensor['@iot.id'].toString());
@@ -53,19 +67,9 @@ function DatasetViewer() {
 			newFilterSelectOptions[key] = Array.from(new Set(newFilterSelectOptions[key]));
 		}
 		setFilterSelectOptions(newFilterSelectOptions);
-		console.log(newFilterSelectOptions);
 	}, [selectedSensors]);
 
 
-	type TableContent = {
-		sensorId: number;
-		sensorName: string;
-		faculty: string;
-		room: string;
-		datastreamId: number;
-		datastreamName: string;
-		unitOfMeasurement: string;
-	};
 
 	// Had to write custom filterFn
 	const arrExactMatch: FilterFn<any> = (
@@ -76,6 +80,7 @@ function DatasetViewer() {
 		if (filterValue.length === 0) return true;
 		return filterValue.includes(row.getValue(columnId));
 	}
+
 
 	const columns = useMemo<MRT_ColumnDef<TableContent>[]>(() => [
 		{
@@ -92,20 +97,6 @@ function DatasetViewer() {
 			filterVariant: 'multi-select',
 			filterFn: arrExactMatch,
 			filterSelectOptions: filterSelectOptions.sensorName,
-		},
-		{
-			accessorKey: 'faculty',
-			header: 'Faculty',
-			filterVariant: 'multi-select',
-			filterFn: arrExactMatch,
-			filterSelectOptions: filterSelectOptions.faculty,
-		},
-		{
-			accessorKey: 'room',
-			header: 'Room',
-			filterVariant: 'multi-select',
-			filterFn: arrExactMatch,
-			filterSelectOptions: filterSelectOptions.room,
 		},
 		{
 			id: 'datastreamId',
@@ -129,7 +120,32 @@ function DatasetViewer() {
 			filterFn: arrExactMatch,
 			filterSelectOptions: filterSelectOptions.unitOfMeasurement,
 		},
+		{
+			accessorKey: 'faculty',
+			header: 'Faculty',
+			filterVariant: 'multi-select',
+			filterFn: arrExactMatch,
+			filterSelectOptions: filterSelectOptions.faculty,
+		},
+		{
+			accessorKey: 'room',
+			header: 'Room',
+			filterVariant: 'multi-select',
+			filterFn: arrExactMatch,
+			filterSelectOptions: filterSelectOptions.room,
+		},
+		{
+			id: 'observationCount',
+			header: 'Observation Count',
+			accessorFn: (row) => row.observationCount?.toString(),
+		},
+		{
+			id: 'firstObservationResult',
+			header: 'First Result',
+			accessorFn: (row) => row.firstObservationResult,
+		},
 	], [filterSelectOptions]);
+
 
 	const data = tableContent.map((row: any, index: number) => ({
 		id: index,
@@ -141,19 +157,110 @@ function DatasetViewer() {
 		datastreamName: row.datastreamName,
 		unitOfMeasurement: row.unitOfMeasurement,
 		timeRange: '', // This should be replaced with the actual data
+		datastreamUrl: row.datastreamUrl,
+		firstObservationResult: row.firstObservationResult,
+		observationCount: row.observationCount,
 	}));
 
-	const csvConfig = mkConfig({
-		fieldSeparator: ',',
-		decimalSeparator: '.',
-		useKeysAsHeaders: true,
-	});
+
+	type TableContent = {
+		sensorId: number;
+		sensorName: string;
+		faculty: string;
+		room: string;
+		datastreamId: number;
+		datastreamName: string;
+		unitOfMeasurement: string;
+		datastreamUrl: string;
+		observations?: { '@iot.id': number, resultTime: string | null, result: string | null }[];
+		observationCount?: number;
+		firstObservationResult?: string;
+	};
+
+
+	const handleFetchObservations = async (rows: MRT_Row<TableContent>[]) => {
+		setLoadingStatus({ initiated: true, loading: true, time: 0 });
+		intervalRef.current = setInterval(() => {
+			setLoadingStatus((prevStatus) => ({ ...prevStatus, time: prevStatus.time + 1 }));
+		}, 1000);
+
+		const fetchPromises = rows.map(async (row: any) => {
+			try {
+				//id: number, resultAmount: number, startDate: Date, endDate ?: Date | null, nextUrl ?: string | null
+				const result = await fetchObservations(row.original.datastreamId, resultAmount, startDate, endDate);
+				const observations = result.value
+				return {
+					...row.original,
+					observations: observations,
+					observationCount: observations.length,
+					firstObservationResult: observations[0].result !== null && observations[0].result !== undefined ? observations[0].result : null,
+				};
+			} catch (error) {
+				console.error(`Error fetching observations for row: ${row.sensorName}`, error);
+			}
+		});
+
+		const updatedRows = await Promise.all(fetchPromises);
+		setTableContent(updatedRows);
+		clearInterval(intervalRef.current!);
+		setLoadingStatus({ initiated: true, loading: false, time: 0 });
+	}
+
 
 	const handleExportRows = (rows: MRT_Row<TableContent>[]) => {
-		const rowData = rows.map((row) => row.original);
-		const csv = generateCsv(csvConfig)(rowData);
-		download(csvConfig)(csv);
+		// Build data for sensors.csv
+		const sensorData = rows.map((row, index) => {
+			const originalRow = row.original;
+
+			return {
+				datastreamId: index + 1,  // Assigning new id
+				sensorId: originalRow.sensorId,
+				sensorName: originalRow.sensorName,
+				faculty: originalRow.faculty,
+				room: originalRow.room,
+				datastreamName: originalRow.datastreamName,
+				unitOfMeasurement: originalRow.unitOfMeasurement,
+				observationCount: originalRow.observationCount !== null && originalRow.observationCount !== undefined ? originalRow.observationCount : [],
+			};
+		});
+		// Build data for observations.csv
+		const observationData = rows.flatMap((row, index) => {
+			const originalRow = row.original;
+			const observations = tableContent.find((content) => content.datastreamUrl === originalRow.datastreamUrl)?.observations;
+
+			return observations ? formatObservations(observations, index + 1) : [];
+		});
+
+
+
+
+		let csvConfig = mkConfig({
+			fieldSeparator: ',',
+			decimalSeparator: '.',
+			useKeysAsHeaders: true,
+			filename: 'SensorData',
+		});
+		const csvSensors = generateCsv(csvConfig)(sensorData);
+		download(csvConfig)(csvSensors);
+
+		csvConfig = mkConfig({
+			fieldSeparator: ',',
+			decimalSeparator: '.',
+			useKeysAsHeaders: true,
+			filename: 'Observations',
+		});
+		const csvObservations = generateCsv(csvConfig)(observationData);
+		download(csvConfig)(csvObservations);
+
+		function formatObservations(observations: any, datastreamId: number) {
+			return observations.map(({ resultTime, result }: { resultTime: string; result: string; }) => ({
+				datastreamId: datastreamId,
+				resultTime: resultTime ? moment(resultTime).format('DD-MM-YYYY HH:mm') : '',
+				result: result !== null && result !== undefined ? parseFloat(result) : '' ? parseFloat(result) : ''
+			})).filter(Boolean);
+		}
 	}
+
 
 	const table = useMaterialReactTable({
 		columns,
@@ -171,16 +278,16 @@ function DatasetViewer() {
 					padding: '8px',
 					flexWrap: 'wrap',
 				}}
-			>
-				<Button
-					disabled={table.getRowModel().rows.length === 0}
-					//export all rows as seen on the screen (respects pagination, sorting, filtering, etc.)
-					onClick={() => handleExportRows(table.getRowModel().rows)}
-					startIcon={<FileDownloadIcon />}
-				>
-					Export All Data
-				</Button>
-				{// Pagination is disabled, so this button is useless
+			><Box sx={buttonBoxStyles}>
+					<Button
+						disabled={table.getRowModel().rows.length === 0}
+						//export all rows as seen on the screen (respects pagination, sorting, filtering, etc.)
+						onClick={() => handleExportRows(table.getRowModel().rows)}
+						startIcon={<FileDownloadIcon />}
+					>
+						Export All Data
+					</Button>
+					{// Pagination is disabled, so this button is useless
 				/*<Button
 					disabled={table.getPrePaginationRowModel().rows.length === 0}
 					//export all rows, including from the next page, (still respects filtering and sorting)
@@ -191,32 +298,107 @@ function DatasetViewer() {
 				>
 					Export All Rows
 				</Button> */}
-				<Button
-					disabled={
-						!table.getIsSomeRowsSelected() && !table.getIsAllRowsSelected()
-					}
-					//only export selected rows
-					onClick={() => handleExportRows(table.getSelectedRowModel().rows)}
-					startIcon={<FileDownloadIcon />}
-				>
-					Export Selected Rows
-				</Button>
+					<Button
+						disabled={
+							!table.getIsSomeRowsSelected() && !table.getIsAllRowsSelected()
+						}
+						//only export selected rows
+						onClick={() => handleExportRows(table.getSelectedRowModel().rows)}
+						startIcon={<FileDownloadIcon />}
+					>
+						Export Selected Rows
+					</Button></Box>
+				<Box>
+					<Button
+						onClick={() => handleFetchObservations(table.getRowModel().rows)}
+					>
+						Fetch Observations
+					</Button>
+					{loadingStatus.initiated && (
+						<Box
+							sx={loadingBoxStyles}
+						>
+							{loadingStatus.loading ? `Loading observations... ${Math.floor(loadingStatus.time / 60)}:${loadingStatus.time % 60}` : 'Finished loading observations'}
+						</Box>)}
+				</Box>
+				<div style={{ display: 'flex' }}>
+					<div style={{ marginRight: '20px', textAlign: 'center' }}>
+						<p>End date</p>
+						<DatePicker
+							portalId="root-portal"
+							selected={startDate}
+							onChange={(date: Date | null) => setStartDate(date)}
+							dateFormat="yyyy-MM-dd HH:mm:ss"
+							timeInputLabel="Time:"
+							showTimeInput
+							placeholderText="2000-01-01 00:00:00"
+							className="input"
+						/>
+					</div>
+					<div style={{ marginRight: '20px', textAlign: 'center' }}>
+						<p>Start date</p>
+						<DatePicker
+							portalId="root-portal"
+							selected={endDate}
+							onChange={(date: Date | null) => setEndDate(date)}
+							dateFormat="yyyy-MM-dd HH:mm:ss"
+							timeInputLabel="Time:"
+							showTimeInput
+							className="input"
+						/>
+					</div>
+					<div style={{ textAlign: 'center' }}>
+						<p>Max observations</p>
+						<input
+							type="number"
+							value={resultAmount}
+							onChange={(e) => setResultAmount(parseInt(e.target.value))}
+							className="input"
+						/>
+					</div>
+				</div>
+				<div style={{ display: 'flex', flexDirection: 'column' }}>
+					<span>End date: Get observations until this date</span>
+					<span>Start date: Get observations from this date</span>
+					<span>Max observations: Maximum amount of observations to fetch</span>
+				</div>
 			</Box>
 		),
 	});
+
+	const buttonBoxStyles = {
+		display: 'flex',
+		flexDirection: 'column',
+		alignItems: 'flex-start',
+
+	};
+
+	const loadingBoxStyles = {
+		display: 'flex',
+		alignItems: 'flex-start',
+		padding: '8px',
+		backgroundColor: loadingStatus.loading ? 'orange' : 'green',
+		color: 'white',
+		borderRadius: '4px',
+		marginLeft: '8px',
+	};
+
 
 	return (
 		<div style={{ height: 400, width: '100%' }}>
 			<MaterialReactTable table={table} />
 		</div>
 	);
+
 }
+
 
 interface UnitOfMeasurement {
 	name: string;
 	symbol: string;
 	definition: string;
 }
+
 
 interface Datastream {
 	'@iot.selfLink': string;
@@ -233,6 +415,7 @@ interface Datastream {
 	resultTime: string;
 }
 
+
 interface Sensor {
 	'@iot.selfLink': string;
 	'@iot.id': number;
@@ -246,54 +429,7 @@ interface Sensor {
 	Faculty: string;
 }
 
-/*
-const fetchData = useCallback(async () => {
-		let allDatastreamsData: any = [];
-		for (const sensor of selectedSensors) {
-			try {
-				const datastreamPromises = sensor.Datastreams.map(async (datastream: any) => {
-					const observations = await fetchDatastreamContents(datastream['@iot.selfLink']);
-					return {
-						sensorId: sensor['@iot.id'],
-						sensorName: sensor.name,
-						datastreamId: datastream['@iot.id'],
-						datastreamName: datastream.name,
-						unitOfMeasurement: datastream.unitOfMeasurement,
-						datastreamDescription: datastream.description,
-						observations
-					};
-				});
-	
-				const datastreamsData = await Promise.all(datastreamPromises);
-				allDatastreamsData = [...allDatastreamsData, ...datastreamsData];
-				setTableContent(allDatastreamsData);
-			} catch (error) {
-				console.error(`Failed to fetch data for sensor: ${sensor['@iot.id']}`, error);
-			}
-		}
-	}, [selectedSensors]);
-*/
 
-async function fetchDatastreamContents(datastream: string): Promise<any> {
-	const url = `${datastream}?
-        $select=Observations&
-        $expand=Observations($top=5;$orderby=resultTime%20desc)
-    `;
-	console.log("fetching datastream contents: " + datastream)
-	const response = await fetchUrl(url);
-	return response.Observations;
-}
-
-async function fetchUrl(url: string): Promise<any> {
-	try {
-		const response = await fetch(url);
-		const data = await response.json();
-		return data;
-	} catch (error) {
-		console.log('Failed URL:', url);
-		throw new Error('Failed to fetch URL: ' + error);
-	}
-}
 
 
 
