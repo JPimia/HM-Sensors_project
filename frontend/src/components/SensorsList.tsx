@@ -7,6 +7,7 @@ import { registerLocale, setDefaultLocale } from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import de from "date-fns/locale/de";
 import { SensorContext } from '../App';
+import "../CSS/InputContainer.css";
 
 registerLocale("de", de);
 setDefaultLocale("de");
@@ -166,7 +167,11 @@ export default function SensorsList() {
                             value={userInput}
                             onChange={handleInputChange}
                             placeholder="Type to search..."
+<<<<<<< HEAD
                             onClick={toggleDropdown}
+=======
+							className='input'
+>>>>>>> ec0e5bb1677055a707c3954c33ac1c8c5f512a47
                         />
                         <button
                             onClick={() =>
