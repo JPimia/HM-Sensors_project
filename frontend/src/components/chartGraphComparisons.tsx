@@ -13,6 +13,7 @@ import {
 import { saveAs } from "file-saver";
 import { SensorContext } from '../App';
 import "../CSS/Filter.css";
+import "../CSS/GraphComparison.css";
 
 function randomizeBorderColor() {
 	const red = Math.floor(Math.random() * 256);
@@ -113,36 +114,12 @@ function ChartGraphComparison() {
 		},
 	};
 	return (
-		<div style={{ display: "flex" }}>
-
-			<div>
+		<div style={{ display: "flex" }} className='main-container'>
 				{datastreamComparisonList.length > 0 ? (
-					<div>
-						<div style={{ display: "flex" }}>
-							<button
-								onClick={() =>
-									exportObservations(
-										datastreamComparisonList,
-										downloadType
-									)
-								}
-							>
-								Save observations as
-							</button>
-							<select
-								value={downloadType}
-								onChange={(e) =>
-									setDownloadType(e.target.value)
-								}
-							>
-								<option value="csv">CSV</option>
-								<option value="json">JSON</option>
-							</select>
-						</div>
-						<h3>Selected Data Streams:</h3>
-						<ul>
+					<div style={{display: "flex", flexDirection: "column"}}>
+						<ul className='sensors-container2' style={{overflowY: "scroll"}}>
 							{datastreamComparisonList.map((dataStream: any) => (
-								<li key={dataStream["@iot.id"] + dataStream.name}>
+								<li key={dataStream["@iot.id"] + dataStream.name} className='sensor-info'>
 									<p>Name: {dataStream.name}</p>
 									<p>Iot.id: {dataStream["@iot.id"]}</p>
 									<p>desc: {dataStream.description}</p>
@@ -152,6 +129,7 @@ function ChartGraphComparison() {
 												dataStream["@iot.id"]
 											)
 										}
+										className='red-graph-button'
 									>
 										Remove
 									</button>
@@ -162,8 +140,8 @@ function ChartGraphComparison() {
 				) : (
 					<p>No data streams selected.</p>
 				)}
-			</div>
-			<div style={{ width: "100%" }}>
+			
+			<div className='graph-container'>
 				<Line data={chartData} options={options} />
 			</div>
 		</div>
