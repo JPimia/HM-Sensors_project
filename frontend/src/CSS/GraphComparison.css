@@ -6,6 +6,7 @@
     border-radius: 10px;
     overflow-y: scroll;
     overflow-x: hidden;
+    width: 350px;
 }
 
 .sensor-info {
@@ -16,7 +17,7 @@
     margin-bottom: 15px;
     margin-right: 60px;
     padding: 0.5rem;
-    border: 2px solid #cfc9c9;
+    border: 5px solid #cfc9c9;
     border-radius: 10px;
 }
 
