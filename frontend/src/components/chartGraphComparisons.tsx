@@ -12,6 +12,7 @@ import {
 } from 'chart.js';
 import { saveAs } from "file-saver";
 import { SensorContext } from '../App';
+import "../CSS/Filter.css";
 
 function randomizeBorderColor() {
 	const red = Math.floor(Math.random() * 256);

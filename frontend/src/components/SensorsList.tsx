@@ -1,12 +1,13 @@
 import React, { useContext } from 'react';
 import { useState, useEffect, memo } from 'react';
-import { fetchSensors, fetchDatastreamContents, fetchSensorNames, fetchUrl } from './fetches';
+import { fetchSensors, fetchDatastreamContents, fetchSensorNames, fetchUrl, fetchSensor } from './fetches';
 import '../CSS/SensorList.css';
 import { useNavigate } from 'react-router-dom';
 import { registerLocale, setDefaultLocale } from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import de from "date-fns/locale/de";
 import { SensorContext } from '../App';
+import "../CSS/InputContainer.css";
 
 registerLocale("de", de);
 setDefaultLocale("de");
@@ -22,9 +23,9 @@ export default function SensorsList() {
 		setDatastreamComparisonList((prevList: any) => [...prevList, fullDatastream]);
 	}
 
-	async function getSensors(name?: string, timeframe?: string, locationName?: String, locations?: any, filter?: string) {
+	async function getSensors(name?: string, timeframe?: string, locationName?: String, locations?: any, filter?: string, dropdown?: boolean) {
 		try {
-			const data = await fetchSensors(name, timeframe, locationName);
+			const data = await fetchSensors(name, dropdown);
 			let sensorsWithLocations = data.value.map((sensor: { name: any; }) => {
 				// Looks for the corresponding location based on sensorName
 				const matchingLocation = locations.find((location: { sensorName: any; }) => location.sensorName === sensor.name);
@@ -77,6 +78,7 @@ export default function SensorsList() {
 		const [locations, setLocations] = useState<any[]>([]);
 		const [faculties, setFaculties] = useState<any[]>([]);
 		const [filter, setFilter] = useState('Any');
+        const [dropdownOpen, setDropdownOpen] = useState(false);
 
 
 		const handleInputChange = () => {
@@ -98,11 +100,22 @@ export default function SensorsList() {
 				timeframeRef.current?.value,
 				locationNameRef.current?.value,
 				locations,
-				filter
+				filter,
+                true
 			)
 		};
 
 		useEffect(() => {
+            const handleClickOutside = (event: MouseEvent) => {
+                const dropdownContainer = document.querySelector('.dropdown-container');
+
+                if (dropdownContainer && !dropdownContainer.contains(event.target as Node)) {
+					setDropdownOpen(false);
+                }
+			};
+
+			document.addEventListener('click', handleClickOutside);
+            
 			const handleFetch = async () => {
 				try {
 					const sensorNameObject = await fetchSensorNames();
@@ -129,7 +142,15 @@ export default function SensorsList() {
 				}
 			};
 			handleFetch();
+
+            return () => {
+                document.removeEventListener('click', handleClickOutside);
+			};
 		}, []);
+
+        const toggleDropdown = () => {
+            setDropdownOpen(!dropdownOpen);
+		};
 
 		return (
 			<div className="input-container">
@@ -139,28 +160,44 @@ export default function SensorsList() {
 					all.
 				</p>
 				<div className="dropdown-container">
-					<input
-						type="text"
-						ref={sensorNameRef}
-						value={userInput}
-						onChange={handleInputChange}
-						placeholder="Type to search..."
-					/>
-					<ul className="dropdown-list">
-						{
-							// Currently only shows the first 10 items in the suggestion array
-						}
-						{suggestions.slice(0, 10).map((suggestion, index) => (
+                    <div style={{display: 'flex', height: 32}}>
+                        <input
+                            type="text"
+                            ref={sensorNameRef}
+                            value={userInput}
+                            onChange={handleInputChange}
+                            placeholder="Type to search..."
+                            onClick={toggleDropdown}
+							className='input'
+                        />
+                        <button
+                            onClick={() =>
+                                getSensors(
+                                    sensorNameRef.current?.value,
+                                    timeframeRef.current?.value,
+                                    locationNameRef.current?.value,
+                                    locations,
+                                    filter,
+                                    false
+                                )
+                            }
+                            className="input-container-red-button"
+                        >
+                            Search
+                        </button>
+                    </div>
+                    {dropdownOpen && (
+						<ul className="dropdown-list">
+							{suggestions.slice(0, 10).map((suggestion, index) => (
 							<li
 								key={index}
-								onClick={() =>
-									handleSuggestionClick(suggestion)
-								}
+								onClick={() => handleSuggestionClick(suggestion)}
 							>
 								{suggestion}
 							</li>
-						))}
-					</ul>
+							))}
+						</ul>
+					)}
 				</div>
 				{/*
 						original search input field
@@ -196,11 +233,13 @@ export default function SensorsList() {
 					defaultValue="hm sensor"
 				/> */}
 				{user ? (
-					<div>
-						<p>Filter results based on the faculty:</p>
+					<div style={{display: "flex"}}>
+						<p style={{width: "71%", height: "5px", marginTop: "10px"}}>Filter results based on the faculty:</p>
 						<select
 							value={filter}
 							onChange={(e) => setFilter(e.target.value)}
+                            style={{height: 30}}
+							className='select'
 						>
 							<option value="Any">Any</option>
 							{faculties.map((faculty, index) => (
@@ -214,30 +253,6 @@ export default function SensorsList() {
 						</select>
 					</div>
 				) : null}
-
-				<div className="input-container-buttons">
-					<button
-						onClick={() =>
-							getSensors(
-								sensorNameRef.current?.value,
-								timeframeRef.current?.value,
-								locationNameRef.current?.value,
-								locations,
-								filter
-							)
-						}
-						className="input-container-red-button"
-						style={{ marginTop: "10px", marginBottom: "10px" }}
-					>
-						Fetch Sensors
-					</button>
-					<button
-						onClick={() => navigate("/graphComparison")}
-						className="input-container-green-button"
-					>
-						Graph Comparison
-					</button>
-				</div>
 			</div>
 		);
 	});

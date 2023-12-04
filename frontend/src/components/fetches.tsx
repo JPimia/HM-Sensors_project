@@ -38,29 +38,18 @@ async function fetchSensor(name: string): Promise<any> {
 
 
 // Fetch a list of sensors using name as filter,
-async function fetchSensors(name?: string, timeFrame?: string, location?: any): Promise<any> {
+async function fetchSensors(name?: string, dropdown?: boolean): Promise<any> {
 
 	let filterOptions = '';
 
-	if (name) {
-		filterOptions = '$filter=';
-	}
-
-	if (name) {
-		filterOptions += `substringof(tolower('${name}'),tolower(name))&`;
-	}
-
-	if (timeFrame) {
-		// TODO: Add filter for timeFrame
-	}
-
-	if (location) {
-		// TODO: Add filter for location
-	}
+    if (dropdown) {
+        filterOptions = `$filter=name eq '${name}'&`;
+    } else {
+        filterOptions += `$filter=substringof(tolower('${name}'),tolower(name))&$top=1000&`;
+    }
 
 	const url = `https://gi3.gis.lrg.tum.de/frost/v1.1/Sensors?
 	${filterOptions}
-	$top=1000&
 	$expand=Datastreams`;
 
 	const response = await fetchUrl(url);
