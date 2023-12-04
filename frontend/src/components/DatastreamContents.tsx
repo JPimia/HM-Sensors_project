@@ -1,4 +1,4 @@
-import React, { Key, useContext, useEffect, useState, memo, useMemo } from "react";
+import React, { Key, useContext, useEffect, useState, memo, useMemo, useRef } from "react";
 import { fetchObservations } from "./fetches";
 import DatePicker, { registerLocale, setDefaultLocale } from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -23,8 +23,13 @@ function DatastreamContent() {
 	const [resultAmount, setResultAmount] = useState(20);
 	const [nextLink, setNextLink] = useState<undefined | null>();
 	const [downloadType, setDownloadType] = useState("csv");
+	const firstUpdate = useRef(true);
 
 	useEffect(() => {
+		if (firstUpdate.current) {
+			firstUpdate.current = false;
+			return;
+		}
 		const handleFetch = async () => {
 			try {
 				const response = await fetchObservations(
