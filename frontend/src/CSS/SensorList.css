@@ -141,11 +141,12 @@
     align-items: center;
     justify-content: center;
     margin-right: 1%;
+    margin-left: 2%;
     padding: 0.5rem;
     border: 2px solid #979797;
     border-radius: 10px;
     width: 50%;
-    height: 45px;
+    height: 32px;
     background-color: rgb(226, 35, 35);
 }
 
@@ -188,5 +189,12 @@
     border-radius: 10px;
     overflow-y: scroll;
     height: 56rem;
+}
+
+.filter-container {
+    display: flex;
+    flex-direction: row;
+    align-items: left;
+    margin-top: 3%;
 }
 

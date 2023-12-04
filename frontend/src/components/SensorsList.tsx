@@ -139,13 +139,29 @@ export default function SensorsList() {
 					all.
 				</p>
 				<div className="dropdown-container">
-					<input
-						type="text"
-						ref={sensorNameRef}
-						value={userInput}
-						onChange={handleInputChange}
-						placeholder="Type to search..."
-					/>
+                    <div style={{display: 'flex', height: 32}}>
+                        <input
+                            type="text"
+                            ref={sensorNameRef}
+                            value={userInput}
+                            onChange={handleInputChange}
+                            placeholder="Type to search..."
+                        />
+                        <button
+                            onClick={() =>
+                                getSensors(
+                                    sensorNameRef.current?.value,
+                                    timeframeRef.current?.value,
+                                    locationNameRef.current?.value,
+                                    locations,
+                                    filter
+                                )
+                            }
+                            className="input-container-red-button"
+                        >
+                            Search
+                        </button>
+                    </div>
 					<ul className="dropdown-list">
 						{
 							// Currently only shows the first 10 items in the suggestion array
@@ -196,11 +212,12 @@ export default function SensorsList() {
 					defaultValue="hm sensor"
 				/> */}
 				{user ? (
-					<div>
-						<p>Filter results based on the faculty:</p>
+					<div className="filter-container">
+						<p style={{marginRight: 25}}>Filter results based on the faculty:</p>
 						<select
 							value={filter}
 							onChange={(e) => setFilter(e.target.value)}
+                            style={{height: 30}}
 						>
 							<option value="Any">Any</option>
 							{faculties.map((faculty, index) => (
@@ -214,30 +231,6 @@ export default function SensorsList() {
 						</select>
 					</div>
 				) : null}
-
-				<div className="input-container-buttons">
-					<button
-						onClick={() =>
-							getSensors(
-								sensorNameRef.current?.value,
-								timeframeRef.current?.value,
-								locationNameRef.current?.value,
-								locations,
-								filter
-							)
-						}
-						className="input-container-red-button"
-						style={{ marginTop: "10px", marginBottom: "10px" }}
-					>
-						Fetch Sensors
-					</button>
-					<button
-						onClick={() => navigate("/graphComparison")}
-						className="input-container-green-button"
-					>
-						Graph Comparison
-					</button>
-				</div>
 			</div>
 		);
 	});
