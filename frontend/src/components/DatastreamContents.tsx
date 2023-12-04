@@ -22,7 +22,6 @@ function DatastreamContent() {
 	const [endDate, setEndDate] = useState<Date | null>(null);
 	const [resultAmount, setResultAmount] = useState(20);
 	const [nextLink, setNextLink] = useState<undefined | null>();
-	const [isFetchObservations, setIsFetchObserevations] = useState(true);
 	const [downloadType, setDownloadType] = useState("csv");
 
 	useEffect(() => {
@@ -43,21 +42,22 @@ function DatastreamContent() {
 				console.log(error);
 			}
 		};
-		if (isFetchObservations) {
-			handleFetch();
-			setIsFetchObserevations(false)
-		}
-	}, [startDate, endDate, nextLink, resultAmount, isFetchObservations, selectedDatastream]);
+		handleFetch();
+
+	}, [selectedDatastream, nextLink]);
 
 
 	const renderChartMemo = useMemo(() => {
+		if (!observations.value) {
+			return null;
+		}
 		return (
 			<RenderChart
 				observations={observations.value}
-				unitOfMeasurement={selectedDatastream.unitOfMeasurement}
+				unitOfMeasurement={unitOfMeasurement}
 			/>
 		);
-	}, [observations.value, selectedDatastream.unitOfMeasurement,]);
+	}, [observations.value]);
 
 
 	const observationList = useMemo(() => {
@@ -168,10 +168,9 @@ function DatastreamContent() {
 						onChange={(e) => setResultAmount(parseInt(e.target.value))}
 						className="input"
 					/>
-					
+
 					<button onClick={() => {
 						setNextLink(null)
-						setIsFetchObserevations(true);
 					}} className="button">
 						Fetch observations
 					</button>
@@ -180,12 +179,11 @@ function DatastreamContent() {
 					<div style={{ display: 'flex' }}>
 						<button onClick={() => {
 							setNextLink(observations["@iot.nextLink"])
-							setIsFetchObserevations(true);
-						}} className="button" style={{marginLeft: "-1px"}}>
+						}} className="button" style={{ marginLeft: "-1px" }}>
 							Show next page
 						</button>
 						<div style={{ display: "flex" }} >
-							<button onClick={() => exportObservations(observations, downloadType)} className="button" style={{marginLeft: "-1px"}}>
+							<button onClick={() => exportObservations(observations, downloadType)} className="button" style={{ marginLeft: "-1px" }}>
 								Save observations as
 							</button>
 							<select
