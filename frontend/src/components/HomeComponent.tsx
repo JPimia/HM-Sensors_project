@@ -61,8 +61,7 @@ export function HomeComponent() {
 							
 								<p>
 								1.  <strong>Fetch a list of available sensors on the
-									left.</strong> <br/>&nbsp;&nbsp;&nbsp; In the search bar, type in “hm sensor” and
-									click “Fetch Sensors”.
+									left.</strong> <br/>&nbsp;&nbsp;&nbsp; In the search bar, type in “hm sensor”, select a faculty location (if applicable) and click “Search”.
 								</p>
 								<p>
 								2.  <strong>Select the variables
