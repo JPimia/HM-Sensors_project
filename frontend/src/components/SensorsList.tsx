@@ -193,39 +193,6 @@ export default function SensorsList() {
 						</ul>
 					)}
 				</div>
-				{/*
-						original search input field
-						<input
-							type="text"
-							ref={sensorNameRef}
-							defaultValue="hm sensor"
-						/>
-					*/}
-
-				{/* 				<span>Location Name</span>
-				<input
-					type="text"
-					ref={locationNameRef}
-					defaultValue="locationtest"
-				/> */}
-
-				{/* 				<div>
-					<div>
-						<p>Start time: Will show sensors that have recorded activity since specified time</p>
-						<DatePicker
-							selected={startDate}
-							onChange={(date: Date | null) => setStartDate(date!)}
-							dateFormat="yyyy-MM-dd HH:mm:ss"
-							timeInputLabel="Time:"
-							showTimeInput
-						/>
-					</div>
-				</div> */}
-				{/* <input
-					type="text"
-					ref={sensorNameRef}
-					defaultValue="hm sensor"
-				/> */}
 				{user ? (
 					<div style={{ display: "flex" }}>
 						<p style={{ width: "71%", height: "5px", marginTop: "10px" }}>Filter results based on the faculty:</p>

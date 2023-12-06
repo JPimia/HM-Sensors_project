@@ -62,6 +62,7 @@ async function fetchDatastreamContents(datastream: string): Promise<any> {
 
 async function fetchObservations(id: number, resultAmount: number, startDate?: Date | null, endDate?: Date | null, nextUrl?: string | null): Promise<any> {
 	// Returns {value:[],@iot.nextLink:string}
+	// startDate 1/1/2000 and endDate 2/1/2000 will return values between the dates
 
 	const formattedStartDate = startDate ? startDate.toISOString() : null;
 	const formattedEndDate = endDate ? endDate.toISOString() : null;
@@ -71,21 +72,21 @@ async function fetchObservations(id: number, resultAmount: number, startDate?: D
 	$top=${resultAmount}
 	&$select=resultTime,result
 	&$orderby=resultTime+desc
-	&$filter=resultTime+le+${formattedStartDate}
 	`;
 
-
-	if (endDate) {
-		url += `+and+resultTime+ge+${formattedEndDate}`;
+	// Add filter if startDate or endDate is defined
+	if (startDate || endDate) {
+		url += '&$filter=';
+		if (startDate) url += `resultTime+le+${formattedStartDate}`;
+		if (endDate) url += (startDate ? '+and+' : '') + `resultTime+ge+${formattedEndDate}`;
 	}
 	try {
 		const response = fetchUrl(url);
 		return response;
 	} catch (error) {
-		//
+
+		console.error(`Error fetching observations: ${error}`);
 	}
-
-
 
 }
 

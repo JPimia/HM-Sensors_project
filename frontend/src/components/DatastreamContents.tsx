@@ -1,4 +1,4 @@
-import React, { Key, useContext, useEffect, useState, memo, useMemo, useRef } from "react";
+import React, { Key, useContext, useEffect, useState, useMemo, useRef } from "react";
 import { fetchObservations } from "./fetches";
 import DatePicker, { registerLocale, setDefaultLocale } from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -16,7 +16,7 @@ function DatastreamContent() {
 		selectedDatastream
 	} = useContext(SensorContext)!;
 	const { name, description, unitOfMeasurement, ObservedProperty } = selectedDatastream;
-	// Wrap observations in a similar object as the response for fetchObservations
+	// Wrap observations in same format as the response of fetchObservations
 	const [observations, setObservations] = useState({ value: selectedDatastream.Observations, "@iot.nextLink": null });
 	const [startDate, setStartDate] = useState(new Date());
 	const [endDate, setEndDate] = useState<Date | null>(null);

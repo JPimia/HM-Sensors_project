@@ -1,8 +1,8 @@
 import React, { createContext, useState, useContext, ReactNode, Dispatch, FC, SetStateAction, useEffect } from 'react';
 import PopupComponent from './components/PopupComponent';
 import ChartGraphComparison from './components/chartGraphComparisons';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import SensorPage from './components/sensorPage';
+import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
+import MobileSensorPage from './components/MobileSensorPage';
 import RegisterComponent from './components/RegisterPopUp';
 import GitLabAuth from './components/GitLabAuth';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -57,17 +57,21 @@ function SensorProvider({ children }: SensorProviderProps) {
 }
 
 
-function App() {
+function NavbarWithLocation() {
+	const location = useLocation();
 
+	if (location.pathname.includes('/mobile/sensor')) {
+		return null;
+	}
+
+	return <NavbarContainer />;
+}
+
+function App() {
 	return (
 		<SensorProvider>
 			<Router>
-				<NavbarContainer />
-				{
-					// commented out because it uses http://localhost:3000/ as it's callback url
-					// move outside of tis block to test
-					// <GitLabAuth />
-				}
+				<NavbarWithLocation />
 				<Routes>
 					<Route path="/" element={<HomeComponent />} />
 					<Route path="/login" element={<PopupComponent />} />
@@ -83,12 +87,11 @@ function App() {
 						</LocalizationProvider>
 					} />
 					<Route path="/register" element={<RegisterComponent />} />
-					<Route path="/sensor/:sensorName" element={<SensorPage />} />
+					<Route path="/mobile/sensor/:sensorName" element={<MobileSensorPage />} />
 				</Routes>
 			</Router>
 		</SensorProvider >
 	);
-
 }
 
 export default App;
