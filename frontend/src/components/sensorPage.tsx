@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { fetchSensor } from './fetches';
+import { fetchSensors } from './fetches';
 
 interface SensorContainer {
 	value: SensorData[];
@@ -27,7 +27,7 @@ function SensorPage() {
 	useEffect(() => {
 		async function fetchSensorData() {
 			try {
-				const data = await fetchSensor(sensorName!);
+				const data = await fetchSensors(sensorName!);
 				setSensor(data);
 			} catch (error) {
 				console.error('Error fetching sensor data', error);

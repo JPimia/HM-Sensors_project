@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { useState, useEffect, memo } from 'react';
-import { fetchSensors, fetchDatastreamContents, fetchSensorNames, fetchUrl, fetchSensor } from './fetches';
+import { fetchSensors, fetchDatastreamContents, fetchSensorNames, fetchUrl } from './fetches';
 import '../CSS/SensorList.css';
 import { useNavigate } from 'react-router-dom';
 import { registerLocale, setDefaultLocale } from "react-datepicker";
@@ -23,7 +23,7 @@ export default function SensorsList() {
 		setDatastreamComparisonList((prevList: any) => [...prevList, fullDatastream]);
 	}
 
-	async function getSensors(name?: string, timeframe?: string, locationName?: String, locations?: any, filter?: string, dropdown?: boolean) {
+	async function getSensors(name?: string, locations?: any, filter?: string, dropdown?: boolean) {
 		try {
 			const data = await fetchSensors(name, dropdown);
 			let sensorsWithLocations = data.value.map((sensor: { name: any; }) => {
@@ -70,15 +70,13 @@ export default function SensorsList() {
 
 	const InputFields = memo(function InputFields(): any {
 		const sensorNameRef = React.useRef<HTMLInputElement>(null);
-		const locationNameRef = React.useRef<HTMLInputElement>(null);
-		const timeframeRef = React.useRef<HTMLInputElement>(null);
 		const [sensorNames, setSensorNames] = useState([]);
 		const [userInput, setUserInput] = useState('');
 		const [suggestions, setSuggestions] = useState([]);
 		const [locations, setLocations] = useState<any[]>([]);
 		const [faculties, setFaculties] = useState<any[]>([]);
 		const [filter, setFilter] = useState('Any');
-        const [dropdownOpen, setDropdownOpen] = useState(false);
+		const [dropdownOpen, setDropdownOpen] = useState(false);
 
 
 		const handleInputChange = () => {
@@ -97,25 +95,23 @@ export default function SensorsList() {
 			setUserInput(suggestion);
 			getSensors(
 				suggestion,
-				timeframeRef.current?.value,
-				locationNameRef.current?.value,
 				locations,
 				filter,
-                true
+				true
 			)
 		};
 
 		useEffect(() => {
-            const handleClickOutside = (event: MouseEvent) => {
-                const dropdownContainer = document.querySelector('.dropdown-container');
+			const handleClickOutside = (event: MouseEvent) => {
+				const dropdownContainer = document.querySelector('.dropdown-container');
 
-                if (dropdownContainer && !dropdownContainer.contains(event.target as Node)) {
+				if (dropdownContainer && !dropdownContainer.contains(event.target as Node)) {
 					setDropdownOpen(false);
-                }
+				}
 			};
 
 			document.addEventListener('click', handleClickOutside);
-            
+
 			const handleFetch = async () => {
 				try {
 					const sensorNameObject = await fetchSensorNames();
@@ -143,13 +139,13 @@ export default function SensorsList() {
 			};
 			handleFetch();
 
-            return () => {
-                document.removeEventListener('click', handleClickOutside);
+			return () => {
+				document.removeEventListener('click', handleClickOutside);
 			};
 		}, []);
 
-        const toggleDropdown = () => {
-            setDropdownOpen(!dropdownOpen);
+		const toggleDropdown = () => {
+			setDropdownOpen(!dropdownOpen);
 		};
 
 		return (
@@ -160,41 +156,39 @@ export default function SensorsList() {
 					all.
 				</p>
 				<div className="dropdown-container">
-                    <div style={{display: 'flex', height: 32}}>
-                        <input
-                            type="text"
-                            ref={sensorNameRef}
-                            value={userInput}
-                            onChange={handleInputChange}
-                            placeholder="Type to search..."
-                            onClick={toggleDropdown}
+					<div style={{ display: 'flex', height: 32 }}>
+						<input
+							type="text"
+							ref={sensorNameRef}
+							value={userInput}
+							onChange={handleInputChange}
+							placeholder="Type to search..."
+							onClick={toggleDropdown}
 							className='input'
-                        />
-                        <button
-                            onClick={() =>
-                                getSensors(
-                                    sensorNameRef.current?.value,
-                                    timeframeRef.current?.value,
-                                    locationNameRef.current?.value,
-                                    locations,
-                                    filter,
-                                    false
-                                )
-                            }
-                            className="input-container-red-button"
-                        >
-                            Search
-                        </button>
-                    </div>
-                    {dropdownOpen && (
+						/>
+						<button
+							onClick={() =>
+								getSensors(
+									sensorNameRef.current?.value,
+									locations,
+									filter,
+									false
+								)
+							}
+							className="input-container-red-button"
+						>
+							Search
+						</button>
+					</div>
+					{dropdownOpen && (
 						<ul className="dropdown-list">
 							{suggestions.slice(0, 10).map((suggestion, index) => (
-							<li
-								key={index}
-								onClick={() => handleSuggestionClick(suggestion)}
-							>
-								{suggestion}
-							</li>
+								<li
+									key={index}
+									onClick={() => handleSuggestionClick(suggestion)}
+								>
+									{suggestion}
+								</li>
 							))}
 						</ul>
 					)}
@@ -233,12 +227,12 @@ export default function SensorsList() {
 					defaultValue="hm sensor"
 				/> */}
 				{user ? (
-					<div style={{display: "flex"}}>
-						<p style={{width: "71%", height: "5px", marginTop: "10px"}}>Filter results based on the faculty:</p>
+					<div style={{ display: "flex" }}>
+						<p style={{ width: "71%", height: "5px", marginTop: "10px" }}>Filter results based on the faculty:</p>
 						<select
 							value={filter}
 							onChange={(e) => setFilter(e.target.value)}
-                            style={{height: 30}}
+							style={{ height: 30 }}
 							className='select'
 						>
 							<option value="Any">Any</option>
