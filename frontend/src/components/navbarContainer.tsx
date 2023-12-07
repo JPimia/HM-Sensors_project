@@ -30,9 +30,10 @@ export function NavbarContainer(): JSX.Element {
 						<Nav.Link as={Link} to="/" className="buttons">Sensor explorer</Nav.Link>
 						<Nav.Link as={Link} to="/graphComparison" className="buttons">Graph Comparison {datastreamComparisonList.length}</Nav.Link>
 						<Nav.Link as={Link} to="/selectedDataset" className="buttons">Download</Nav.Link>
+						<Nav.Link as={Link} to="/HmBatteries" className="buttons">Quick: HM Sensor batteries</Nav.Link>
 						{/* <Nav.Link href="/register" className="buttons">Register</Nav.Link> */}
 						{/* <Nav.Link onClick={() => setIsPopupVisible(!isPopupVisible)}>Login</Nav.Link> */}
-                        
+
 					</Nav>
 				</Navbar.Collapse>
 
@@ -53,13 +54,13 @@ export function NavbarContainer(): JSX.Element {
 						Log out
 					</NavDropdown.Item>
 				</NavDropdown> */}
-                {
-                    process.env.REACT_APP_GITLAB_CLIENT_ID ? (
-                        <div>
-                            <GitLabAuth />
-                        </div>
-                    ) : null
-                }
+				{
+					process.env.REACT_APP_GITLAB_CLIENT_ID ? (
+						<div>
+							<GitLabAuth />
+						</div>
+					) : null
+				}
 			</Navbar>
 			{/* {isPopupVisible && <PopupComponent/>} */}
 		</div>

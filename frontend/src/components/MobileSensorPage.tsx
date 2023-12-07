@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { fetchObservations, fetchSensors } from './fetches';
 import '../CSS/MobileSensorPage.css';
 
@@ -74,14 +74,13 @@ function MobileSensorPage() {
 		return sensor.Datastreams.map((datastream) => (
 			<div key={datastream['@iot.id']} className="sensor-info">
 				<h2 className="sensor-name">{datastream.name}</h2>
-				<p>ID: {datastream['@iot.id']}</p>
-				<p>{datastream.description}</p>
-				<p>Observation Type: {datastream.observationType}</p>
-				<p>Unit of Measurement: {datastream.unitOfMeasurement.name}</p>
+				<span>ID: {datastream['@iot.id']}</span>
+				<span>{datastream.description}</span>
+				<span>Unit of Measurement: {datastream.unitOfMeasurement.name}</span>
 				{datastream.observations && datastream.observations[0] && (
 					<>
-						<p>Result Time: {new Date(datastream.observations[0].resultTime).toString()}</p>
-						<p>Last result: {datastream.observations[0].result}</p>
+						<span>Latest result Time: {new Date(datastream.observations[0].resultTime).toString()}</span>
+						<span>Last result: {datastream.observations[0].result}</span>
 					</>
 				)}
 			</div>
@@ -92,8 +91,9 @@ function MobileSensorPage() {
 		sensor ? (
 			<div className="mobilepage-sensors-container">
 				<h1 className="sensor-name">{sensor.name}</h1>
-				<p>ID: {sensor['@iot.id']}</p>
-				<p>{sensor.description}</p>
+				<span>ID: {sensor['@iot.id']}</span>
+				<span>{sensor.description}</span>
+				<span>This and other sensors can be properly accessed at:<br /> <Link to='/'>HM Insighthub</Link></span>
 				<div>
 					{renderDatastreamComponents()}
 				</div>

@@ -14,6 +14,7 @@ import { NavbarContainer } from './components/navbarContainer';
 import DatasetViewer from './components/DatasetViewer';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import HmBatteries from './components/HmBatteries';
 
 
 interface SelectedSensorsState {
@@ -22,13 +23,14 @@ interface SelectedSensorsState {
 	datastreamComparisonList: any[];
 	user: any | null;
 	locationData: any[];
+	compareType: string | null
 	setSelectedSensors: React.Dispatch<React.SetStateAction<any[]>>;
 	setSelectedDatastream: React.Dispatch<React.SetStateAction<any | null>>;
 	setDatastreamComparisonList: React.Dispatch<React.SetStateAction<any[]>>;
 	setUser: React.Dispatch<React.SetStateAction<any | null>>;
 	setLocationData: React.Dispatch<React.SetStateAction<any[]>>;
+	setCompareType: React.Dispatch<React.SetStateAction<any | null>>;
 }
-
 export const SensorContext = createContext<SelectedSensorsState | undefined>(undefined);
 
 interface SensorProviderProps {
@@ -41,6 +43,7 @@ function SensorProvider({ children }: SensorProviderProps) {
 	const [datastreamComparisonList, setDatastreamComparisonList] = useState<any[]>([]);
 	const [user, setUser] = useState<any | null>(null);
 	const [locationData, setLocationData] = useState<any[]>([]);
+	const [compareType, setCompareType] = useState(null);
 
 	return (
 		<SensorContext.Provider
@@ -49,7 +52,8 @@ function SensorProvider({ children }: SensorProviderProps) {
 				selectedSensors, setSelectedSensors,
 				datastreamComparisonList, setDatastreamComparisonList,
 				user, setUser,
-				locationData, setLocationData
+				locationData, setLocationData,
+				compareType, setCompareType
 			}}>
 			{children}
 		</SensorContext.Provider>
@@ -86,6 +90,7 @@ function App() {
 							<DatasetViewer />
 						</LocalizationProvider>
 					} />
+					<Route path="/hmBatteries" element={<HmBatteries />} />
 					<Route path="/register" element={<RegisterComponent />} />
 					<Route path="/mobile/sensor/:sensorName" element={<MobileSensorPage />} />
 				</Routes>

@@ -41,14 +41,14 @@ function DatasetViewer() {
 		selectedSensors.forEach((sensor: Sensor) => {
 			sensor.Datastreams.forEach((datastream: Datastream) => {
 				newTableContent.push({
-					sensorId: sensor['@iot.id'],
-					sensorName: sensor.name,
+					sensorId: sensor['@iot.id'] || '',
+					sensorName: sensor.name || '',
 					faculty: sensor.Faculty || '',
 					room: sensor.Room || '',
-					datastreamId: datastream['@iot.id'],
-					datastreamName: datastream.name,
-					unitOfMeasurement: datastream.unitOfMeasurement.name,
-					datastreamUrl: datastream['@iot.selfLink'],
+					datastreamId: datastream['@iot.id'] || '',
+					datastreamName: datastream.name || '',
+					unitOfMeasurement: datastream.unitOfMeasurement.name || '',
+					datastreamUrl: datastream['@iot.selfLink'] || '',
 					//datastreamDescription: datastream.description,
 				});
 				newFilterSelectOptions.sensorId.push(sensor['@iot.id'].toString());
@@ -164,11 +164,11 @@ function DatasetViewer() {
 
 
 	type TableContent = {
-		sensorId: number;
+		sensorId: number | string;
 		sensorName: string;
 		faculty: string;
 		room: string;
-		datastreamId: number;
+		datastreamId: number | string;
 		datastreamName: string;
 		unitOfMeasurement: string;
 		datastreamUrl: string;

@@ -13,12 +13,12 @@ registerLocale("de", de);
 setDefaultLocale("de");
 
 export default function SensorsList() {
-	const { setSelectedSensors, setSelectedDatastream, setDatastreamComparisonList, selectedSensors, user } = useContext(SensorContext)!;
-	const [compareType, setCompareType] = useState(null);
+	const { setSelectedSensors, setSelectedDatastream, setDatastreamComparisonList, selectedSensors, user, setCompareType, compareType } = useContext(SensorContext)!;
 	const navigate = useNavigate(); // Use useNavigate instead of useHistory
 
-	async function handleCompareBtnClick(datastream: { [key: string]: any }) {
+	async function handleCompareBtnClick(datastream: { [key: string]: any }, sensorName: string) {
 		const fullDatastream = await fetchDatastreamContents(datastream['@iot.selfLink']);
+		fullDatastream.sensorName = sensorName;
 		setCompareType(datastream.name);
 		setDatastreamComparisonList((prevList: any) => [...prevList, fullDatastream]);
 	}
@@ -243,7 +243,7 @@ export default function SensorsList() {
 											{datastream.name}
 										</button>
 										<button
-											onClick={() => handleCompareBtnClick(datastream)}
+											onClick={() => handleCompareBtnClick(datastream, sensor.name)}
 											className='green-button'
 											style={{
 												backgroundColor: isCompareBtnDisabled(datastream.name, compareType) ? 'gray' : 'green',
