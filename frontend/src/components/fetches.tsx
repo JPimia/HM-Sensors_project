@@ -97,9 +97,9 @@ async function fetchHmBatteries(): Promise<ResponseType> {
 // Fetch contents of datastream using datastream -> '@iot.selfLink'
 async function fetchDatastreamContents(datastream: string): Promise<any> {
 	const url = `${datastream}?
-		$select = name, description, observationType, unitOfMeasurement, @iot.id, Observations &
-			$expand=ObservedProperty, Observations($top = 20; $orderby = resultTime % 20desc)
-		`;
+	$select=name,description,observationType,unitOfMeasurement,@iot.id,Observations&
+	$expand=ObservedProperty,Observations($top=20;$orderby=resultTime%20desc)
+	`;
 
 	const response = await fetchUrl(url);
 	return response;
