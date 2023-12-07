@@ -6,12 +6,10 @@ import { Box, Button } from '@mui/material';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import { type FilterFn } from '@tanstack/react-table';
 import moment from 'moment';
-import DatePicker, { registerLocale, setDefaultLocale } from "react-datepicker";
+import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import de from "date-fns/locale/de";
 import { fetchObservations } from './fetches';
-registerLocale("de", de);
-setDefaultLocale("de");
+
 
 function DatasetViewer() {
 	const { selectedSensors } = useContext(SensorContext)!;
