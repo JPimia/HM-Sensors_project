@@ -9,7 +9,6 @@
     overflow-y: scroll;
     height: calc(100vh - 235px);
     width: 50%;
-    /* space between */
     background: linear-gradient(
     to bottom right,
     rgba(192, 149, 149, 0.507) 0%,
@@ -29,7 +28,6 @@
     overflow-y: scroll;
     height: calc(100vh - 235px);
     width: 50%;
-    /* space between */
     background: linear-gradient(
     to bottom right,
     rgba(192, 149, 149, 0.507) 0%,
