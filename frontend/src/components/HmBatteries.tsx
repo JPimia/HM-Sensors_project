@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { ResponseType, fetchHmBatteries } from './fetches';
 import '../CSS/MobileSensorPage.css';
+import "../CSS/Filter.css";
+import "../CSS/BatteryPage.css";
 
 function HmBatteries() {
 	const [sensorData, setSensorData] = useState<ResponseType | null>(null);
@@ -40,7 +42,7 @@ function HmBatteries() {
 		const renderSensors = (sensors: any) => (
 			<div>
 				{sensors.map((sensor: any) => (
-					<div key={sensor.name}>
+					<div key={sensor.name} className='individual-sensor'>
 						<h2>{sensor.name}</h2>
 						{sensor.Datastreams.map((datastream: any) => (
 							<div key={datastream['@iot.id']}>
@@ -54,23 +56,32 @@ function HmBatteries() {
 		);
 
 		return (
-			<div style={{ display: 'flex' }}>
-				<div>
-					<h2>Valid sensors:</h2>
-					{renderSensors(validSensors)}</div>
-				<div>
-					<h2>Invalid sensors:</h2>
-					{renderSensors(invalidSensors)}</div>
+			<div style={{display: "flex", flexDirection: "column"}}>
+
+			
+				<div style={{ display: 'flex' }}>
+					<div className='battery-sensors-container-valid' style={{marginRight: "5px"}}>
+						<h2><center>Valid sensors:</center></h2>
+						<div >
+							{renderSensors(validSensors)}
+						</div>
+						
+					</div>
+					<div className='battery-sensors-container-invalid' style={{marginLeft: "5px"}}>
+						<h2><center>Invalid sensors:</center></h2>
+						{renderSensors(invalidSensors)}
+					</div>
+				</div>
 			</div>
 		);
 	}
 
 	return (
-		<>
-			<h1>Hm sensor battery statuses</h1>
-			<p>Sorted: Lowest battery on top</p>
+		<div className='main-container' style={{display: "flex", flexDirection: "column"}}>
+			<h1><center><strong>Hm sensor battery statuses</strong></center></h1>
+			<p><center>Sorted: Lowest battery on top</center></p>
 			{renderDatastreamComponents()}
-		</>
+		</div>
 	);
 }
 

@@ -1,0 +1,44 @@
+.battery-sensors-container-valid {
+    display: flex;
+    flex-grow: 1;
+    flex-direction: column;
+    align-items: left;
+    padding: 0.5rem;
+    border: 4px solid #cfc9c9;
+    border-radius: 10px;
+    overflow-y: scroll;
+    height: calc(100vh - 235px);
+    width: 50%;
+    /* space between */
+    background: linear-gradient(
+    to bottom right,
+    rgba(192, 149, 149, 0.507) 0%,
+    rgba(150, 175, 140, 0.6) 50%,
+    rgba(126, 115, 115, 0.527) 100%
+    );
+}
+
+.battery-sensors-container-invalid {
+    display: flex;
+    flex-grow: 1;
+    flex-direction: column;
+    align-items: left;
+    padding: 0.5rem;
+    border: 4px solid #cfc9c9;
+    border-radius: 10px;
+    overflow-y: scroll;
+    height: calc(100vh - 235px);
+    width: 50%;
+    /* space between */
+    background: linear-gradient(
+    to bottom right,
+    rgba(192, 149, 149, 0.507) 0%,
+    rgba(177, 143, 143, 0.6) 50%,
+    rgba(126, 115, 115, 0.527) 100%
+    );
+}
+
+.individual-sensor {
+    border-bottom: 1px solid #0000008c;
+    margin-bottom: 10px;
+}
