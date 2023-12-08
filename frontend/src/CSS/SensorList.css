@@ -1,5 +1,4 @@
-
-.sensor-name {
+.sensorlist-sensor-name {
     font-size: 1.5rem;
     font-weight: bold;
     margin-bottom: 0rem;
@@ -8,10 +7,10 @@
 
 .sensor-container {
     background: linear-gradient(
-    to bottom right,
-    rgba(192, 149, 149, 0.8) 0%,
-    rgba(29, 26, 26, 0.6) 50%,
-    rgba(235, 105, 105, 0.8) 100%
+        to bottom right,
+        rgba(192, 149, 149, 0.8) 0%,
+        rgba(29, 26, 26, 0.6) 50%,
+        rgba(235, 105, 105, 0.8) 100%
     );
     display: flex;
     flex-direction: column;
@@ -27,7 +26,7 @@
 }
 
 .sensor-container:hover {
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2); /* Adjust shadow on hover for emphasis */
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2); /* Adjust shadow on hover for emphasis */
 }
 
 .sensor-info {
@@ -63,7 +62,9 @@
 }
 
 .red-button:active {
-  transform: translateY(2px); /* Shift the button downward by 2 pixels when pressed */
+    transform: translateY(
+        2px
+    ); /* Shift the button downward by 2 pixels when pressed */
 }
 
 .green-button {
@@ -84,7 +85,9 @@
 }
 
 .green-button:active {
-  transform: translateY(2px); /* Shift the button downward by 2 pixels when pressed */
+    transform: translateY(
+        2px
+    ); /* Shift the button downward by 2 pixels when pressed */
 }
 
 .red-button {
@@ -185,7 +188,6 @@
     border: 2px solid #cfc9c9;
     border-radius: 10px;
     overflow-y: scroll;
-    
 }
 
 .filter-container {
@@ -194,4 +196,3 @@
     align-items: left;
     margin-top: 3%;
 }
-
