@@ -59,14 +59,12 @@ function DatasetViewer() {
 			});
 		});
 
-		setTableContent(newTableContent);
-
 		for (let key in newFilterSelectOptions) {
 			newFilterSelectOptions[key] = Array.from(new Set(newFilterSelectOptions[key]));
 		}
+		setTableContent(newTableContent);
 		setFilterSelectOptions(newFilterSelectOptions);
 	}, [selectedSensors]);
-
 
 
 	// Had to write custom filterFn
@@ -78,7 +76,6 @@ function DatasetViewer() {
 		if (filterValue.length === 0) return true;
 		return filterValue.includes(row.getValue(columnId));
 	}
-
 
 	const columns = useMemo<MRT_ColumnDef<TableContent>[]>(() => [
 		{
@@ -206,56 +203,70 @@ function DatasetViewer() {
 
 
 	const handleExportRows = (rows: MRT_Row<TableContent>[]) => {
-		// Build data for sensors.csv
-		const sensorData = rows.map((row, index) => {
-			const originalRow = row.original;
+		try {
+			const sensorData = buildSensorData(rows);
+			downloadCsv('SensorData', sensorData);
 
-			return {
-				datastreamId: index + 1,  // Assigning new id
-				sensorId: originalRow.sensorId,
-				sensorName: originalRow.sensorName,
-				faculty: originalRow.faculty,
-				room: originalRow.room,
-				datastreamName: originalRow.datastreamName,
-				unitOfMeasurement: originalRow.unitOfMeasurement,
-				observationCount: originalRow.observationCount !== null && originalRow.observationCount !== undefined ? originalRow.observationCount : [],
-			};
-		});
-		// Build data for observations.csv
-		const observationData = rows.flatMap((row, index) => {
-			const originalRow = row.original;
-			const observations = tableContent.find((content) => content.datastreamUrl === originalRow.datastreamUrl)?.observations;
+			// Check if observations have been fetched
+			const hasObservations = rows.some(row => row.original.observations && row.original.observations.length > 0);
 
-			return observations ? formatObservations(observations, index + 1) : [];
-		});
+			if (hasObservations) {
+				console.log('Observations have been found');
+				const observationData = buildObservationData(rows);
+				downloadCsv('Observations', observationData);
+			}
+		} catch (error) {
+			console.error('Error exporting rows:', error);
+		}
 
+		function buildSensorData(rows: MRT_Row<TableContent>[]) {
+			return rows.map((row, index) => {
+				const originalRow = row.original;
+				return {
+					datastreamId: index + 1,
+					sensorId: originalRow.sensorId,
+					sensorName: originalRow.sensorName,
+					faculty: originalRow.faculty,
+					room: originalRow.room,
+					datastreamName: originalRow.datastreamName,
+					unitOfMeasurement: originalRow.unitOfMeasurement,
+					observationCount: originalRow.observationCount || [],
+				};
+			});
+		}
 
+		function buildObservationData(rows: MRT_Row<TableContent>[]) {
+			return rows.flatMap((row, index) => {
+				const originalRow = row.original;
+				const observations = tableContent.find((content) => content.datastreamUrl === originalRow.datastreamUrl)?.observations;
+				return observations ? formatObservations(observations, index + 1) : [];
+			});
+		}
 
-
-		let csvConfig = mkConfig({
-			fieldSeparator: ',',
-			decimalSeparator: '.',
-			useKeysAsHeaders: true,
-			filename: 'SensorData',
-		});
-		const csvSensors = generateCsv(csvConfig)(sensorData);
-		download(csvConfig)(csvSensors);
-
-		csvConfig = mkConfig({
-			fieldSeparator: ',',
-			decimalSeparator: '.',
-			useKeysAsHeaders: true,
-			filename: 'Observations',
-		});
-		const csvObservations = generateCsv(csvConfig)(observationData);
-		download(csvConfig)(csvObservations);
-
-		function formatObservations(observations: any, datastreamId: number) {
-			return observations.map(({ resultTime, result }: { resultTime: string; result: string; }) => ({
+		function formatObservations(
+			observations: {
+				'@iot.id': number;
+				resultTime: string | null;
+				result: string | null;
+			}[],
+			datastreamId: number
+		) {
+			return observations.map(({ resultTime, result }) => ({
 				datastreamId: datastreamId,
 				resultTime: resultTime ? moment(resultTime).format('DD-MM-YYYY HH:mm') : '',
-				result: result !== null && result !== undefined ? parseFloat(result) : '' ? parseFloat(result) : ''
+				result: result ? parseFloat(result) : ''
 			})).filter(Boolean);
+		}
+
+		function downloadCsv(filename: string, data: any[]) {
+			const csvConfig = mkConfig({
+				fieldSeparator: ',',
+				decimalSeparator: '.',
+				useKeysAsHeaders: true,
+				filename: filename,
+			});
+			const csvData = generateCsv(csvConfig)(data);
+			download(csvConfig)(csvData);
 		}
 	}
 
@@ -276,7 +287,8 @@ function DatasetViewer() {
 					padding: '8px',
 					flexWrap: 'wrap',
 				}}
-			><Box sx={buttonBoxStyles}>
+			>
+				<Box sx={buttonBoxStyles}>
 					<Button
 						disabled={table.getRowModel().rows.length === 0}
 						//export all rows as seen on the screen (respects pagination, sorting, filtering, etc.)
@@ -305,7 +317,8 @@ function DatasetViewer() {
 						startIcon={<FileDownloadIcon />}
 					>
 						Export Selected Rows
-					</Button></Box>
+					</Button>
+				</Box>
 				<Box>
 					<Button
 						onClick={() => handleFetchObservations(table.getRowModel().rows)}
@@ -368,7 +381,6 @@ function DatasetViewer() {
 		display: 'flex',
 		flexDirection: 'column',
 		alignItems: 'flex-start',
-
 	};
 
 	const loadingBoxStyles = {
@@ -381,13 +393,11 @@ function DatasetViewer() {
 		marginLeft: '8px',
 	};
 
-
 	return (
 		<div style={{ height: 400, width: '100%' }}>
 			<MaterialReactTable table={table} />
 		</div>
 	);
-
 }
 
 
