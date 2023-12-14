@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext } from 'react';
 import { Line } from 'react-chartjs-2';
 import {
 	Chart,
@@ -10,7 +10,6 @@ import {
 	Tooltip,
 	Legend,
 } from 'chart.js';
-import { saveAs } from "file-saver";
 import { SensorContext } from '../App';
 import "../CSS/Filter.css";
 import "../CSS/GraphComparison.css";
@@ -22,41 +21,6 @@ function randomizeBorderColor() {
 	return `rgb(${red}, ${green}, ${blue})`;
 }
 
-function exportObservations(observations: any, downloadType: String) {
-	console.log(downloadType);
-	const flatMappedData = observations.flatMap(
-		(item: { [x: string]: any; Observations: any[] }) =>
-			item.Observations.map((observation) => ({
-				iotId: item["@iot.id"],
-				observationIotId: observation["@iot.id"],
-				result: observation.result,
-				resultTime: observation.resultTime,
-			}))
-	);
-	if (downloadType === "csv") {
-		const header = "iotId, observationId, resultTime, result";
-		const csvContent = flatMappedData
-			.map(
-				(observation: {
-					iotId: number;
-					observationIotId: number;
-					resultTime: string | null;
-					result: string | null;
-				}) => {
-					const { iotId, observationIotId, resultTime, result } = observation;
-					return `${iotId || "null"},${observationIotId || "null"},${resultTime || "null"},${result || "null"}`;
-				}
-			)
-			.join("\n");
-		const csvData = `${header}\n${csvContent}`;
-		const blob = new Blob([csvData], { type: "text/csv;charset=utf-8" });
-		saveAs(blob, "observations.csv");
-	} else if (downloadType === "json") {
-		const jsonContent = JSON.stringify(flatMappedData, null, 2);
-		const blob = new Blob([jsonContent], { type: "application/json;charset=utf-8" });
-		saveAs(blob, "observations.json");
-	}
-}
 
 function ChartGraphComparison() {
 	Chart.register(
@@ -69,14 +33,12 @@ function ChartGraphComparison() {
 		Legend
 	);
 	const { datastreamComparisonList, setDatastreamComparisonList } = useContext(SensorContext)!;
-	const [downloadType, setDownloadType] = useState("csv");
 	function removeDataStream(iotId: string) {
 		const updatedDataStreams = datastreamComparisonList.filter(
 			(dataStream: any) => dataStream['@iot.id'] !== iotId
 		);
 		setDatastreamComparisonList(updatedDataStreams);
 	}
-	console.log('dataStreams:', datastreamComparisonList);
 	const chartData: any = {
 		labels: [],
 		datasets: [],
@@ -115,32 +77,32 @@ function ChartGraphComparison() {
 	};
 	return (
 		<div style={{ display: "flex" }} className='main-container'>
-				{datastreamComparisonList.length > 0 ? (
-					<div style={{display: "flex", flexDirection: "column"}}>
-						<ul className='sensors-container2' style={{overflowY: "scroll"}}>
-							{datastreamComparisonList.map((dataStream: any) => (
-								<li key={dataStream["@iot.id"] + dataStream.name} className='sensor-info'>
-									<p>Name: {dataStream.name}</p>
-									<p>Iot.id: {dataStream["@iot.id"]}</p>
-									<p>desc: {dataStream.description}</p>
-									<button
-										onClick={() =>
-											removeDataStream(
-												dataStream["@iot.id"]
-											)
-										}
-										className='red-graph-button'
-									>
-										Remove
-									</button>
-								</li>
-							))}
-						</ul>
-					</div>
-				) : (
-					<p>No data streams selected.</p>
-				)}
-			
+			{datastreamComparisonList.length > 0 ? (
+				<div style={{ display: "flex", flexDirection: "column" }}>
+					<ul className='sensors-container2' style={{ overflowY: "scroll" }}>
+						{datastreamComparisonList.map((dataStream: any) => (
+							<li key={dataStream["@iot.id"] + dataStream.name} className='sensor-info'>
+								<p>Name: {dataStream.name}</p>
+								<p>Iot.id: {dataStream["@iot.id"]}</p>
+								<p>desc: {dataStream.description}</p>
+								<button
+									onClick={() =>
+										removeDataStream(
+											dataStream["@iot.id"]
+										)
+									}
+									className='red-graph-button'
+								>
+									Remove
+								</button>
+							</li>
+						))}
+					</ul>
+				</div>
+			) : (
+				<p>No data streams selected.</p>
+			)}
+
 			<div className='graph-container'>
 				<Line data={chartData} options={options} />
 			</div>

@@ -3,8 +3,6 @@
 	https://fraunhoferiosb.github.io/FROST-Server/ 
 */
 
-import { type } from "os";
-
 
 async function fetchUrl(url: string): Promise<any> {
 	try {
@@ -47,8 +45,6 @@ async function fetchSensors(name?: string, isExact?: boolean, selectDatastreamNa
 	const url = `https://gi3.gis.lrg.tum.de/frost/v1.1/Sensors?
 	${sensorFilter}
 		$expand = Datastreams${datastreamFilter} `;
-	//https://gi3.gis.lrg.tum.de/frost/v1.1/Sensors?$filter = substringof(tolower('hm sensor'), tolower(name)) & $top=1000 &$expand = Datastreams($filter = name eq 'VDD') 
-
 	const response = await fetchUrl(url);
 	return response;
 }
@@ -88,7 +84,6 @@ async function fetchHmBatteries(): Promise<ResponseType> {
 				$top=1000
 			)
 		)`
-
 	const response = await fetchUrl(url);
 	return response;
 }
@@ -100,7 +95,6 @@ async function fetchDatastreamContents(datastream: string): Promise<any> {
 	$select=name,description,observationType,unitOfMeasurement,@iot.id,Observations&
 	$expand=ObservedProperty,Observations($top=20;$orderby=resultTime%20desc)
 	`;
-
 	const response = await fetchUrl(url);
 	return response;
 }
@@ -109,7 +103,6 @@ async function fetchDatastreamContents(datastream: string): Promise<any> {
 async function fetchObservations(id: number, resultAmount: number, startDate?: Date | null, endDate?: Date | null, nextUrl?: string | null): Promise<any> {
 	// Returns {value:[],@iot.nextLink:string}
 	// startDate 1/1/2000 and endDate 2/1/2000 will return values between the dates
-
 	const formattedStartDate = startDate ? startDate.toISOString() : null;
 	const formattedEndDate = endDate ? endDate.toISOString() : null;
 	// Use nextUrl if it exists
