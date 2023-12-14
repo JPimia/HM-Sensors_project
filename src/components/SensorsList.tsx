@@ -21,18 +21,26 @@ export default function SensorsList() {
     const {
         setSelectedSensors,
         setSelectedDatastream,
+        datastreamComparisonList,
         setDatastreamComparisonList,
         selectedSensors,
         user,
         setCompareType,
         compareType,
     } = useContext(SensorContext)!;
-    const navigate = useNavigate(); // Use useNavigate instead of useHistory
 
     async function handleCompareBtnClick(
         datastream: { [key: string]: any },
         sensorName: string
     ) {
+        // Check if datastream is already in the list
+        if (datastreamComparisonList.some((ds: any) => ds['@iot.id'] === datastream['@iot.id'])) {
+            console.log('Datastream already in the list');
+            //TODO: Add toast message to notify user
+            return;
+        }
+
+        console.log(datastreamComparisonList)
         const fullDatastream = await fetchDatastreamContents(
             datastream["@iot.selfLink"]
         );
