@@ -9,6 +9,7 @@ const GitLabAuth = () => {
 	useEffect(() => {
 		const fetchData = async (code: string) => {
 			try {
+                // Send a POST request to obtain an access token from GitLab
 				const response = await fetch("https://gitlab.lrz.de/oauth/token", {
 					method: "POST",
 					headers: {
@@ -23,6 +24,7 @@ const GitLabAuth = () => {
 					}),
 				});
 				const data = await response.json();
+                // If an access token is obtained, fetch user profile
                 if (data.access_token) {
                     const userProfile = await fetch('https://gitlab.lrz.de/api/v4/user', {
                         headers: {
@@ -33,25 +35,29 @@ const GitLabAuth = () => {
                     setUser(userProfileData);
                     setUserState(userProfileData)
                     setUserName(userProfileData.name);
+                    // Store user data in local storage
                     localStorage.setItem('user', JSON.stringify(userProfileData));
                 }
 			} catch (error) {
 				console.error("Error fetching data:", error);
 			}
 		};
-        
 
+        // Check if user data is stored in local storage
         const storedUser = localStorage.getItem('user');
         if (storedUser) {
+             // If stored data exists, update state and context with stored user data
             const storedUserData = JSON.parse(storedUser);
             setUser(storedUserData);
             setUserState(storedUserData);
             setUserName(storedUserData.name);
         }
 
+        // Parse the authorization code from the URL parameters
 		const urlParams = new URLSearchParams(window.location.search);
 		const code = urlParams.get("code");
 
+        // If an authorization code is present, fetch user data
 		if (code) {
 			fetchData(code);
 		}
