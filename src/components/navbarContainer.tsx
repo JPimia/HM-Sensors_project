@@ -11,8 +11,7 @@ export function NavbarContainer(): JSX.Element {
 	const {
 		datastreamComparisonList
 	} = useContext(SensorContext)!;
-	//en saanu navbar login nappia toimiin niinku pitäs
-	//const [isPopupVisible, setIsPopupVisible] = useState(false);
+
 	return (
 		<div>
 			<Navbar className='custom-navbar'>
@@ -22,39 +21,17 @@ export function NavbarContainer(): JSX.Element {
 						width={300}
 						alt="Sensor Logo" />
 				</Navbar.Brand>
-
 				<Navbar.Toggle aria-controls="basic-navbar-nav" />
-
 				<Navbar.Collapse id="basic-navbar-nav">
 					<Nav className="mr-auto">
 						<Nav.Link as={Link} to="/" className="buttons">Sensor explorer</Nav.Link>
 						<Nav.Link as={Link} to="/graphComparison" className="buttons">Graph Comparison {datastreamComparisonList.length}</Nav.Link>
 						<Nav.Link as={Link} to="/selectedDataset" className="buttons">Download</Nav.Link>
 						<Nav.Link as={Link} to="/HmBatteries" className="buttons">Quick: HM Sensor batteries</Nav.Link>
-						{/* <Nav.Link href="/register" className="buttons">Register</Nav.Link> */}
-						{/* <Nav.Link onClick={() => setIsPopupVisible(!isPopupVisible)}>Login</Nav.Link> */}
-
 					</Nav>
 				</Navbar.Collapse>
-
-				{/*                 <NavDropdown
-					title="Dropdown"
-					id="basic-nav-dropdown"
-					className="custom-dropdown">
-
-					<NavDropdown.Item href="#action/3.1">Action</NavDropdown.Item>
-					<NavDropdown.Item href="#action/3.2">
-						Another action
-					</NavDropdown.Item>
-					<NavDropdown.Item href="#action/3.3">
-						Something
-					</NavDropdown.Item>
-					<NavDropdown.Divider />
-					<NavDropdown.Item href="#action/3.4">
-						Log out
-					</NavDropdown.Item>
-				</NavDropdown> */}
 				{
+                    // Only show login option if the user has added the enviromental values
 					process.env.REACT_APP_GITLAB_CLIENT_ID ? (
 						<div>
 							<GitLabAuth />
@@ -62,7 +39,6 @@ export function NavbarContainer(): JSX.Element {
 					) : null
 				}
 			</Navbar>
-			{/* {isPopupVisible && <PopupComponent/>} */}
 		</div>
 	);
 }

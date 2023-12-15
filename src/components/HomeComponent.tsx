@@ -10,6 +10,7 @@ export function HomeComponent() {
         selectedDatastream
     } = useContext(SensorContext)!;
 
+    // Function to handle button click for downloading user manual
     const onButtonClick = () => {
 		const pdfUrl = "usermanual.pdf";
 		const link = document.createElement("a");
