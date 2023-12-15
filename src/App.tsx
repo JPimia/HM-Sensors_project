@@ -1,9 +1,7 @@
 import React, { createContext, useState, useContext, ReactNode, Dispatch, FC, SetStateAction, useEffect } from 'react';
-import PopupComponent from './components/PopupComponent';
 import ChartGraphComparison from './components/chartGraphComparisons';
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 import MobileSensorPage from './components/MobileSensorPage';
-import RegisterComponent from './components/RegisterPopUp';
 import GitLabAuth from './components/GitLabAuth';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './CSS/Navbar.css';
@@ -78,7 +76,6 @@ function App() {
 				<NavbarWithLocation />
 				<Routes>
 					<Route path="/" element={<HomeComponent />} />
-					<Route path="/login" element={<PopupComponent />} />
 					<Route
 						path="/graphComparison"
 						element={
@@ -91,7 +88,6 @@ function App() {
 						</LocalizationProvider>
 					} />
 					<Route path="/hmBatteries" element={<HmBatteries />} />
-					<Route path="/register" element={<RegisterComponent />} />
 					<Route path="/mobile/sensor/:sensorName" element={<MobileSensorPage />} />
 				</Routes>
 			</Router>

@@ -11,10 +11,10 @@ export function HomeComponent() {
     } = useContext(SensorContext)!;
 
     const onButtonClick = () => {
-		const pdfUrl = "sample.pdf";
+		const pdfUrl = "usermanual.pdf";
 		const link = document.createElement("a");
 		link.href = pdfUrl;
-		link.download = "sample.pdf"; 
+		link.download = "usermanual.pdf"; 
 		document.body.appendChild(link);
 		link.click();
 		document.body.removeChild(link);
