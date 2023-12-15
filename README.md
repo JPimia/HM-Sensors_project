@@ -26,6 +26,8 @@ Welcome to Hm Sensors InsightHub, a powerful web application designed for sensor
   <img src="src/images/img.png" alt="Screenshot 1" width="200" />
   <img src="src/images/img_1.png" alt="Screenshot 2" width="200" />
   <img src="src/images/img_2.png" alt="Screenshot 3" width="200" />
+  <img src="src/images/img_3.png" alt="Screenshot 3" width="200" />
+  <img src="src/images/img_4.png" alt="Screenshot 3" width="200" />
 </div>
 
 ## Technologies and Libraries Used
