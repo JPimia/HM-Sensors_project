@@ -22,10 +22,10 @@ Welcome to Hm Sensors InsightHub, a powerful web application designed for sensor
 
 ## Screenshots
 
-<div style="display:flex; flex-wrap: wrap; justify-content: center;">
-  <img src="img.png" alt="Screenshot 1" width="200" />
-  <img src="img_1.png" alt="Screenshot 2" width="200" />
-  <img src="img_2.png" alt="Screenshot 3" width="200" />
+<div style="display: flex; flex-wrap: wrap; justify-content: center;">
+  <img src="src/images/img.png" alt="Screenshot 1" width="200" />
+  <img src="src/images/img_1.png" alt="Screenshot 2" width="200" />
+  <img src="src/images/img_2.png" alt="Screenshot 3" width="200" />
 </div>
 
 ## Technologies and Libraries Used
