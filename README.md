@@ -104,3 +104,8 @@ Follow these steps to make the most of the system:
 
 5. **Mobile View with QR Code:**
    - Access a dedicated mobile view for a specific sensor by scanning its QR code.
+
+## Conclusion
+
+Thank you for exploring Hm Sensors InsightHub! We hope this tool proves valuable for your sensor data exploration and analysis needs.
+
