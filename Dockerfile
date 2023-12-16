@@ -1,17 +1,16 @@
-# Step 1: Start with a base image, we are going to use a Node base image.
 FROM node:14
 
 # Set working directory in Docker, any commands we run will be run from this directory.
 WORKDIR /app
 
 # copy package.json into the container
-COPY frontend/package*.json ./
+COPY package*.json ./
 
 # install dependencies in the container.
 RUN npm install
 
 # Copy the rest of your app's source code from your host to your image filesystem.
-COPY frontend/ ./
+COPY ./ ./
 
 # build the project
 RUN npm run build
