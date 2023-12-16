@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Line } from 'react-chartjs-2';
 import {
 	Chart,
@@ -33,17 +33,35 @@ function ChartGraphComparison() {
 		Legend
 	);
 	const { datastreamComparisonList, setDatastreamComparisonList } = useContext(SensorContext)!;
+	const [coloredComparisonList, setColoredComparisonList] = useState<any>([]);
+
+	// Adds a random color to each datastream for the graph elements
+	useEffect(() => {
+		const updatedDatastreamComparisonList = datastreamComparisonList.map(datastream => {
+			return { ...datastream, color: randomizeBorderColor() };
+		});
+		setColoredComparisonList(updatedDatastreamComparisonList);
+	}, []);
+
 	function removeDataStream(iotId: string) {
-		const updatedDataStreams = datastreamComparisonList.filter(
+		// Remove from chart
+		const updatedDataStreams = coloredComparisonList.filter(
 			(dataStream: any) => dataStream['@iot.id'] !== iotId
 		);
-		setDatastreamComparisonList(updatedDataStreams);
+		setColoredComparisonList(updatedDataStreams)
+		// Remove from comparisonList
+		const updatedComparisonList = datastreamComparisonList.filter(
+			(dataStream: any) => dataStream['@iot.id'] !== iotId
+		);
+		setDatastreamComparisonList(updatedComparisonList);
 	}
+
 	const chartData: any = {
 		labels: [],
 		datasets: [],
 	};
-	datastreamComparisonList.forEach((datastream: any) => {
+
+	coloredComparisonList.forEach((datastream: any) => {
 		// add labels
 		chartData.labels = datastream.Observations.map((observation: any) => {
 			let date = new Date(observation.resultTime);
@@ -55,7 +73,7 @@ function ChartGraphComparison() {
 			label: datastream['@iot.id'],
 			data: datastream.Observations.map((observation: any) => observation.result),
 			fill: false,
-			borderColor: randomizeBorderColor(),
+			borderColor: datastream.color, // use the stored color if it exists, otherwise generate a new one
 			tension: 0.1,
 		});
 	});
