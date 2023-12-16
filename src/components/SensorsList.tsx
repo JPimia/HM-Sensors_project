@@ -7,7 +7,6 @@ import {
     fetchUrl,
 } from "./fetches";
 import "../CSS/SensorList.css";
-import { useNavigate } from "react-router-dom";
 import { registerLocale, setDefaultLocale } from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import de from "date-fns/locale/de";
@@ -29,6 +28,7 @@ export default function SensorsList() {
         compareType,
     } = useContext(SensorContext)!;
 
+
     async function handleCompareBtnClick(
         datastream: { [key: string]: any },
         sensorName: string
@@ -40,7 +40,6 @@ export default function SensorsList() {
             return;
         }
 
-        console.log(datastreamComparisonList)
         const fullDatastream = await fetchDatastreamContents(
             datastream["@iot.selfLink"]
         );
@@ -50,7 +49,9 @@ export default function SensorsList() {
             ...prevList,
             fullDatastream,
         ]);
+        console.log(datastreamComparisonList)
     }
+
 
     async function getSensors(
         name?: string,
@@ -98,6 +99,7 @@ export default function SensorsList() {
         }
     }
 
+
     async function getDatastream(datastream: { [key: string]: any }) {
         try {
             const data = await fetchDatastreamContents(
@@ -109,12 +111,14 @@ export default function SensorsList() {
         }
     }
 
+
     function isCompareBtnDisabled(
         datastreamType: string,
         compareType: string | null
     ): boolean {
         return compareType !== null && datastreamType !== compareType;
     }
+
 
     const InputFields = memo(function InputFields(): any {
         const sensorNameRef = React.useRef<HTMLInputElement>(null);
@@ -196,15 +200,16 @@ export default function SensorsList() {
                 }
             };
             handleFetch();
-
             return () => {
                 document.removeEventListener("click", handleClickOutside);
             };
         }, []);
 
+
         const toggleDropdown = () => {
             setDropdownOpen(!dropdownOpen);
         };
+
 
         return (
             <div className="input-container">

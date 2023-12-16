@@ -36,8 +36,8 @@ async function fetchSensors(name?: string, isExact?: boolean, selectDatastreamNa
 		sensorFilter += `$filter=substringof(tolower('${name}'),tolower(name))&$top=1000&`;
 	}
 
+	// filter for exact datastream names
 	let datastreamFilter = '';
-	// Only select VDD/Battery life datastream
 	if (selectDatastreamName) {
 		datastreamFilter += `($filter=name eq '${selectDatastreamName}')`
 	}
