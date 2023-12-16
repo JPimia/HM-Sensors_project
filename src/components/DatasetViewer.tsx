@@ -20,6 +20,7 @@ function DatasetViewer() {
 	const [resultAmount, setResultAmount] = useState(1000);
 	const [startDate, setStartDate] = useState<Date | null>(new Date());
 	const [endDate, setEndDate] = useState<Date | null>(null);
+	const [isFetchCompleted, setIsFetchCompleted] = useState(false);
 
 
 
@@ -196,7 +197,13 @@ function DatasetViewer() {
 		});
 
 		const updatedRows = await Promise.all(fetchPromises);
-		setTableContent(updatedRows);
+		setTableContent((prevTableContent) =>
+			prevTableContent.map((content) => {
+				const updatedRow = updatedRows.find((row) => row.sensorId === content.sensorId && row.datastreamId === content.datastreamId);
+				return updatedRow ? updatedRow : content;
+			})
+		);
+		setIsFetchCompleted(true);
 		clearInterval(intervalRef.current!);
 		setLoadingStatus({ initiated: true, loading: false, time: 0 });
 	}
@@ -208,16 +215,16 @@ function DatasetViewer() {
 			downloadCsv('SensorData', sensorData);
 
 			// Check if observations have been fetched
-			const hasObservations = rows.some(row => row.original.observations && row.original.observations.length > 0);
-
-			if (hasObservations) {
+			if (isFetchCompleted) {
 				console.log('Observations have been found');
 				const observationData = buildObservationData(rows);
+				console.log(observationData)
 				downloadCsv('Observations', observationData);
 			}
 		} catch (error) {
 			console.error('Error exporting rows:', error);
 		}
+
 
 		function buildSensorData(rows: MRT_Row<TableContent>[]) {
 			return rows.map((row, index) => {
@@ -235,13 +242,20 @@ function DatasetViewer() {
 			});
 		}
 
+
 		function buildObservationData(rows: MRT_Row<TableContent>[]) {
 			return rows.flatMap((row, index) => {
 				const originalRow = row.original;
-				const observations = tableContent.find((content) => content.datastreamUrl === originalRow.datastreamUrl)?.observations;
-				return observations ? formatObservations(observations, index + 1) : [];
+				const observations = tableContent.find((content) => content.datastreamId === originalRow.datastreamId)?.observations;
+				// Check if observations exist for the row
+				if (observations && observations.length > 0) {
+					return formatObservations(observations, index + 1);
+				}
+				// If no observations, return an empty array
+				return [];
 			});
 		}
+
 
 		function formatObservations(
 			observations: {
@@ -257,6 +271,7 @@ function DatasetViewer() {
 				result: result ? parseFloat(result) : ''
 			})).filter(Boolean);
 		}
+
 
 		function downloadCsv(filename: string, data: any[]) {
 			const csvConfig = mkConfig({
