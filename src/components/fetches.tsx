@@ -108,10 +108,10 @@ async function fetchObservations(id: number, resultAmount: number, startDate?: D
 	// Use nextUrl if it exists
 	let url = nextUrl ? nextUrl : `
 		https://gi3.gis.lrg.tum.de/frost/v1.1/Datastreams(${id})/Observations?
-		$top = ${resultAmount}
-	& $select=resultTime, result
-			& $orderby=resultTime + desc
-				`;
+		$top = ${resultAmount}& 
+		$select=resultTime, result& 
+		$orderby=resultTime + desc
+		`;
 
 	// Add filter if startDate or endDate is defined
 	if (startDate || endDate) {
